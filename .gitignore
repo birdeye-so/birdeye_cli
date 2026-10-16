@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.birdeye/
+.env
+config.json
+config.sqlite*
+usage.sqlite*
+*.tgz
+test-results/
+.test-dist/
+.impeccable/review/

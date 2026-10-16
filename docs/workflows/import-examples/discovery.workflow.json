@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "title": "Trending token evidence",
+  "purpose": "Discover one page of trending tokens and inspect at most two distinct contracts.",
+  "chain": "solana",
+  "steps": [
+    {"id":"discover","operation":"market.trending","params":{"interval":"1h","limit":20}},
+    {"id":"overview","operation":"token.overview","subjects":{"from":["discover"],"kind":"token","take":2}},
+    {"id":"security","operation":"token.security","subjects":{"from":["discover"],"kind":"token","take":2}}
+  ]
+}

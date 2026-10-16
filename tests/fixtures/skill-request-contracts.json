@@ -1,0 +1,1049 @@
+{
+  "source": "bds-docs-mintlify/openapi/data/openapi_docs.json",
+  "note": "Request constraints copied from local official OpenAPI; response fixtures in skills.test.ts are synthetic and follow documented field nesting. Smart-money raw envelope follows reference _be().",
+  "paths": {
+    "/smart-money/v1/token/list": {
+      "GET": {
+        "query": {
+          "interval": {
+            "type": "string",
+            "enum": [
+              "1d",
+              "7d",
+              "30d"
+            ]
+          },
+          "trader_style": {
+            "type": "string",
+            "enum": [
+              "all",
+              "risk_averse",
+              "risk_balancers",
+              "trenchers"
+            ]
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "net_flow",
+              "smart_traders_no",
+              "market_cap"
+            ]
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ]
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "requiredQuery": []
+      }
+    },
+    "/defi/v2/tokens/top_traders": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "time_frame": {
+            "type": "string",
+            "enum": [
+              "30m",
+              "1h",
+              "2h",
+              "4h",
+              "6h",
+              "8h",
+              "12h",
+              "24h",
+              "2d",
+              "3d",
+              "7d",
+              "14d",
+              "30d",
+              "60d",
+              "90d",
+              "all_time"
+            ]
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ]
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "volume",
+              "trade",
+              "total_pnl",
+              "unrealized_pnl",
+              "realized_pnl",
+              "volume_usd",
+              "hold_volume"
+            ]
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          },
+          "wallet_tags": {
+            "type": "array"
+          },
+          "get_holders_networth": {
+            "type": "boolean"
+          },
+          "min_trade": {
+            "type": "number"
+          },
+          "max_trade": {
+            "type": "number"
+          },
+          "min_volume": {
+            "type": "number"
+          },
+          "max_volume": {
+            "type": "number"
+          },
+          "min_volume_usd": {
+            "type": "number"
+          },
+          "max_volume_usd": {
+            "type": "number"
+          },
+          "min_realized_pnl": {
+            "type": "number"
+          },
+          "max_realized_pnl": {
+            "type": "number"
+          },
+          "min_unrealized_pnl": {
+            "type": "number"
+          },
+          "max_unrealized_pnl": {
+            "type": "number"
+          }
+        },
+        "requiredQuery": [
+          "address",
+          "time_frame",
+          "sort_type",
+          "sort_by"
+        ]
+      }
+    },
+    "/wallet/v2/pnl/summary": {
+      "GET": {
+        "query": {
+          "wallet": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string",
+            "enum": [
+              "all",
+              "90d",
+              "30d",
+              "7d",
+              "24h"
+            ]
+          },
+          "position_scope": {
+            "type": "string",
+            "enum": [
+              "duration_only",
+              "cumulative"
+            ]
+          },
+          "pnl_method": {
+            "type": "string",
+            "enum": [
+              "wac",
+              "net_cash"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "wallet"
+        ]
+      }
+    },
+    "/wallet/v2/pnl/details": {
+      "POST": {
+        "query": {},
+        "requiredQuery": [],
+        "body": {
+          "wallet": {
+            "type": "string"
+          },
+          "token_addresses": {
+            "type": "array"
+          },
+          "duration": {
+            "type": "string",
+            "enum": [
+              "all",
+              "90d",
+              "30d",
+              "7d",
+              "24h"
+            ]
+          },
+          "position_scope": {
+            "type": "string",
+            "enum": [
+              "duration_only",
+              "cumulative"
+            ]
+          },
+          "pnl_method": {
+            "type": "string"
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "last_trade"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "requiredBody": [
+          "wallet"
+        ]
+      }
+    },
+    "/wallet/v2/current-net-worth": {
+      "GET": {
+        "query": {
+          "wallet": {
+            "type": "string"
+          },
+          "filter_value": {
+            "type": "number"
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "value"
+            ]
+          },
+          "flags": {
+            "type": "array"
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        },
+        "requiredQuery": [
+          "wallet",
+          "sort_type"
+        ]
+      }
+    },
+    "/wallet/v2/tx/first-funded": {
+      "POST": {
+        "query": {},
+        "requiredQuery": [],
+        "body": {
+          "wallets": {
+            "type": "array"
+          },
+          "token_address": {
+            "type": "string"
+          }
+        },
+        "requiredBody": [
+          "wallets"
+        ]
+      }
+    },
+    "/wallet/v2/net-worth": {
+      "GET": {
+        "query": {
+          "wallet": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "back",
+              "forward"
+            ]
+          },
+          "time": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "1h",
+              "1d"
+            ]
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "wallet",
+          "sort_type"
+        ]
+      }
+    },
+    "/v1/wallet/tx_list": {
+      "GET": {
+        "query": {
+          "wallet": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "before": {
+            "type": "string"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "wallet"
+        ]
+      }
+    },
+    "/defi/v3/liquidity/history/token": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "4h",
+              "1D"
+            ]
+          },
+          "time": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "back",
+              "forward"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/v3/ohlcv": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "1s",
+              "15s",
+              "30s",
+              "1m",
+              "3m",
+              "5m",
+              "15m",
+              "30m",
+              "1H",
+              "2H",
+              "4H",
+              "6H",
+              "8H",
+              "12H",
+              "1D",
+              "3D",
+              "1W",
+              "1M"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "usd",
+              "native"
+            ]
+          },
+          "chart_type": {
+            "type": "string",
+            "enum": [
+              "price",
+              "mcap"
+            ]
+          },
+          "time_from": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "time_to": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled",
+              "both"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "range",
+              "count"
+            ]
+          },
+          "count_limit": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5000
+          },
+          "padding": {
+            "type": "boolean",
+            "enum": [
+              true,
+              false
+            ]
+          },
+          "outlier": {
+            "type": "boolean",
+            "enum": [
+              true,
+              false
+            ]
+          }
+        },
+        "requiredQuery": [
+          "address",
+          "type",
+          "time_from",
+          "time_to"
+        ]
+      }
+    },
+    "/defi/v3/token/money-flow": {
+      "POST": {
+        "query": {},
+        "requiredQuery": [],
+        "body": {
+          "token_address": {
+            "type": "string"
+          },
+          "wallet_tags": {
+            "type": "array"
+          },
+          "frames": {
+            "type": "array",
+            "maxItems": 8
+          },
+          "wallets": {
+            "type": "array",
+            "maxItems": 50
+          }
+        },
+        "requiredBody": [
+          "token_address"
+        ]
+      }
+    },
+    "/token/v1/holder-profile": {
+      "GET": {
+        "query": {
+          "token_address": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "1h"
+            ]
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "scaled",
+              "raw"
+            ]
+          },
+          "include_zero_balance": {
+            "type": "boolean"
+          }
+        },
+        "requiredQuery": [
+          "token_address"
+        ]
+      }
+    },
+    "/holder/v1/distribution": {
+      "GET": {
+        "query": {
+          "token_address": {
+            "type": "string"
+          },
+          "address_type": {
+            "type": "string",
+            "enum": [
+              "wallet",
+              "token_account"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "percent",
+              "top"
+            ]
+          },
+          "top_n": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "min_percent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "max_percent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "include_list": {
+            "type": "boolean"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "requiredQuery": [
+          "token_address"
+        ]
+      }
+    },
+    "/defi/v3/token/list": {
+      "GET": {
+        "query": {
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "liquidity",
+              "market_cap",
+              "fdv",
+              "recent_listing_time",
+              "last_trade_unix_time",
+              "holder",
+              "volume_1m_usd",
+              "volume_5m_usd",
+              "volume_30m_usd",
+              "volume_1h_usd",
+              "volume_2h_usd",
+              "volume_4h_usd",
+              "volume_8h_usd",
+              "volume_24h_usd",
+              "volume_7d_usd",
+              "volume_30d_usd",
+              "volume_1m_change_percent",
+              "volume_5m_change_percent",
+              "volume_30m_change_percent",
+              "volume_1h_change_percent",
+              "volume_2h_change_percent",
+              "volume_4h_change_percent",
+              "volume_8h_change_percent",
+              "volume_24h_change_percent",
+              "volume_7d_change_percent",
+              "volume_30d_change_percent",
+              "price_change_1m_percent",
+              "price_change_5m_percent",
+              "price_change_30m_percent",
+              "price_change_1h_percent",
+              "price_change_2h_percent",
+              "price_change_4h_percent",
+              "price_change_8h_percent",
+              "price_change_24h_percent",
+              "price_change_7d_percent",
+              "price_change_30d_percent",
+              "trade_1m_count",
+              "trade_5m_count",
+              "trade_30m_count",
+              "trade_1h_count",
+              "trade_2h_count",
+              "trade_4h_count",
+              "trade_8h_count",
+              "trade_24h_count",
+              "trade_7d_count",
+              "trade_30d_count",
+              "global_fees_paid"
+            ]
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ]
+          },
+          "platform_name": {
+            "type": "string"
+          },
+          "min_liquidity": {
+            "type": "number"
+          },
+          "max_liquidity": {
+            "type": "number"
+          },
+          "min_market_cap": {
+            "type": "number"
+          },
+          "max_market_cap": {
+            "type": "number"
+          },
+          "min_fdv": {
+            "type": "number"
+          },
+          "max_fdv": {
+            "type": "number"
+          },
+          "min_recent_listing_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "max_recent_listing_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "min_last_trade_unix_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "max_last_trade_unix_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "min_holder": {
+            "type": "integer"
+          },
+          "min_volume_1m_usd": {
+            "type": "number"
+          },
+          "min_volume_5m_usd": {
+            "type": "number"
+          },
+          "min_volume_30m_usd": {
+            "type": "number"
+          },
+          "min_volume_1h_usd": {
+            "type": "number"
+          },
+          "min_volume_2h_usd": {
+            "type": "number"
+          },
+          "min_volume_4h_usd": {
+            "type": "number"
+          },
+          "min_volume_8h_usd": {
+            "type": "number"
+          },
+          "min_volume_24h_usd": {
+            "type": "number"
+          },
+          "min_volume_7d_usd": {
+            "type": "number"
+          },
+          "min_volume_30d_usd": {
+            "type": "number"
+          },
+          "min_volume_1m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_5m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_30m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_1h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_2h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_4h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_8h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_24h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_7d_change_percent": {
+            "type": "number"
+          },
+          "min_volume_30d_change_percent": {
+            "type": "number"
+          },
+          "min_price_change_1m_percent": {
+            "type": "number"
+          },
+          "min_price_change_5m_percent": {
+            "type": "number"
+          },
+          "min_price_change_30m_percent": {
+            "type": "number"
+          },
+          "min_price_change_1h_percent": {
+            "type": "number"
+          },
+          "min_price_change_2h_percent": {
+            "type": "number"
+          },
+          "min_price_change_4h_percent": {
+            "type": "number"
+          },
+          "min_price_change_8h_percent": {
+            "type": "number"
+          },
+          "min_price_change_24h_percent": {
+            "type": "number"
+          },
+          "min_price_change_7d_percent": {
+            "type": "number"
+          },
+          "min_price_change_30d_percent": {
+            "type": "number"
+          },
+          "min_trade_1m_count": {
+            "type": "integer"
+          },
+          "min_trade_5m_count": {
+            "type": "integer"
+          },
+          "min_trade_30m_count": {
+            "type": "integer"
+          },
+          "min_trade_1h_count": {
+            "type": "integer"
+          },
+          "min_trade_2h_count": {
+            "type": "integer"
+          },
+          "min_trade_4h_count": {
+            "type": "integer"
+          },
+          "min_trade_8h_count": {
+            "type": "integer"
+          },
+          "min_trade_24h_count": {
+            "type": "integer"
+          },
+          "min_trade_7d_count": {
+            "type": "integer"
+          },
+          "min_trade_30d_count": {
+            "type": "integer"
+          },
+          "min_global_fees_paid": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "sort_by",
+          "sort_type"
+        ]
+      }
+    },
+    "/defi/token_trending": {
+      "GET": {
+        "query": {
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "rank",
+              "volumeUSD",
+              "liquidity"
+            ]
+          },
+          "interval": {
+            "type": "string",
+            "enum": [
+              "1h",
+              "4h",
+              "24h"
+            ]
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "sort_by",
+          "sort_type"
+        ]
+      }
+    },
+    "/defi/token_overview": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "frames": {
+            "type": "string"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/token_security": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/v3/token/holder": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "token_account",
+              "wallet"
+            ]
+          },
+          "get_holder_infos": {
+            "type": "boolean"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/trader/txs/seek_by_time": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "tx_type": {
+            "type": "string",
+            "enum": [
+              "swap",
+              "add",
+              "remove",
+              "all"
+            ]
+          },
+          "before_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "after_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    }
+  }
+}

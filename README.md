@@ -299,7 +299,7 @@ birdeye-cli --format interface --bind 127.0.0.1:8787 \
 | `chains` | `--refresh` | Không có cờ: chain CLI hỗ trợ. Có cờ: hỏi upstream, ước tính 1 CU; không bật thêm chain cho CLI. |
 | `cases` | Không có | Liệt kê workflow, mục đích và loại subject. |
 | `demos` | Không có | Liệt kê 5 use case sản phẩm chạy trên workflow thật, không gọi API. |
-| `demo <id>` | `--address`, `--limit`, `--min-liquidity`, `--max-top10-pct`, `--from`, `--to` | Chạy snapshot sản phẩm. `limit` cho terminal (1–5, mặc định 3); hai ngưỡng cho security (mặc định 100.000 USD/50%); from/to là cặp Unix giây. Dùng `--estimate-cu` để preview miễn CU. Xem [hướng dẫn demo](docs/workflows/customer-demos.md). |
+| `demo <id>` | `--address`, `--limit`, `--min-liquidity`, `--max-top10-pct`, `--from`, `--to` | Chạy snapshot sản phẩm. `limit` cho terminal hoặc wallet discovery (1–5, mặc định 3); wallet không có `--address` sẽ discover trước, có `--address` sẽ phân tích ví đã chọn; hai ngưỡng cho security (mặc định 100.000 USD/50%); from/to là cặp Unix giây. Dùng `--estimate-cu` để preview miễn CU. Xem [hướng dẫn demo](docs/workflows/customer-demos.md). |
 | `usage show` | Dùng cờ chung `--workflow <id>`, `--short` | Đọc CU ledger; bản full kèm attempts. |
 | `usage credits` | Không có cờ riêng | Lấy credits toàn tài khoản từ Birdeye, ước tính 1 CU. |
 | `workflow create` | `--label <label>` mặc định `research` | Tạo nhóm budget, trả ID để dùng với `--workflow`; budget lấy từ `--max-cu`. |
@@ -844,9 +844,20 @@ JSON kết quả ở stdout, lỗi ở stderr. `--short` không bỏ chi phí ha
 
 ## Live demo cho khách hàng
 
-Tab **Demos** có 5 sản phẩm mẫu: Research terminal, DEX token inspector, Wallet intelligence, Security signals và Telegram research brief. Mỗi demo có mục đích/customer, input, API/CU preview, bảng kết quả có nguồn và History SQLite. Run lấy snapshot thật khi có Birdeye key; không tự refresh, đặt lệnh hay gửi tin Telegram. Telegram demo tạo bản tin để preview/export và tích hợp bot riêng.
+Tab **Demos** có 5 giao diện sản phẩm riêng, lấy dữ liệu từ workflow và mở lại snapshot từ History SQLite:
+
+| Demo | UI và thao tác |
+| --- | --- |
+| Research terminal | Watchlist giá/24h change/volume/liquidity; tìm kiếm, sắp xếp, chọn token để xem controls và so sánh thanh khoản. |
+| DEX token inspector | Thông số token, bảng pool, thanh so sánh liquidity; chọn pool để xem chi tiết và nguồn. |
+| Wallet intelligence | Discover smart wallets từ smart-money tokens → top traders → shortlist khử trùng lặp. Chọn ví, preview CU riêng rồi xem 7d/30d PnL, allocation và holdings. |
+| Security signals | Ba rule theo ngưỡng, 38 metrics/quan sát bổ sung về market, sở hữu, quyền kiểm soát và authority; bảng holder ví với lượng token và % tổng cung. |
+| Telegram research brief | Khung hội thoại với token, market metrics, controls và coverage; xem/export plain text cho bot adapter. |
+
+Chọn **Preview APIs & CU → Run live snapshot** để lấy dữ liệu bằng Birdeye key. API steps và JSON evidence nằm trong mục mở rộng; **Source evidence** truy vết timestamp/request của từng nhóm dữ liệu. Đổi kỳ, lọc/sort, chọn token/pool và mở lại History không gọi API. Dữ liệu thiếu hiển thị Unavailable/Unknown; UI không cài sẵn giá giả, không tự refresh, đặt lệnh hay gửi Telegram.
 
 ```bash
+npm run build
 node dist/index.js demos --short
 node dist/index.js demo terminal --limit 2 --estimate-cu --short
 node dist/index.js --format interface --bind 127.0.0.1:8787
@@ -854,6 +865,49 @@ node dist/index.js --format interface --bind 127.0.0.1:8787
 ```
 
 Xem [cách chạy, contract JSON và tích hợp vào ứng dụng/bot](docs/workflows/customer-demos.md), cùng [nghiên cứu use case và các phần cần thêm hạ tầng](docs/research/customer-live-demos.md). CU vẫn là estimate theo catalog; nghiên cứu ghi nhận giá Security và Wallet PnL live khác snapshot, chưa xác nhận billing bằng key thật.
+
+Wallet intelligence bắt đầu ở **Discover smart wallets**, không cần nhập ví. `Maximum tokens / wallets` giới hạn số token lookup và số ví trong shortlist. Chọn **Select wallet → Preview APIs & CU → Run live snapshot** để phân tích. Discovery mặc định tối đa 110 CU/4 requests theo catalog (20 + 3 × 30); phân tích một ví 90 CU/4 requests, budget áp dụng riêng từng run. Chọn ví và preview không tiêu CU. History phân biệt `Wallet intelligence · discover` và run có địa chỉ ví rút gọn; mở lại discovery để chọn ví khác mà không fetch lại shortlist.
+
+```bash
+# Khám phá trước, không cần wallet address; --limit 2: tối đa 80 CU
+node dist/index.js demo wallet-intelligence --limit 2 --estimate-cu --short
+node dist/index.js demo wallet-intelligence --limit 2 --max-cu 100 > wallet-discovery.json
+# Chọn address trong data.demo.sections (Discovered wallets), rồi phân tích riêng
+node dist/index.js demo wallet-intelligence --address WALLET_ADDRESS --estimate-cu
+node dist/index.js demo wallet-intelligence --address WALLET_ADDRESS --max-cu 120 > wallet-analysis.json
+```
+
+Để trống ví (`address` bị bỏ qua, `""` hoặc chỉ có khoảng trắng) đều chạy discovery. Địa chỉ không rỗng nhưng sai định dạng vẫn bị từ chối. Trên UI, chọn **Preview APIs & CU** trước; **Run live snapshot** chỉ bật khi preview hợp lệ và CU limit đủ cho estimate. Không cần điền ví để mở khóa discovery.
+
+```bash
+# Regression cho input ví rỗng; estimate miễn CU, không cần key
+node dist/index.js demo wallet-intelligence --address "" --estimate-cu --short
+# Regression HTTP thật trong process, dùng fixture và không tiêu CU
+npm test
+node --test --test-name-pattern="HTTP wallet discovery previews and runs" .test-dist/tests/demos.test.js
+```
+
+Nếu UI vẫn yêu cầu ví ở discovery, dừng process interface cũ, chạy `npm run build`, khởi động lại bằng `node dist/index.js --format interface --bind 127.0.0.1:8787`, rồi reload browser. Build không thay thế module đã được process Node cũ load vào bộ nhớ.
+
+Shortlist gồm trader của smart-money-list tokens, không tự chứng minh mọi ví là smart money hay có lợi nhuận. Token-level PnL được giữ theo từng quan sát, không cộng thành wallet-wide PnL.
+
+Kiểm tra UI demo (fixture, không dùng key và không tiêu CU):
+
+```bash
+npm run typecheck
+npm test
+npm run build
+# Render/data regression cho 5 UI
+node --test tests/demo-ui.test.mjs
+# Tương tác và screenshot desktop/mobile, cần Chrome; không cần mở cổng HTTP
+npm run test:demos:browser
+# Linux hoặc Chrome nằm ở đường dẫn khác
+CHROME_PATH=/usr/bin/google-chrome npm run test:demos:browser
+# Toàn bộ app: CU preview/run và History, cần Chrome + quyền listen loopback
+npm run test:browser
+```
+
+Sau khi build, dừng process interface cũ và chạy lại lệnh trên, rồi reload browser. Regression Wallet discovery, typecheck và build đã qua. Chrome vẫn bị chặn trong sandbox nên chưa xác nhận screenshot/browser interaction. Test riêng lưu capture ở `.impeccable/review/demo-*-desktop.png` và `demo-*-mobile.png` khi chạy được Chrome; fixture chỉ được import bởi tests.
 
 ## CLI dữ liệu
 

@@ -1,0 +1,46 @@
+{
+  "name": "birdeye-cli",
+  "version": "0.4.0",
+  "description": "Birdeye data CLI with CU accounting and a local AI research interface",
+  "type": "module",
+  "bin": {
+    "birdeye-cli": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "docs/workflows",
+    "docs/research",
+    "README.md",
+    "knowledge/birdeye"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build-web.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.web.json",
+    "dev": "npm run build && node dist/index.js",
+    "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js tests/*.test.mjs",
+    "test:browser": "npm run build && node tests/browser-smoke.mjs",
+    "prepack": "npm run build",
+    "knowledge:sync": "node scripts/sync-knowledge.mjs",
+    "test:demos:browser": "node tests/demo-ui-browser.mjs"
+  },
+  "dependencies": {
+    "bignumber.js": "9.3.1",
+    "commander": "14.0.3",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.3.0",
+    "entities": "6.0.1",
+    "esbuild": "0.28.2",
+    "marked": "18.0.11",
+    "playwright-core": "1.63.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

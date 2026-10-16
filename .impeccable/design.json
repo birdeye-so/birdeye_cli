@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-15T09:14:42.991084+00:00",
+  "title": "Design System: Birdeye CLI",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "tonalRamp": [
+          "oklch(15% 0.0111 267.98)",
+          "oklch(26% 0.0111 267.98)",
+          "oklch(38% 0.0111 267.98)",
+          "oklch(49% 0.0111 267.98)",
+          "oklch(61% 0.0111 267.98)",
+          "oklch(72% 0.0111 267.98)",
+          "oklch(84% 0.0111 267.98)",
+          "oklch(95% 0.0111 267.98)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0190 266.07)",
+          "oklch(26% 0.0190 266.07)",
+          "oklch(38% 0.0190 266.07)",
+          "oklch(49% 0.0190 266.07)",
+          "oklch(61% 0.0190 266.07)",
+          "oklch(72% 0.0190 266.07)",
+          "oklch(84% 0.0190 266.07)",
+          "oklch(95% 0.0190 266.07)"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Surface raised",
+        "tonalRamp": [
+          "oklch(15% 0.0243 267.00)",
+          "oklch(26% 0.0243 267.00)",
+          "oklch(38% 0.0243 267.00)",
+          "oklch(49% 0.0243 267.00)",
+          "oklch(61% 0.0243 267.00)",
+          "oklch(72% 0.0243 267.00)",
+          "oklch(84% 0.0243 267.00)",
+          "oklch(95% 0.0243 267.00)"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Input",
+        "tonalRamp": [
+          "oklch(15% 0.0154 266.68)",
+          "oklch(26% 0.0154 266.68)",
+          "oklch(38% 0.0154 266.68)",
+          "oklch(49% 0.0154 266.68)",
+          "oklch(61% 0.0154 266.68)",
+          "oklch(72% 0.0154 266.68)",
+          "oklch(84% 0.0154 266.68)",
+          "oklch(95% 0.0154 266.68)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0126 271.28)",
+          "oklch(26% 0.0126 271.28)",
+          "oklch(38% 0.0126 271.28)",
+          "oklch(49% 0.0126 271.28)",
+          "oklch(61% 0.0126 271.28)",
+          "oklch(72% 0.0126 271.28)",
+          "oklch(84% 0.0126 271.28)",
+          "oklch(95% 0.0126 271.28)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0337 266.08)",
+          "oklch(26% 0.0337 266.08)",
+          "oklch(38% 0.0337 266.08)",
+          "oklch(49% 0.0337 266.08)",
+          "oklch(61% 0.0337 266.08)",
+          "oklch(72% 0.0337 266.08)",
+          "oklch(84% 0.0337 266.08)",
+          "oklch(95% 0.0337 266.08)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "tonalRamp": [
+          "oklch(15% 0.0336 265.99)",
+          "oklch(26% 0.0336 265.99)",
+          "oklch(38% 0.0336 265.99)",
+          "oklch(49% 0.0336 265.99)",
+          "oklch(61% 0.0336 265.99)",
+          "oklch(72% 0.0336 265.99)",
+          "oklch(84% 0.0336 265.99)",
+          "oklch(95% 0.0336 265.99)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15% 0.1300 257.69)",
+          "oklch(26% 0.1300 257.69)",
+          "oklch(38% 0.1300 257.69)",
+          "oklch(49% 0.1300 257.69)",
+          "oklch(61% 0.1300 257.69)",
+          "oklch(72% 0.1300 257.69)",
+          "oklch(84% 0.1300 257.69)",
+          "oklch(95% 0.1300 257.69)"
+        ]
+      },
+      "focus": {
+        "role": "primary",
+        "displayName": "Focus",
+        "tonalRamp": [
+          "oklch(15% 0.0930 257.61)",
+          "oklch(26% 0.0930 257.61)",
+          "oklch(38% 0.0930 257.61)",
+          "oklch(49% 0.0930 257.61)",
+          "oklch(61% 0.0930 257.61)",
+          "oklch(72% 0.0930 257.61)",
+          "oklch(84% 0.0930 257.61)",
+          "oklch(95% 0.0930 257.61)"
+        ]
+      },
+      "soft": {
+        "role": "primary",
+        "displayName": "Soft",
+        "tonalRamp": [
+          "oklch(15% 0.0546 260.37)",
+          "oklch(26% 0.0546 260.37)",
+          "oklch(38% 0.0546 260.37)",
+          "oklch(49% 0.0546 260.37)",
+          "oklch(61% 0.0546 260.37)",
+          "oklch(72% 0.0546 260.37)",
+          "oklch(84% 0.0546 260.37)",
+          "oklch(95% 0.0546 260.37)"
+        ]
+      },
+      "green": {
+        "role": "neutral",
+        "displayName": "Green",
+        "tonalRamp": [
+          "oklch(15% 0.1387 156.97)",
+          "oklch(26% 0.1387 156.97)",
+          "oklch(38% 0.1387 156.97)",
+          "oklch(49% 0.1387 156.97)",
+          "oklch(61% 0.1387 156.97)",
+          "oklch(72% 0.1387 156.97)",
+          "oklch(84% 0.1387 156.97)",
+          "oklch(95% 0.1387 156.97)"
+        ]
+      },
+      "warning": {
+        "role": "neutral",
+        "displayName": "Warning",
+        "tonalRamp": [
+          "oklch(15% 0.1255 81.43)",
+          "oklch(26% 0.1255 81.43)",
+          "oklch(38% 0.1255 81.43)",
+          "oklch(49% 0.1255 81.43)",
+          "oklch(61% 0.1255 81.43)",
+          "oklch(72% 0.1255 81.43)",
+          "oklch(84% 0.1255 81.43)",
+          "oklch(95% 0.1255 81.43)"
+        ]
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Danger",
+        "tonalRamp": [
+          "oklch(15% 0.1187 20.05)",
+          "oklch(26% 0.1187 20.05)",
+          "oklch(38% 0.1187 20.05)",
+          "oklch(49% 0.1187 20.05)",
+          "oklch(61% 0.1187 20.05)",
+          "oklch(72% 0.1187 20.05)",
+          "oklch(84% 0.1187 20.05)",
+          "oklch(95% 0.1187 20.05)"
+        ]
+      },
+      "error-bg": {
+        "role": "neutral",
+        "displayName": "Error bg",
+        "tonalRamp": [
+          "oklch(15% 0.0329 352.93)",
+          "oklch(26% 0.0329 352.93)",
+          "oklch(38% 0.0329 352.93)",
+          "oklch(49% 0.0329 352.93)",
+          "oklch(61% 0.0329 352.93)",
+          "oklch(72% 0.0329 352.93)",
+          "oklch(84% 0.0329 352.93)",
+          "oklch(95% 0.0329 352.93)"
+        ]
+      },
+      "warning-bg": {
+        "role": "neutral",
+        "displayName": "Warning bg",
+        "tonalRamp": [
+          "oklch(15% 0.0214 82.46)",
+          "oklch(26% 0.0214 82.46)",
+          "oklch(38% 0.0214 82.46)",
+          "oklch(49% 0.0214 82.46)",
+          "oklch(61% 0.0214 82.46)",
+          "oklch(72% 0.0214 82.46)",
+          "oklch(84% 0.0214 82.46)",
+          "oklch(95% 0.0214 82.46)"
+        ]
+      },
+      "button": {
+        "role": "primary",
+        "displayName": "Button",
+        "tonalRamp": [
+          "oklch(15% 0.1625 260.34)",
+          "oklch(26% 0.1625 260.34)",
+          "oklch(38% 0.1625 260.34)",
+          "oklch(49% 0.1625 260.34)",
+          "oklch(61% 0.1625 260.34)",
+          "oklch(72% 0.1625 260.34)",
+          "oklch(84% 0.1625 260.34)",
+          "oklch(95% 0.1625 260.34)"
+        ]
+      },
+      "button-hover": {
+        "role": "primary",
+        "displayName": "Button hover",
+        "tonalRamp": [
+          "oklch(15% 0.1682 260.08)",
+          "oklch(26% 0.1682 260.08)",
+          "oklch(38% 0.1682 260.08)",
+          "oklch(49% 0.1682 260.08)",
+          "oklch(61% 0.1682 260.08)",
+          "oklch(72% 0.1682 260.08)",
+          "oklch(84% 0.1682 260.08)",
+          "oklch(95% 0.1682 260.08)"
+        ]
+      },
+      "light-canvas": {
+        "role": "neutral",
+        "displayName": "Light canvas",
+        "tonalRamp": [
+          "oklch(15% 0.0057 264.53)",
+          "oklch(26% 0.0057 264.53)",
+          "oklch(38% 0.0057 264.53)",
+          "oklch(49% 0.0057 264.53)",
+          "oklch(61% 0.0057 264.53)",
+          "oklch(72% 0.0057 264.53)",
+          "oklch(84% 0.0057 264.53)",
+          "oklch(95% 0.0057 264.53)"
+        ]
+      },
+      "light-surface": {
+        "role": "neutral",
+        "displayName": "Light surface",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      },
+      "light-surface-raised": {
+        "role": "neutral",
+        "displayName": "Light surface raised",
+        "tonalRamp": [
+          "oklch(15% 0.0125 255.51)",
+          "oklch(26% 0.0125 255.51)",
+          "oklch(38% 0.0125 255.51)",
+          "oklch(49% 0.0125 255.51)",
+          "oklch(61% 0.0125 255.51)",
+          "oklch(72% 0.0125 255.51)",
+          "oklch(84% 0.0125 255.51)",
+          "oklch(95% 0.0125 255.51)"
+        ]
+      },
+      "light-input": {
+        "role": "neutral",
+        "displayName": "Light input",
+        "tonalRamp": [
+          "oklch(15% 0.0057 264.53)",
+          "oklch(26% 0.0057 264.53)",
+          "oklch(38% 0.0057 264.53)",
+          "oklch(49% 0.0057 264.53)",
+          "oklch(61% 0.0057 264.53)",
+          "oklch(72% 0.0057 264.53)",
+          "oklch(84% 0.0057 264.53)",
+          "oklch(95% 0.0057 264.53)"
+        ]
+      },
+      "light-ink": {
+        "role": "neutral",
+        "displayName": "Light ink",
+        "tonalRamp": [
+          "oklch(15% 0.0387 259.38)",
+          "oklch(26% 0.0387 259.38)",
+          "oklch(38% 0.0387 259.38)",
+          "oklch(49% 0.0387 259.38)",
+          "oklch(61% 0.0387 259.38)",
+          "oklch(72% 0.0387 259.38)",
+          "oklch(84% 0.0387 259.38)",
+          "oklch(95% 0.0387 259.38)"
+        ]
+      },
+      "light-muted": {
+        "role": "neutral",
+        "displayName": "Light muted",
+        "tonalRamp": [
+          "oklch(15% 0.0428 259.72)",
+          "oklch(26% 0.0428 259.72)",
+          "oklch(38% 0.0428 259.72)",
+          "oklch(49% 0.0428 259.72)",
+          "oklch(61% 0.0428 259.72)",
+          "oklch(72% 0.0428 259.72)",
+          "oklch(84% 0.0428 259.72)",
+          "oklch(95% 0.0428 259.72)"
+        ]
+      },
+      "light-line": {
+        "role": "neutral",
+        "displayName": "Light line",
+        "tonalRamp": [
+          "oklch(15% 0.0229 260.72)",
+          "oklch(26% 0.0229 260.72)",
+          "oklch(38% 0.0229 260.72)",
+          "oklch(49% 0.0229 260.72)",
+          "oklch(61% 0.0229 260.72)",
+          "oklch(72% 0.0229 260.72)",
+          "oklch(84% 0.0229 260.72)",
+          "oklch(95% 0.0229 260.72)"
+        ]
+      },
+      "light-accent": {
+        "role": "primary",
+        "displayName": "Light accent",
+        "tonalRamp": [
+          "oklch(15% 0.1440 257.90)",
+          "oklch(26% 0.1440 257.90)",
+          "oklch(38% 0.1440 257.90)",
+          "oklch(49% 0.1440 257.90)",
+          "oklch(61% 0.1440 257.90)",
+          "oklch(72% 0.1440 257.90)",
+          "oklch(84% 0.1440 257.90)",
+          "oklch(95% 0.1440 257.90)"
+        ]
+      },
+      "light-focus": {
+        "role": "primary",
+        "displayName": "Light focus",
+        "tonalRamp": [
+          "oklch(15% 0.1704 258.72)",
+          "oklch(26% 0.1704 258.72)",
+          "oklch(38% 0.1704 258.72)",
+          "oklch(49% 0.1704 258.72)",
+          "oklch(61% 0.1704 258.72)",
+          "oklch(72% 0.1704 258.72)",
+          "oklch(84% 0.1704 258.72)",
+          "oklch(95% 0.1704 258.72)"
+        ]
+      },
+      "light-soft": {
+        "role": "primary",
+        "displayName": "Light soft",
+        "tonalRamp": [
+          "oklch(15% 0.0266 262.34)",
+          "oklch(26% 0.0266 262.34)",
+          "oklch(38% 0.0266 262.34)",
+          "oklch(49% 0.0266 262.34)",
+          "oklch(61% 0.0266 262.34)",
+          "oklch(72% 0.0266 262.34)",
+          "oklch(84% 0.0266 262.34)",
+          "oklch(95% 0.0266 262.34)"
+        ]
+      },
+      "light-green": {
+        "role": "neutral",
+        "displayName": "Light green",
+        "tonalRamp": [
+          "oklch(15% 0.1087 156.66)",
+          "oklch(26% 0.1087 156.66)",
+          "oklch(38% 0.1087 156.66)",
+          "oklch(49% 0.1087 156.66)",
+          "oklch(61% 0.1087 156.66)",
+          "oklch(72% 0.1087 156.66)",
+          "oklch(84% 0.1087 156.66)",
+          "oklch(95% 0.1087 156.66)"
+        ]
+      },
+      "light-warning": {
+        "role": "neutral",
+        "displayName": "Light warning",
+        "tonalRamp": [
+          "oklch(15% 0.1023 73.14)",
+          "oklch(26% 0.1023 73.14)",
+          "oklch(38% 0.1023 73.14)",
+          "oklch(49% 0.1023 73.14)",
+          "oklch(61% 0.1023 73.14)",
+          "oklch(72% 0.1023 73.14)",
+          "oklch(84% 0.1023 73.14)",
+          "oklch(95% 0.1023 73.14)"
+        ]
+      },
+      "light-danger": {
+        "role": "neutral",
+        "displayName": "Light danger",
+        "tonalRamp": [
+          "oklch(15% 0.1719 19.55)",
+          "oklch(26% 0.1719 19.55)",
+          "oklch(38% 0.1719 19.55)",
+          "oklch(49% 0.1719 19.55)",
+          "oklch(61% 0.1719 19.55)",
+          "oklch(72% 0.1719 19.55)",
+          "oklch(84% 0.1719 19.55)",
+          "oklch(95% 0.1719 19.55)"
+        ]
+      },
+      "light-error-bg": {
+        "role": "neutral",
+        "displayName": "Light error bg",
+        "tonalRamp": [
+          "oklch(15% 0.0163 12.78)",
+          "oklch(26% 0.0163 12.78)",
+          "oklch(38% 0.0163 12.78)",
+          "oklch(49% 0.0163 12.78)",
+          "oklch(61% 0.0163 12.78)",
+          "oklch(72% 0.0163 12.78)",
+          "oklch(84% 0.0163 12.78)",
+          "oklch(95% 0.0163 12.78)"
+        ]
+      },
+      "light-warning-bg": {
+        "role": "neutral",
+        "displayName": "Light warning bg",
+        "tonalRamp": [
+          "oklch(15% 0.0320 87.29)",
+          "oklch(26% 0.0320 87.29)",
+          "oklch(38% 0.0320 87.29)",
+          "oklch(49% 0.0320 87.29)",
+          "oklch(61% 0.0320 87.29)",
+          "oklch(72% 0.0320 87.29)",
+          "oklch(84% 0.0320 87.29)",
+          "oklch(95% 0.0320 87.29)"
+        ]
+      },
+      "on-button": {
+        "role": "primary",
+        "displayName": "On button",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Console body",
+        "purpose": "Compact system typography shared by both themes."
+      },
+      "code": {
+        "displayName": "Source data",
+        "purpose": "Inspectable JSON and address typography."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "button-transition",
+        "value": "background .15s ease, border-color .15s ease",
+        "purpose": "Control state changes; disabled under reduced-motion preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-max",
+        "value": "1200px"
+      },
+      {
+        "name": "history-below-max",
+        "value": "950px"
+      },
+      {
+        "name": "mobile-max",
+        "value": "650px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary button from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<button class=\"ds-primary\">Run skill</button>",
+      "css": ".ds-primary{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.5;cursor:pointer;transition:background .15s ease,border-color .15s ease;background:var(--button,#3069ca);color:#fff;border:1px solid var(--button,#3069ca);font-weight:650;}.ds-primary:hover:not(:disabled){background:var(--button-hover,#3b78de);}.ds-primary:disabled{opacity:.5;cursor:not-allowed;}.ds-primary:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-primary{transition:none;animation:none;}}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary button from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<button class=\"ds-secondary\">Stop run</button>",
+      "css": ".ds-secondary{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.5;cursor:pointer;transition:background .15s ease,border-color .15s ease;background:var(--surface-raised,#1a1f2b);color:var(--ink,#e6e9f2);border:1px solid var(--line,#30384a);}.ds-secondary:hover:not(:disabled){border-color:var(--accent,#78afff);}.ds-secondary:disabled{opacity:.5;cursor:not-allowed;}.ds-secondary:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-secondary{transition:none;animation:none;}}"
+    },
+    {
+      "name": "Quiet button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Quiet button from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<button class=\"ds-quiet\">Export JSON</button>",
+      "css": ".ds-quiet{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:6px;padding:8px 12px;font-size:12px;line-height:1.5;cursor:pointer;transition:background .15s ease,border-color .15s ease;background:transparent;color:var(--muted,#a1abc1);border:1px solid transparent;padding:6px 8px;}.ds-quiet:hover:not(:disabled){background:var(--surface-raised,#1a1f2b);color:var(--ink,#e6e9f2);}.ds-quiet:disabled{opacity:.5;cursor:not-allowed;}.ds-quiet:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-quiet{transition:none;animation:none;}}"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Text field from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<label class=\"ds-label\" for=\"ds-token\">Token address</label><input id=\"ds-token\" class=\"ds-field\" placeholder=\"Paste a Solana address\">",
+      "css": ".ds-label{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:block;font-size:12px;color:var(--muted,#a1abc1);margin-bottom:5px;}.ds-field{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;width:100%;min-height:36px;padding:7px 10px;border:1px solid var(--line,#30384a);border-radius:6px;background:var(--input,#0d1017);color:var(--ink,#e6e9f2);font-size:13px;caret-color:var(--accent,#78afff);}.ds-field::placeholder{color:var(--muted,#a1abc1);opacity:1;}.ds-field:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-field{transition:none;animation:none;}}"
+    },
+    {
+      "name": "Workspace navigation",
+      "kind": "nav",
+      "refersTo": "nav-selected",
+      "description": "Workspace navigation from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><button aria-current=\"page\" class=\"ds-nav-item ds-selected\">Research</button><button class=\"ds-nav-item\">Usage</button><button class=\"ds-nav-item\">Settings</button></nav>",
+      "css": ".ds-nav{display:flex;gap:4px;}.ds-nav-item{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:13px;line-height:1.5;background:transparent;color:var(--muted,#a1abc1);border:1px solid transparent;border-radius:6px;padding:7px 12px;cursor:pointer;transition:background .15s ease,border-color .15s ease;}.ds-nav-item:hover{background:var(--surface-raised,#1a1f2b);color:var(--ink,#e6e9f2);}.ds-nav-item.ds-selected{background:var(--soft,#192944);color:var(--accent,#78afff);border-color:var(--line,#30384a);}.ds-nav-item:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-nav-item{transition:none;animation:none;}}"
+    },
+    {
+      "name": "Status badges",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Status badges from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<span class=\"ds-badge\">running</span> <span class=\"ds-badge ds-good\">completed</span>",
+      "css": ".ds-badge{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:10px;color:var(--muted,#a1abc1);background:var(--surface-raised,#1a1f2b);padding:3px 7px;border-radius:5px;}.ds-badge.ds-good{color:var(--green,#67d99a);}"
+    },
+    {
+      "name": "Skill card",
+      "kind": "card",
+      "refersTo": "skill-card",
+      "description": "Skill card from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<button class=\"ds-card\"><strong>Token research</strong><span>Review token metrics and supporting sources.</span><small>Inspect API steps and CU</small></button>",
+      "css": ".ds-card{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;flex-direction:column;align-items:start;gap:5px;padding:12px;text-align:left;background:var(--surface,#141821);color:var(--ink,#e6e9f2);border:1px solid var(--line,#30384a);border-radius:10px;cursor:pointer;transition:background .15s ease,border-color .15s ease;}.ds-card strong{font-size:13px;}.ds-card span{font-size:11.5px;line-height:1.5;color:var(--muted,#a1abc1);}.ds-card small{font-size:10.5px;color:var(--accent,#78afff);}.ds-card:hover{background:var(--surface-raised,#1a1f2b);border-color:var(--accent,#78afff);}.ds-card:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-card{transition:none;animation:none;}}"
+    },
+    {
+      "name": "API plan disclosure",
+      "kind": "custom",
+      "refersTo": "composer",
+      "description": "API plan disclosure from the implemented console; theme variables inherit with dark fallbacks.",
+      "html": "<div class=\"ds-plan\"><details><summary>Review API steps</summary><p>Inspect the purpose, source and parameters of each request.</p></details><p class=\"ds-estimate\">Estimate is free.</p></div>",
+      "css": ".ds-plan{font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-size:12px;background:var(--surface,#141821);color:var(--ink,#e6e9f2);border:1px solid var(--line,#30384a);border-radius:10px;padding:14px;}.ds-plan summary{padding:8px 0;color:var(--accent,#78afff);cursor:pointer;}.ds-plan .ds-estimate{color:var(--warning,#f5c365);margin:12px 0;}.ds-plan summary:focus-visible{outline:2px solid var(--focus,#9dc5ff);outline-offset:3px;}@media(prefers-reduced-motion:reduce){.ds-plan summary{transition:none;animation:none;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Birdeye research console",
+    "overview": "The user-selected `birdeye-data-skills/deploy/index.html` is the visual authority, recorded in `docs/ui/reference-console.md`. The replacement console uses a navy canvas, blue controls, compact system typography and bordered panels. Its light theme preserves the same hierarchy with cool pale surfaces. This replaces the former light/orange workspace.\n\nThis record is extracted from `web/style.css`, `web/main.tsx`, `web/skill-console.tsx`, `web/workflow-overview.tsx` and `web/skill-settings.tsx`. No generated comp or raster imagery defines this world. Browser rendering and contrast have not been visually validated: TCP listen returned EPERM and Chrome launch was blocked, so no screenshots were captured.",
+    "keyCharacteristics": [
+      "Navy or cool light surfaces with blue selection and actions.",
+      "Compact skill, research and history areas with visible CU context.",
+      "Flat bordered panels, system fonts and inspectable source data."
+    ],
+    "rules": [],
+    "dos": [
+      "Do use semantic theme variables for surfaces, labels, selection and status.",
+      "Do keep CU estimates visible when API-step narratives are collapsed.",
+      "Do keep skills and history accessible as compact disclosures at mobile widths.",
+      "Do preserve explicit unavailable values, source context, tabular numerals and contained scrolling.",
+      "Do retain visible keyboard focus and the reduced-motion override."
+    ],
+    "donts": [
+      "Don't restore orange actions or the previous fixed-sidebar workspace.",
+      "Don't treat missing data or unknown usage as zero.",
+      "Don't add decorative imagery or shadows to this flat console without a new direction.",
+      "Don't describe source inspection or automated checks as screenshot or contrast validation."
+    ]
+  }
+}
