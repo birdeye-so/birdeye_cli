@@ -421,7 +421,7 @@ test("authenticated interface, origin checks, initial-run idempotency and cost a
       headers,
       body: JSON.stringify({ code: app.connectCode }),
     });
-    assert.equal(reused.status, 401);
+    assert.equal(reused.status, 200);
   } finally {
     await app.close();
     ledger.close();
@@ -451,6 +451,43 @@ test("HTTPS public origin behind a loopback HTTP proxy preserves origin checks a
       assert.equal((await inProcessFetch(app.handler,host)(host+"/api/status",{headers:{Origin:publicUrl,"X-Forwarded-Host":"research.example.test","X-Forwarded-Proto":"https"}})).status,403,"Forwarded headers cannot override the Host allowlist");
     }
   } finally {await app?.close();ledger.close();}
+});
+
+test("connection codes admit multiple browsers and restart revokes old codes and sessions", async () => {
+  const ledger = new Ledger(":memory:");
+  try {
+    for (const publicUrl of [undefined, "https://research.example.test"]) {
+      const options = { ledger, bind: "127.0.0.1:8787", publicUrl, requireCode: true, listen: false };
+      const app = await startInterface(options);
+      const cookies: string[] = [];
+      const login = (server: typeof app, code: string) => inProcessFetch(server.handler, server.url)(server.url + "/api/connect", {
+        method: "POST", headers: { "Content-Type": "application/json", Origin: server.url }, body: JSON.stringify({ code }),
+      });
+      try {
+        for (let browser = 0; browser < 3; browser++) {
+          assert.equal((await login(app, "wrong-code")).status, 401);
+          // No cookie is sent: each login represents a fresh browser.
+          const response = await login(app, app.connectCode);
+          assert.equal(response.status, 200);
+          cookies.push(response.headers.get("set-cookie")!.split(";")[0]);
+        }
+        for (const Cookie of cookies) {
+          assert.equal((await inProcessFetch(app.handler, app.url)(app.url + "/api/status", { headers: { Cookie } })).status, 200);
+        }
+        for (let attempt = 0; attempt < 4; attempt++) await login(app, "wrong-code");
+        assert.equal((await login(app, app.connectCode)).status, 429, "Reuse retains the connection attempt limit");
+      } finally { await app.close(); }
+      const restarted = await startInterface(options);
+      try {
+        assert.notEqual(restarted.connectCode, app.connectCode);
+        assert.equal((await login(restarted, app.connectCode)).status, 401);
+        for (const Cookie of cookies) {
+          assert.equal((await inProcessFetch(restarted.handler, restarted.url)(restarted.url + "/api/status", { headers: { Cookie } })).status, 401);
+        }
+        assert.equal((await login(restarted, restarted.connectCode)).status, 200);
+      } finally { await restarted.close(); }
+    }
+  } finally { ledger.close(); }
 });
 
 test("proxy public URLs cannot bypass remote TLS or accept unsupported protocols", async () => {

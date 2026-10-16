@@ -117,7 +117,7 @@ async function serve(
   });
   serving = true;
   console.log(
-    `Birdeye interface: ${app.url}\nConfiguration: ${configPath()}\nConnection code: ${app.connectCode}\nLoopback browsers connect automatically unless --require-code is set. Remote access requires the code. Ctrl+C stops the server.`,
+    `Birdeye interface: ${app.url}\nConfiguration: ${configPath()}\nConnection code: ${app.connectCode}\nCode is reusable until restart; connected users share this workspace and API usage.\nLoopback browsers connect automatically unless --require-code is set. Remote access requires the code. Ctrl+C stops the server.`,
   );
   const close = async () => {
     await app.close();

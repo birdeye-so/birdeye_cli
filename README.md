@@ -203,6 +203,30 @@ ssh -N -L 8787:127.0.0.1:8787 user@remote-host
 
 Giữ cả tiến trình server và tunnel đang chạy, mở **http://127.0.0.1:8787** trên máy cá nhân. Nếu cổng local 8787 đang bận, đổi **cả server và tunnel** sang 8788: chạy server với `--bind 127.0.0.1:8788`, tunnel bằng `ssh -N -L 8788:127.0.0.1:8788 user@remote-host`, rồi mở `http://127.0.0.1:8788`. Giữ cùng port ở hai đầu để Host/Origin khớp kiểm tra của CLI. API keys và SQLite nằm trên máy chạy CLI. Dùng SSH tunnel không cần bind `0.0.0.0` hoặc mở cổng UI ra Internet.
 
+#### Chia sẻ connection code để nhiều người test qua tunnel
+
+Connection code dùng lại được cho nhiều browser trong cùng phiên server. Mã và session cookie cũ hết hiệu lực khi restart; lấy mã mới từ terminal. Người kết nối dùng chung workspace, cấu hình, lịch sử và ngân sách API; chưa có tài khoản hay phân quyền riêng.
+
+Trên server, bật yêu cầu code cả khi truy cập qua tunnel:
+
+```bash
+node dist/index.js --format interface --bind 127.0.0.1:8787 --require-code
+```
+
+Mỗi người chạy tunnel trên máy của mình (cần quyền SSH vào server):
+
+```bash
+ssh -N -L 8787:127.0.0.1:8787 user@remote-host
+```
+
+Mở `http://127.0.0.1:8787`, nhập cùng connection code do người chạy server chia sẻ. Test bằng hai browser hoặc một cửa sổ thường và một cửa sổ riêng tư: cả hai phải kết nối được bằng cùng mã. Restart server thì mã và cookie cũ phải bị từ chối. Giới hạn 10 lần thử kết nối/phút dùng chung cho server vẫn áp dụng. Với server có `--public-url`, truy cập đúng domain public; ví dụ tunnel local này dành cho server không đặt `--public-url`.
+
+```bash
+# Regression test: nhiều browser, mã sai, giới hạn thử và vô hiệu hóa sau restart
+npx tsc -p tsconfig.test.json
+node --test --test-name-pattern='connection codes admit multiple browsers' .test-dist/tests/interface.test.js
+```
+
 #### Cloudflare → Nginx → CLI
 
 Nếu dùng domain HTTPS qua Nginx, khai báo URL browser bằng `--public-url`. Nginx kết thúc TLS và chuyển tiếp HTTP đến CLI trên loopback. Thay `research.example.com` trong toàn bộ ví dụ bằng domain thật; triển khai ở gốc domain, không phải subpath.
@@ -312,7 +336,7 @@ Nếu dùng `--config-dir`, thay đường dẫn nguồn trong lệnh `cp` bằn
 | UI vẫn là bản cũ | Kiểm tra `command -v birdeye-cli` và `birdeye-cli --version`; dừng server cũ, cài/build lại đúng cách rồi restart và refresh browser. Cùng số version vẫn có thể là hai build khác nhau. |
 | Cổng bận / `EADDRINUSE` | Dừng server cũ bằng `Ctrl+C` hoặc chọn `--bind 127.0.0.1:8788` và mở đúng URL mới. |
 | `ORIGIN_DENIED` | Mở đúng URL in trong terminal. Với loopback dùng `http://127.0.0.1:8787`. Qua Cloudflare/Nginx: dùng bản CLI đã cập nhật, đặt `--public-url https://domain` và giữ Host public ở proxy; xem cấu hình phía trên. |
-| UI yêu cầu connection code | Dùng code của server hiện tại. Với local, bỏ `--require-code`/`--public-url` nếu không cần chế độ này; restart server khi code cũ đã hết hiệu lực. |
+| UI yêu cầu connection code | Dùng code của server hiện tại; cùng mã dùng lại được cho nhiều browser đến khi restart. Với local, bỏ `--require-code`/`--public-url` nếu không cần chế độ này. |
 | Save config lỗi hoặc restart mất key | Xem lỗi trong UI, dùng `doctor --short` kiểm tra config directory, tài khoản, quyền ghi và environment overrides. Giữ checkbox lưu trên máy khi Save. |
 | Birdeye trả 401/403 | Kiểm tra key, gói API và quyền endpoint; chạy `doctor --live` để kiểm tra cơ bản (có CU). Key hoạt động ở một endpoint chưa đảm bảo quyền ở tất cả endpoint. |
 | Import GMGN trả 403/429 | Bản hiện tại tự chuyển sang 9 file raw khi API liệt kê lỗi. Nếu raw cũng bị chặn, dùng file local/upload; thông báo mới ghi rõ host. |

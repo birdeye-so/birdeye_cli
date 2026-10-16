@@ -500,8 +500,9 @@ function App() {
           <Brand />
           <h1>Connect your workspace</h1>
           <p>
-            Enter the one-time code from your terminal. Your API keys stay on
-            the machine running Birdeye CLI.
+            Enter the connection code from the server terminal. The same code
+            can connect multiple browsers until the server restarts. Connected
+            users share this workspace, settings and API usage.
           </p>
           <form onSubmit={connect}>
             <label htmlFor="connection-code">Connection code</label>

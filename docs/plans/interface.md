@@ -152,7 +152,7 @@ Giới hạn đề xuất: tối đa 8 bước AI và 20 request attempts mỗi 
 
 ## Session và địa chỉ bind
 
-MVP một người dùng, không có multi-tenant accounts. Mỗi server có session authentication, kiểm tra Host/Origin và CSRF cho thao tác thay đổi cấu hình/khởi chạy request có phí. Không bật wildcard CORS. Local access dùng mã kết nối một lần đổi thành cookie HttpOnly/SameSite; không dùng Birdeye/AI key làm mã đăng nhập và không đặt secret trong query string URL.
+MVP dùng chung một workspace, không có multi-tenant accounts hay phân quyền riêng. Nhiều browser có thể nhập cùng mã kết nối trong một phiên server; người kết nối dùng chung cấu hình, lịch sử và ngân sách API. Restart tạo mã mới và vô hiệu hóa mã/cookie cũ. Mỗi server có session authentication, kiểm tra Host/Origin và CSRF cho thao tác thay đổi cấu hình/khởi chạy request có phí. Không bật wildcard CORS. Mã kết nối đổi thành cookie HttpOnly/SameSite (Secure nếu HTTPS); loopback tự kết nối trừ khi bật `--require-code` hoặc `--public-url`. Không dùng Birdeye/AI key làm mã đăng nhập và không đặt secret trong query string URL.
 
 Custom bind là tính năng được hỗ trợ. Khi bind ra ngoài loopback, phải có authentication cấu hình sẵn và HTTPS trực tiếp hoặc qua reverse proxy phù hợp; không có chế độ expose dữ liệu/credentials không xác thực. SSH tunnel là luồng remote ưu tiên: web server vẫn nghe loopback trên máy remote. Không yêu cầu thêm hệ thống user management cho luồng này.
 

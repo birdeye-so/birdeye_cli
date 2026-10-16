@@ -175,7 +175,6 @@ export async function startInterface(options: ServerOptions) {
   let settingsPersisted = !options.config;
   const autoConnect = loopback && !options.publicUrl && !options.requireCode;
   const connectCode = randomBytes(24).toString("base64url");
-  let codeAvailable = true;
   const session = randomBytes(32).toString("base64url");
   let origin = "";
   const allowedHosts = new Set<string>();
@@ -445,19 +444,18 @@ export async function startInterface(options: ServerOptions) {
           req.headers["sec-fetch-site"] === "same-origin" &&
           req.headers.origin === `${secure ? "https" : "http"}://${req.headers.host}`;
         if (
-          !localConnect && (!codeAvailable ||
+          !localConnect && (
           typeof input.code !== "string" ||
           !equals(input.code, connectCode))
         ) {
           json(res, 401, {
             error: {
               message:
-                "Invalid or already used connection code. Restart the server for a new code.",
+                "Invalid connection code. Use the code from the currently running server.",
             },
           });
           return;
         }
-        if (!localConnect) codeAvailable = false;
         res.setHeader(
           "Set-Cookie",
           `birdeye_session=${session}; HttpOnly; SameSite=Strict; Path=/${secure || proxyTls ? "; Secure" : ""}`,
