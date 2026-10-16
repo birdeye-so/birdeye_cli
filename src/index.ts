@@ -61,7 +61,7 @@ program
   .option("--tls-key <path>", "HTTPS private key for non-loopback bind")
   .option(
     "--public-url <url>",
-    "HTTPS browser URL when binding a wildcard address",
+    "browser URL allowed by Host/Origin checks (supports HTTPS proxy to loopback)",
   );
 let ledger: Ledger | undefined;
 let currentRun: string | undefined;

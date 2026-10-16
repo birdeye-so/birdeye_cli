@@ -64,6 +64,43 @@ npm install --global ./birdeye-cli-0.4.0.tgz
 birdeye-cli --version
 ```
 
+#### Ubuntu dùng nvm: cài xong nhưng `birdeye-cli: command not found`
+
+CLI cần Node >=22.16; log `current: node v18...` nghĩa là shell vẫn đang chọn Node 18. Cảnh báo `EBADENGINE` không giải thích đầy đủ việc thiếu executable: npm còn phải tạo link vào đúng prefix. Với nvm, global packages thuộc từng phiên bản Node. Không dùng `sudo npm install` cho Node được cài bằng nvm.
+
+Ví dụ file nằm ở `/opt/be/birdeye_cli/birdeye-cli-0.4.0.tgz`:
+
+```bash
+nvm install 22
+nvm use 22
+node -v
+
+# NVM_BIN do nvm use thiết lập; cài vào đúng phiên bản đang dùng, bật tạo executable link
+npm install --global --prefix "$NVM_BIN/.." --bin-links=true /opt/be/birdeye_cli/birdeye-cli-0.4.0.tgz
+hash -r
+command -v birdeye-cli
+birdeye-cli --version
+birdeye-cli --format interface --bind 127.0.0.1:8787
+```
+
+Khi mở shell mới hoặc đổi Node, chạy lại `nvm use 22` trước khi gọi CLI. Lệnh cài trên chỉ đặt prefix cho lần cài này, không sửa npm config của các ứng dụng khác.
+
+Nếu vẫn thiếu lệnh, kiểm tra các giá trị cụ thể (không cần gửi toàn bộ `.npmrc`, vì file đó có thể chứa token):
+
+```bash
+node -v
+command -v npm
+npm prefix -g
+npm config get bin-links
+ls -l "$NVM_BIN/birdeye-cli"
+tar -xOf /opt/be/birdeye_cli/birdeye-cli-0.4.0.tgz package/package.json
+tar -tzf /opt/be/birdeye_cli/birdeye-cli-0.4.0.tgz | grep '^package/dist/index.js$'
+```
+
+`npm` là file executable, không phải thư mục để `cd` vào. Nếu cần chạy ngay từ source đã build, sau `nvm use 22` dùng `node /opt/be/birdeye_cli/dist/index.js --format interface --bind 127.0.0.1:8787`.
+
+Tham khảo: [npm global executable locations](https://docs.npmjs.com/cli/v10/configuring-npm/folders/) và [nvm: global packages theo phiên bản](https://github.com/nvm-sh/nvm#usage).
+
 ### 3. Cấu hình Birdeye một lần
 
 Có thể chọn cấu hình qua **CLI** hoặc **UI**; cả hai cùng lưu vào SQLite local.
@@ -166,6 +203,67 @@ ssh -N -L 8787:127.0.0.1:8787 user@remote-host
 
 Giữ cả tiến trình server và tunnel đang chạy, mở **http://127.0.0.1:8787** trên máy cá nhân. Nếu cổng local 8787 đang bận, đổi **cả server và tunnel** sang 8788: chạy server với `--bind 127.0.0.1:8788`, tunnel bằng `ssh -N -L 8788:127.0.0.1:8788 user@remote-host`, rồi mở `http://127.0.0.1:8788`. Giữ cùng port ở hai đầu để Host/Origin khớp kiểm tra của CLI. API keys và SQLite nằm trên máy chạy CLI. Dùng SSH tunnel không cần bind `0.0.0.0` hoặc mở cổng UI ra Internet.
 
+#### Cloudflare → Nginx → CLI
+
+Nếu dùng domain HTTPS qua Nginx, khai báo URL browser bằng `--public-url`. Nginx kết thúc TLS và chuyển tiếp HTTP đến CLI trên loopback. Thay `research.example.com` trong toàn bộ ví dụ bằng domain thật; triển khai ở gốc domain, không phải subpath.
+
+Sau khi cập nhật source chứa bản sửa proxy, build và khởi động lại process đang chạy:
+
+```bash
+nvm use 22
+npm run build
+node dist/index.js --format interface --bind 127.0.0.1:8787 \
+  --public-url https://research.example.com
+```
+
+Nếu dùng bản cài global, cần đóng gói/cài lại tarball mới trước khi chạy `birdeye-cli` với cùng tham số. Build source không cập nhật bản global đã cài:
+
+```bash
+npm pack
+npm install --global --prefix "$NVM_BIN/.." --bin-links=true ./birdeye-cli-0.4.0.tgz
+```
+
+Trong `server` HTTPS của Nginx đang phục vụ domain đó, dùng:
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:8787;
+    proxy_http_version 1.1;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_cache off;
+    proxy_read_timeout 3600s;
+}
+```
+
+Giữ nguyên header `Origin` của browser. `Host` phải là domain public (kèm port nếu không dùng port mặc định), không phải `127.0.0.1:8787`. CLI kiểm tra Host/Origin theo `--public-url`, không dùng `X-Forwarded-*` để cấp quyền. Cookie có `Secure` khi public URL dùng HTTPS. Giao diện qua public URL cần connection code in ở terminal; loopback upstream không bật tự đăng nhập cho người truy cập domain.
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+
+# Kiểm tra upstream từ server, không gọi Birdeye/AI:
+# 401 CONNECT_REQUIRED = Host/Origin đã đúng, chưa có session đăng nhập
+curl -i http://127.0.0.1:8787/api/status \
+  -H 'Host: research.example.com' -H 'Origin: https://research.example.com'
+
+# Origin khác vẫn bị chặn: 403 ORIGIN_DENIED
+curl -i http://127.0.0.1:8787/api/status \
+  -H 'Host: research.example.com' -H 'Origin: https://evil.example'
+
+# Qua cả Cloudflare/Nginx, trước đăng nhập cũng phải nhận 401
+curl -i https://research.example.com/api/status
+```
+
+Cloudflare dùng **Full (strict)** với chứng chỉ hợp lệ trên Nginx và bỏ qua cache cho hostname giao diện/API. Không cần mở port 8787 ra Internet. Tham khảo [Nginx proxy headers/buffering](https://nginx.org/en/docs/http/ngx_http_proxy_module.html) và [Cloudflare Full (strict)](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/).
+
+Regression tests cho Host/Origin, proxy HTTPS, cookie và connection code chạy trong process, không gọi API và không cần mở cổng:
+
+```bash
+npx tsc -p tsconfig.test.json
+node --test .test-dist/tests/interface.test.js
+```
+
 ### 8. Dữ liệu lưu ở đâu, cập nhật và gỡ cài đặt
 
 Mặc định dùng `~/.config/birdeye` của tài khoản đang chạy CLI:
@@ -213,7 +311,7 @@ Nếu dùng `--config-dir`, thay đường dẫn nguồn trong lệnh `cp` bằn
 | `Cannot find module .../dist/index.js` | Đứng trong đúng thư mục source, chạy `npm ci` rồi `npm run build`. |
 | UI vẫn là bản cũ | Kiểm tra `command -v birdeye-cli` và `birdeye-cli --version`; dừng server cũ, cài/build lại đúng cách rồi restart và refresh browser. Cùng số version vẫn có thể là hai build khác nhau. |
 | Cổng bận / `EADDRINUSE` | Dừng server cũ bằng `Ctrl+C` hoặc chọn `--bind 127.0.0.1:8788` và mở đúng URL mới. |
-| `ORIGIN_DENIED` | Mở đúng URL in trong terminal. Với loopback dùng `http://127.0.0.1:8787`; nếu đặt `--public-url`, dùng đúng URL đó. Kiểm tra bản CLI đang chạy nếu `localhost` lỗi. |
+| `ORIGIN_DENIED` | Mở đúng URL in trong terminal. Với loopback dùng `http://127.0.0.1:8787`. Qua Cloudflare/Nginx: dùng bản CLI đã cập nhật, đặt `--public-url https://domain` và giữ Host public ở proxy; xem cấu hình phía trên. |
 | UI yêu cầu connection code | Dùng code của server hiện tại. Với local, bỏ `--require-code`/`--public-url` nếu không cần chế độ này; restart server khi code cũ đã hết hiệu lực. |
 | Save config lỗi hoặc restart mất key | Xem lỗi trong UI, dùng `doctor --short` kiểm tra config directory, tài khoản, quyền ghi và environment overrides. Giữ checkbox lưu trên máy khi Save. |
 | Birdeye trả 401/403 | Kiểm tra key, gói API và quyền endpoint; chạy `doctor --live` để kiểm tra cơ bản (có CU). Key hoạt động ở một endpoint chưa đảm bảo quyền ở tất cả endpoint. |
@@ -284,7 +382,7 @@ birdeye-cli capabilities
 | `--require-code` | Tắt trên loopback | Bắt nhập connection code kể cả local. Remote hoặc `--public-url` luôn cần code. |
 | `--tls-cert <path>` | Không có | File chứng chỉ HTTPS; phải đi cùng `--tls-key`. Bắt buộc nếu bind ngoài loopback. |
 | `--tls-key <path>` | Không có | File private key cho chứng chỉ HTTPS. |
-| `--public-url <url>` | URL từ địa chỉ bind | URL browser được phép truy cập, dùng kiểm tra Host/Origin. Bắt buộc cho wildcard `0.0.0.0`/`[::]`; giao thức phải khớp server. Dùng HTTPS khi bind remote. |
+| `--public-url <url>` | URL từ địa chỉ bind | URL browser được phép truy cập, dùng kiểm tra Host/Origin. HTTPS public có thể đi qua reverse proxy đến HTTP loopback. Các trường hợp khác giao thức phải khớp server. Bắt buộc cho wildcard `0.0.0.0`/`[::]`; bind remote vẫn cần TLS trực tiếp. |
 
 ```bash
 birdeye-cli --format interface --bind 127.0.0.1:8787 \
@@ -1149,7 +1247,7 @@ node dist/index.js --format interface --bind 127.0.0.1:8787 --short --max-cu 100
 
 Mở `http://127.0.0.1:8787`; browser tự kết nối local. Vào Settings để cấu hình key. Chỉ mở interface chưa gọi API.
 
-Bind loopback chấp nhận Host `localhost`, `127.0.0.1` và `[::1]` trên cùng port; kết nối vẫn phải đến được địa chỉ đang listen. Nếu cấu hình `--public-url`, chỉ Host của URL đó được chấp nhận. Origin của browser phải khớp Host và protocol đang truy cập.
+Bind loopback chấp nhận Host `localhost`, `127.0.0.1` và `[::1]` trên cùng port; kết nối vẫn phải đến được địa chỉ đang listen. Nếu cấu hình `--public-url`, chỉ Host của URL đó được chấp nhận và Origin của browser phải khớp origin public, kể cả khi proxy chuyển HTTPS xuống HTTP loopback. Khi không có public URL, Origin phải khớp Host và protocol của listener.
 
 Trong terminal khác, kiểm tra không tốn CU:
 

@@ -427,3 +427,41 @@ test("authenticated interface, origin checks, initial-run idempotency and cost a
     ledger.close();
   }
 });
+
+test("HTTPS public origin behind a loopback HTTP proxy preserves origin checks and secure login",async()=>{
+  const ledger=new Ledger(":memory:"),publicUrl="https://research.example.test";
+  let app:Awaited<ReturnType<typeof startInterface>>|undefined;
+  try {
+    app=await startInterface({ledger,bind:"127.0.0.1:8787",publicUrl,listen:false,config:{ai:{defaultProfile:"research",profiles:{}}}});
+    const fetch=inProcessFetch(app.handler,publicUrl);
+    assert.equal(app.url,publicUrl);
+    assert.equal((await fetch(publicUrl+"/api/status",{headers:{Origin:publicUrl}})).status,401,"Matching proxy origin must reach session authentication");
+    const local=await fetch(publicUrl+"/api/connect",{method:"POST",headers:{"Content-Type":"application/json",Origin:publicUrl,"Sec-Fetch-Site":"same-origin"},body:JSON.stringify({local:true})});
+    assert.equal(local.status,401,"Loopback upstream must not enable auto-connect for a public URL");
+    const login=await fetch(publicUrl+"/api/connect",{method:"POST",headers:{"Content-Type":"application/json",Origin:publicUrl,"Sec-Fetch-Site":"same-origin"},body:JSON.stringify({code:app.connectCode})});
+    assert.equal(login.status,200);
+    const cookie=login.headers.get("set-cookie")!;
+    assert.match(cookie,/; Secure/);assert.match(cookie,/HttpOnly/);assert.match(cookie,/SameSite=Strict/);
+    assert.equal((await fetch(publicUrl+"/api/status",{headers:{Origin:publicUrl,Cookie:cookie.split(";")[0]}})).status,200);
+    for(const Origin of ["https://evil.test","http://research.example.test","https://research.example.test:8787","null"]) {
+      assert.equal((await fetch(publicUrl+"/api/status",{headers:{Origin,Cookie:cookie.split(";")[0],"X-Forwarded-Proto":"https"}})).status,403);
+    }
+    assert.equal((await fetch(publicUrl,{headers:{"Sec-Fetch-Site":"cross-site"}})).status,403);
+    for(const host of ["http://127.0.0.1:8787","https://evil.test"]) {
+      assert.equal((await inProcessFetch(app.handler,host)(host+"/api/status",{headers:{Origin:publicUrl,"X-Forwarded-Host":"research.example.test","X-Forwarded-Proto":"https"}})).status,403,"Forwarded headers cannot override the Host allowlist");
+    }
+  } finally {await app?.close();ledger.close();}
+});
+
+test("proxy public URLs cannot bypass remote TLS or accept unsupported protocols", async () => {
+  const ledger = new Ledger(":memory:");
+  try {
+    for (const bind of ["0.0.0.0:8787", "[::]:8787", "192.0.2.1:8787"]) {
+      await assert.rejects(startInterface({ ledger, bind, publicUrl: "https://research.example.test", listen: false }), { code: "TLS_REQUIRED" });
+    }
+    for (const publicUrl of ["not-a-url", "ftp://research.example.test", "javascript:alert(1)"]) {
+      await assert.rejects(startInterface({ ledger, bind: "127.0.0.1:8787", publicUrl, listen: false }), { code: "PUBLIC_URL_INVALID" });
+    }
+    await assert.rejects(startInterface({ ledger, bind: "127.0.0.1:8787", tlsCert: "unused", tlsKey: "unused", publicUrl: "http://research.example.test", listen: false }), { code: "PUBLIC_URL_INVALID" });
+  } finally { ledger.close(); }
+});

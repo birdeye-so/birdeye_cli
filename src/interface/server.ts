@@ -151,13 +151,24 @@ export async function startInterface(options: ServerOptions) {
       "PUBLIC_URL_REQUIRED",
       "Wildcard bind requires --public-url with the HTTPS address you will open.",
     );
+  let publicUrl: URL | undefined;
+  if (options.publicUrl) {
+    try {
+      publicUrl = new URL(options.publicUrl);
+    } catch {
+      throw new AppError("PUBLIC_URL_INVALID", "Provide an absolute HTTP or HTTPS public URL.");
+    }
+  }
+  // TLS may terminate at an explicitly configured reverse proxy, provided the
+  // plaintext upstream listens only on loopback. Forwarded headers are not trusted.
+  const proxyTls = loopback && !secure && publicUrl?.protocol === "https:";
   if (
-    options.publicUrl &&
-    new URL(options.publicUrl).protocol !== (secure ? "https:" : "http:")
+    publicUrl &&
+    (publicUrl.protocol !== (secure ? "https:" : "http:") && !proxyTls)
   )
     throw new AppError(
       "PUBLIC_URL_INVALID",
-      "Public URL protocol must match the server.",
+      "Public URL protocol must match the server, except HTTPS through a proxy to an HTTP loopback bind.",
     );
   const dir = options.dir || configDir();
   let config = options.config || readConfig(dir);
@@ -406,7 +417,7 @@ export async function startInterface(options: ServerOptions) {
       if (
         !allowedHosts.has(req.headers.host || "") ||
         (req.headers.origin !== undefined &&
-          req.headers.origin !== `${secure ? "https" : "http"}://${req.headers.host}`) ||
+          req.headers.origin !== (publicUrl?.origin ?? `${secure ? "https" : "http"}://${req.headers.host}`)) ||
         req.headers["sec-fetch-site"] === "cross-site"
       ) {
         json(res, 403, {
@@ -449,7 +460,7 @@ export async function startInterface(options: ServerOptions) {
         if (!localConnect) codeAvailable = false;
         res.setHeader(
           "Set-Cookie",
-          `birdeye_session=${session}; HttpOnly; SameSite=Strict; Path=/${secure ? "; Secure" : ""}`,
+          `birdeye_session=${session}; HttpOnly; SameSite=Strict; Path=/${secure || proxyTls ? "; Secure" : ""}`,
         );
         json(res, 200, { ok: true });
         return;
@@ -718,9 +729,7 @@ export async function startInterface(options: ServerOptions) {
   const actualPort =
     typeof address === "object" && address ? address.port : port;
   const urlHost = host.includes(":") ? `[${host}]` : host;
-  origin = options.publicUrl
-    ? new URL(options.publicUrl).origin
-    : `${secure ? "https" : "http"}://${urlHost}:${actualPort}`;
+  origin = publicUrl?.origin ?? `${secure ? "https" : "http"}://${urlHost}:${actualPort}`;
   allowedHosts.add(new URL(origin).host);
   // Local aliases are safe only for a loopback listener without an explicit
   // public URL. Browser Origin must still match the request's own Host above.
