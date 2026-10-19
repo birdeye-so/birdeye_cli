@@ -38,8 +38,8 @@ try {
   await page.getByLabel("Demo",{exact:true}).selectOption("security-signals");
   await page.getByRole("heading",{name:"Ownership concentration",exact:true}).waitFor();
   assert.match(await page.locator(".security-evidence").innerText(),/24,983/);
-  await page.locator(".security-metric-source summary").first().click();
-  assert.match(await page.locator(".security-metric-source").first().innerText(),/fixture-request/);
+  await page.locator(".security-evidence-group > .demo-provenance > summary").first().click();
+  assert.match(await page.locator(".security-evidence-group > .demo-provenance").first().innerText(),/fixture-request/);
   await page.getByLabel("Filter checks").selectOption("attention");
   assert.equal(await page.locator(".demo-rule").count(),1);
   await page.getByLabel("Filter checks").selectOption("unknown");

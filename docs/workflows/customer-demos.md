@@ -24,20 +24,20 @@ node dist/index.js --format interface --bind 127.0.0.1:8787
 1. Mở URL trong terminal. Trong Settings, lưu Birdeye key có quyền các endpoint cần dùng. Không cần AI key.
 2. Chọn **Demos → tab use case**. Mở **Use case and data coverage** để đọc khách hàng, kết quả và giới hạn.
 3. Nhập token nếu demo cần. Wallet intelligence bắt đầu với discovery, không nhập ví; chọn ví từ shortlist để phân tích ở run riêng. Terminal cho chọn số token; Security signals cho chỉnh ngưỡng liquidity/top-10. Ngưỡng mặc định 100.000 USD và 50% là ví dụ cấu hình, không phải tiêu chuẩn an toàn.
-4. Chọn **Preview APIs & CU**. Mở API steps để xem mục đích, endpoint, tham số và nhánh phụ thuộc. Bước này miễn CU.
-5. Đặt budget đủ cho scope rồi chọn **Run live snapshot**. Có thể Stop; các API đã gửi vẫn được ledger ghi nhận.
+4. Đặt CU limit rồi chọn **Create draft**. UI tự kiểm tra tham số và estimate miễn CU, sau đó chạy ngay nếu ngân sách đủ. Thiếu ngân sách hoặc input không hợp lệ sẽ báo lỗi trước khi gọi API dữ liệu.
+5. Draft lấy dữ liệu Birdeye thật và lưu vào History. Có thể Stop; các API đã gửi vẫn được ledger ghi nhận.
 6. Xem màn hình sản phẩm và tương tác theo bảng dưới. Mở **Source evidence** để truy vết timestamp/request. Export JSON; với Telegram có **Export message**.
-7. Mở lại từ History để dùng snapshot đã lưu, không gọi API. Sửa form không thay đổi kết quả cũ; muốn lấy dữ liệu mới phải preview và run lại.
+7. Mở lại từ History để dùng snapshot đã lưu, không gọi API. Sửa form không thay đổi kết quả cũ; muốn lấy dữ liệu mới chọn Create draft.
 
 | Giao diện | Cách sử dụng dữ liệu |
 | --- | --- |
 | Terminal | Lọc theo symbol/address, sort volume/liquidity/24h change, chọn hàng token để xem panel chi tiết. Thanh liquidity dùng cùng scale của giá trị lớn nhất trong watchlist, không phải lịch sử giá. |
 | DEX | Các pool xếp theo liquidity giảm dần. Chọn pool để xem address, liquidity, volume và request gốc; không suy ra route swap tốt nhất. |
-| Wallet | Discover smart wallets → Select wallet → preview CU riêng → run analysis. Shortlist theo provider order, khử trùng lặp; mỗi ví giữ các quan sát token và source riêng. Nút 7 days / 30 days chỉ đổi kỳ hiển thị trong dữ liệu đã lấy. Biểu đồ lãi/lỗ có mốc 0 giữa; allocation tính theo priced page, không khẳng định là toàn bộ ví. |
+| Wallet | Discover smart wallets → Select wallet → Create draft để chạy analysis. Shortlist theo provider order, khử trùng lặp; mỗi ví giữ các quan sát token và source riêng. Nút 7 days / 30 days chỉ đổi kỳ hiển thị trong dữ liệu đã lấy. Biểu đồ lãi/lỗ có mốc 0 giữa; allocation tính theo priced page, không khẳng định là toàn bộ ví. |
 | Security | Thanh đo hiển thị giá trị quan sát, vạch ngưỡng và điều kiện kích hoạt; filter All/Attention/Unknown không gọi API. Unknown không trở thành pass. |
 | Telegram | Xem bot message dưới dạng hội thoại, mở Inspect plain text và Export message. Bản text có thêm run/source references; không có chức năng Send. |
 
-Màn hình chưa có dữ liệu vẫn có bố cục từng sản phẩm, với Unavailable/Unknown và hướng dẫn chạy. UI không vẽ nến hay lịch sử giá khi workflow chỉ trả snapshot. Giá nhỏ giữ phần thập phân; số tiền có USD, tỷ lệ có %, số âm/0 và missing được phân biệt. Snapshot cũ thiếu field mới vẫn mở được; UI để field đó Unknown thay vì tự gọi lại API.
+Màn hình chưa có dữ liệu hiển thị form và một dòng hướng dẫn tạo draft. UI không vẽ nến hay lịch sử giá khi workflow chỉ trả snapshot. Giá nhỏ giữ phần thập phân; số tiền có USD, tỷ lệ có %, số âm/0 và missing được phân biệt. Snapshot cũ thiếu field mới vẫn mở được; UI để field đó Unknown thay vì tự gọi lại API.
 
 Wallet discovery dùng smart-money token list (1d, một trang tối đa 20 token), top traders (30d, một trang 10 trader/token) cho tối đa `limit` token. Shortlist chọn tối đa `limit` ví hợp lệ, khử trùng lặp theo provider order; đây không phải bảng xếp hạng PnL toàn ví. Các ví được tìm vì có giao dịch với token trong smart-money list; không mặc nhiên được gắn nhãn smart money. Chỉ khi chọn một ví và chạy analysis mới lấy PnL/holdings; không tự chạy cho mọi ví. Hai pha có CU và snapshot SQLite riêng, History phân biệt `discover` với địa chỉ ví rút gọn. Reopen discovery để chọn ví khác, không gọi lại API discovery. Ví rỗng (`address` bị bỏ qua, chuỗi rỗng hoặc khoảng trắng) được chuẩn hóa thành không có địa chỉ; discovery preview/run không yêu cầu ví. Địa chỉ sai nhưng không rỗng vẫn bị từ chối. CLI có `--address` vẫn hỗ trợ phân tích trực tiếp một ví đã biết; bỏ `--address` sẽ discover. `data.demo.walletStage` phân biệt `discovery` và `analysis`; report cũ thiếu field vẫn mở theo `input.address`.
 

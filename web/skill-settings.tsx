@@ -44,14 +44,14 @@ export function SkillFindings({analysis}:{analysis:Data}) {
     <h3>Skill findings</h3>
     {analysis.findings.map((f:Data,i:number)=><div className="skill-finding" key={i}>
       <h4>{names[f.kind]??f.kind}</h4>
-      {f.kind==="wallet-discovery"&&<><p>{f.wallets.length} shortlisted · {f.observedWallets} unique wallets observed</p><div className="table-wrap"><table><thead><tr><th>Wallet</th><th>Tokens observed</th></tr></thead><tbody>{f.wallets.map((w:Data)=><tr key={w.wallet}><td title={w.wallet}><AddressText text={w.wallet} compact /></td><td>{w.tokens.length}</td></tr>)}</tbody></table></div></>}
+      {f.kind==="wallet-discovery"&&<><p>{f.wallets.length} shortlisted · {f.observedWallets} unique wallets observed</p><div className="table-wrap"><table><thead><tr><th>Wallet</th><th>Tokens observed</th></tr></thead><tbody>{f.wallets.map((w:Data)=><tr key={w.wallet}><td title={w.wallet}><AddressText text={w.wallet} compact kind="wallet" chain={w.chain} /></td><td>{w.tokens.length}</td></tr>)}</tbody></table></div></>}
       {f.kind==="security-evidence"&&<dl className="finding-components">{[["Freezeable",f.freezeable],["Mintable",f.mintable],["Top 10 account share",f.top10AccountShare==null?null:`${Number(f.top10AccountShare)*100}%`]].map(([label,value])=><div key={String(label)}><dt>{label}</dt><dd>{value==null?"Unknown":typeof value==="boolean"?(value?"Yes":"No"):value}</dd></div>)}</dl>}
       <p>{f.pattern?.replaceAll("_"," ")??f.style??(f.kind==="security-evidence"?"Evidence checklist; no safety verdict":null)}{f.score!=null?` · ${f.score}/100`:""}{f.kind==="wallet-alpha"?(f.alphaScore!=null?`${f.alphaScore}/100` : "Score unavailable"):""}{f.liquidityChangePct!=null?`${f.liquidityChangePct}% across ${f.snapshots} snapshots`:""}</p>
       {f.components&&<dl className="finding-components">{Object.entries(f.components).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{String(v)}</dd></div>)}</dl>}
-      {f.rows&&<div className="table-wrap"><table><thead><tr><th>Rank</th><th>Wallet</th><th>Comparison score</th><th>30d realized · USD</th><th>30d wins · %</th></tr></thead><tbody>{f.rows.map((r:Data)=><tr key={r.wallet}><td>{r.rank??"Unranked"}</td><td title={r.wallet}><AddressText text={r.wallet} compact /></td><td>{r.rankingScore??"Unavailable"}</td><td>{r.pnl30??"Unavailable"}</td><td>{r.wr30==null?"Unavailable":(r.wr30*100).toFixed(1)}</td></tr>)}</tbody></table></div>}
+      {f.rows&&<div className="table-wrap"><table><thead><tr><th>Rank</th><th>Wallet</th><th>Comparison score</th><th>30d realized · USD</th><th>30d wins · %</th></tr></thead><tbody>{f.rows.map((r:Data)=><tr key={r.wallet}><td>{r.rank??"Unranked"}</td><td title={r.wallet}><AddressText text={r.wallet} compact kind="wallet" chain={r.chain} /></td><td>{r.rankingScore??"Unavailable"}</td><td>{r.pnl30??"Unavailable"}</td><td>{r.wr30==null?"Unavailable":(r.wr30*100).toFixed(1)}</td></tr>)}</tbody></table></div>}
       {f.missing?.length>0&&<ul className="field-hint">{f.missing.map((m:string)=><li key={m}>{m}</li>)}</ul>}
-      <p className="field-hint">{f.basis}</p>
-      <details className="source"><summary>Measurements, formula and evidence</summary><pre><AddressText text={JSON.stringify(f,null,2)} /></pre></details>
+
+      <details className="source"><summary>Details</summary><p>{f.basis}</p><pre><AddressText text={JSON.stringify(f,null,2)} /></pre></details>
     </div>)}
   </section>;
 }

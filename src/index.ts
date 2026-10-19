@@ -362,6 +362,7 @@ program
   .option("--skip-first-funded", "omit first-funding lookup")
   .option("--skip-transactions", "omit wallet transaction/trade page")
   .option("--skip-positions", "omit per-token PnL; scores may become unavailable")
+  .option("--step-overrides <json>", "Per-step API parameter overrides as a JSON object", JSON.parse)
   .action(async (kind: string, o: Data, c: Command) => {
     const opts = options(c);
     if (opts.chain !== "solana") throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");

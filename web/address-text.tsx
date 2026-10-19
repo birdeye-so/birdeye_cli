@@ -1,5 +1,11 @@
 import React, {createContext, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {addressParts, copyAddress} from "./address-detection";
+import {birdeyeAddressUrl, type AddressKind} from "./birdeye-address";
+
+const ChainContext = createContext("solana");
+export function AddressChainProvider({chain, children}: {chain?: string; children: React.ReactNode}) {
+  return <ChainContext.Provider value={chain ?? "solana"}>{children}</ChainContext.Provider>;
+}
 
 type Notice = {message: string; failed: boolean; value: string} | null;
 const CopyContext = createContext<{copy: (value: string) => void; dismiss: () => void; notice: Notice}>({copy: () => {}, dismiss: () => {}, notice: null});
@@ -31,12 +37,20 @@ export function AddressCopyNotice() {
   </div>;
 }
 
-export function AddressText({text, compact = false}: {text: string; compact?: boolean}) {
+export function AddressText({text, compact = false, kind, chain}: {text: string; compact?: boolean; kind?: AddressKind; chain?: string}) {
   const {copy} = useContext(CopyContext);
+  const inheritedChain = useContext(ChainContext);
   const parts = useMemo(() => addressParts(text), [text]);
-  return <>{parts.map((part, index) => part.encoding
-    ? <button key={index} type="button" className="copy-address" data-address={part.text}
+  return <>{parts.map((part, index) => {
+    if (!part.encoding) return <React.Fragment key={index}>{part.text}</React.Fragment>;
+    const href = kind ? birdeyeAddressUrl(part.text, kind, chain ?? inheritedChain) : undefined;
+    return <span key={index} className="address-actions"><button type="button" className="copy-address" data-address={part.text}
         title={`Click to copy ${part.encoding}: ${part.text}`} aria-label={`Copy ${part.encoding} address ${part.text}`}
-        onClick={() => copy(part.text)}>{compact ? `${part.text.slice(0, 6)}…${part.text.slice(-6)}` : part.text}</button>
-    : <React.Fragment key={index}>{part.text}</React.Fragment>)}</>;
+        onClick={event => { event.stopPropagation(); copy(part.text); }}>{compact ? `${part.text.slice(0, 6)}…${part.text.slice(-6)}` : part.text}</button>{href && <a
+          className="address-explore" href={href} target="_blank" rel="noopener noreferrer"
+          title={`Open ${kind} on Birdeye (new tab)`} aria-label={`Open ${kind} ${part.text} on Birdeye (new tab)`}
+          onClick={event => event.stopPropagation()}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6"/></svg>
+        </a>}</span>;
+  })}</>;
 }

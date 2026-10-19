@@ -56,6 +56,16 @@ test("wallet UI begins with discovery and keeps token evidence separate from sel
   const report={walletStage:"discovery",sections:[{title:"Discovered wallets",rows:[{address,tokens:[address],observations:[{token:address,window:"30d",tokenRealizedPnlUsd:12,sourceId:"discovery-request"}]}]}]};
   const html=renderToStaticMarkup(React.createElement(DemoView,{id:"wallet-intelligence",report,onSelectWallet:()=>{}}));
   assert.match(html,/Discover smart wallets/);assert.match(html,/Select wallet/);assert.match(html,/Token realized PnL/);assert.doesNotMatch(html,/PnL breakdown/);
+  assert.ok(html.includes(`href="https://birdeye.so/solana/wallet-analyzer/${address}"`));
+  assert.ok(html.includes(`href="https://birdeye.so/solana/token/${address}"`));
   const empty=renderToStaticMarkup(React.createElement(DemoView,{id:"wallet-intelligence"}));
   assert.match(empty,/No wallet address is needed/);assert.doesNotMatch(empty,/Wallet performance/);
+});
+
+test("wallet holdings link to tokens while the analyzed wallet links to Wallet Analyzer",()=>{
+  const html=render("wallet-intelligence"),address=demoReports["wallet-intelligence"].input.address;
+  assert.ok(html.includes(`href="https://birdeye.so/solana/wallet-analyzer/${address}"`));
+  assert.ok(html.includes(`href="https://birdeye.so/solana/token/${address}"`));
+  const pool=render("dex-inspector").split("<h3>Selected pool</h3>")[1].split('<dl class="demo-facts">')[0];
+  assert.doesNotMatch(pool,/href=/,"Pool identity must not link to a token page");
 });

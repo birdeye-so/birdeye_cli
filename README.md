@@ -157,7 +157,7 @@ birdeye-cli --format interface --bind 127.0.0.1:8787 --max-cu 250 --session-max-
 Giữ terminal này mở, truy cập URL được in ra. Cổng 8787 là lựa chọn trong hướng dẫn; nếu bỏ `--bind`, mặc định hiện tại là `127.0.0.1:3000`. Chỉ mở UI chưa gọi API; các lệnh mở kèm token/workflow có thể chạy tác vụ khởi đầu sau khi kết nối.
 
 1. Trong **Case studies**, chọn workflow/skill, đọc mục đích và nhập địa chỉ nếu được yêu cầu.
-2. Xem **Workflow overview**, chỉnh tham số từng bước và kiểm tra CU trước khi **Run research**.
+2. Xem **Workflow overview**, chỉnh tham số từng bước và kiểm tra CU trước khi **Run research**. Mở **CLI command** để xem/copy lệnh tương ứng, gồm window, CU limit và tham số API đã chỉnh. Demos và Imports cũng có mục này; Imports cần preview mapping trước. Copy lệnh không gọi API. Lệnh dùng cú pháp Bash/Zsh và cấu hình CLI trên máy thực thi.
 3. Dùng **History** để mở lại kết quả hoặc export dữ liệu, không gọi lại API. Chạy research mới sẽ gọi API mới.
 4. Trong **Imports**, nhập URL GMGN hoặc upload/paste workflow. Xem mapping, phần chưa hỗ trợ, tham số và CU; bấm **Preview mapping & CU** trước khi chạy. Import/preview không tiêu Birdeye CU.
 5. Nhấn `Ctrl+C` ở terminal để dừng. Chạy lại cùng lệnh để mở lại; cấu hình, imports và History vẫn được giữ.
@@ -479,6 +479,7 @@ Lấy `<kind>` bằng `birdeye-cli cases --short`. Các giá trị dưới đây
 | `--depth <depth>` | `core`; `core`, `full` | Độ sâu các workflow cũ; `full` có thể thêm request. Smart Wallets dùng `--skill-depth`. |
 | `--duration <duration>` | `30d`; `24h`, `7d`, `30d`, `90d` | Cửa sổ PnL/trades của recipe ví. Wallet Style chỉ `7d`/`30d`; Wallet Score yêu cầu `30d`. |
 | `--pnl-method <method>` | `wac`; `wac`, `net_cash` | Phương pháp PnL: giá vốn bình quân hoặc dòng tiền ròng, theo contract của Birdeye. |
+| `--step-overrides <json>` | `{}` | Tham số API theo step ID, ví dụ `'{"holders":{"limit":3,"mode":"token_account"}}'`. Dùng tên API dạng `snake_case`; cùng validation với chỉnh step trong UI. |
 | `--from <seconds>`, `--to <seconds>` | Tự tính theo recipe | Window quan sát Unix **giây**, truyền đủ cặp và `from < to`. Nếu bỏ trống: kết thúc hiện tại; thường 24h cho token workflow cũ, theo duration cho ví, theo window-days cho token skill. |
 | `--stage <stage>` | `newly-created` | Early screening: `newly-listed`, `newly-created`, `near-graduation`, `graduated`. |
 | `--source <venue>` | `all` | Venue: `all`, `pump_dot_fun`, `moonshot`, `raydium_launchlab`, `meteora_dynamic_bonding_curve`; newly-listed chỉ nhận `all`. |
@@ -1413,11 +1414,20 @@ Ba skill có trong `skills/birdeye-token`, `skills/birdeye-market`, `skills/bird
 
 Phạm vi tiếp theo: multi-chain, multi-price batching, pagination tự động, scheduler/WebSocket, provider capability probing/fallback, biểu đồ và kiểm thử live. Workflow hiện chạy một lần; không tự giao dịch, không backtest copy-trade ROI. Hai [plan core](docs/plans/cli-core.md) và [interface](docs/plans/interface.md) mô tả đích triển khai rộng hơn bản thử này.
 
-### 8. Copy địa chỉ trong interface (0.4.0)
+### 8. Copy địa chỉ và mở Birdeye trong interface (0.4.0)
 
 UI nhận diện chuỗi giải mã thành địa chỉ 32 byte: base58, base64 chuẩn và base64url (có hoặc không có padding). Địa chỉ có gạch chân chấm; click hoặc focus bằng Tab rồi Enter/Space để copy nguyên chuỗi. Ô trong bảng có thể rút gọn nhưng clipboard luôn nhận đầy đủ địa chỉ, giữ nguyên encoding. Có thông báo Copied; nếu browser từ chối clipboard, UI hiện đầy đủ địa chỉ để chọn/copy thủ công và giữ thông báo đến khi đóng hoặc copy lại.
 
-Áp dụng trong metrics, wallet shortlist/leaderboard, AI findings, workflow subject, JSON/Plain và source/evidence. Nhận diện encoding không xác minh tài khoản tồn tại; không tự đổi base64 thành base58. API requests vẫn dùng địa chỉ Solana base58 như trước. Export JSON/CSV giữ dữ liệu gốc.
+Copy áp dụng trong metrics, wallet shortlist/leaderboard, AI findings, workflow subject, JSON/Plain và source/evidence. Nhận diện encoding không xác minh tài khoản tồn tại. API requests vẫn dùng địa chỉ Solana base58 như trước. Export JSON/CSV giữ dữ liệu gốc.
+
+Địa chỉ xác định được là token hoặc wallet có thêm icon mở Birdeye bên cạnh:
+
+- Token: `https://birdeye.so/{chain}/token/{token_address}`.
+- Wallet: `https://birdeye.so/{chain}/wallet-analyzer/{wallet_address}`.
+
+Click địa chỉ chỉ copy; click icon mở tab mới trong browser đang dùng (Chrome nếu mở UI bằng Chrome). Tooltip và tên truy cập ghi rõ token/wallet và tab mới; Tab rồi Enter cũng mở được link. Chain lấy từ dữ liệu kết quả; dữ liệu Solana cũ không ghi chain dùng `solana`. Token trong holdings mở trang token; ví trong smart traders/shortlist mở Wallet Analyzer. Pool, địa chỉ chưa biết loại và chuỗi trong JSON/AI tự do giữ copy, không đoán thành token hay ví.
+
+Khi địa chỉ Solana được biểu diễn bằng base64, chỉ URL được chuyển sang base58 để mở đúng trang; clipboard và exports vẫn giữ nguyên encoding nguồn. Mở link không gọi API qua CLI và không ghi thêm CU vào ledger.
 
 ```bash
 npm run typecheck
@@ -1426,9 +1436,12 @@ npm run build
 node dist/index.js --format interface --bind 127.0.0.1:8787
 # Test browser với dữ liệu/clipboard giả, không gọi API thật
 npm run test:browser
+# Test riêng copy + icon Birdeye, dùng fixture và chặn mọi request mạng
+# Cần Chrome; có thể đặt CHROME_PATH=/path/to/chrome
+node tests/address-ui-browser.mjs
 ```
 
-Test thủ công: mở một kết quả, click địa chỉ trong metrics hoặc wallet shortlist rồi paste vào editor; phải nhận chuỗi đầy đủ. Chuyển JSON/Plain, thử địa chỉ base58 và base64; kiểm tra phản hồi Copied. Dùng Tab rồi Enter/Space để thử bàn phím. Test browser kiểm tra ghi đúng clipboard và thông báo khi quyền clipboard bị từ chối.
+Test thủ công: mở một kết quả, click địa chỉ trong metrics hoặc wallet shortlist rồi paste vào editor; phải nhận chuỗi đầy đủ. Click icon bên cạnh token và wallet: mỗi loại mở đúng đường dẫn ở tab mới và không đổi clipboard. Trong Wallet Intelligence, token holdings phải mở `/token/`, ví đang phân tích mở `/wallet-analyzer/`. Chuyển JSON/Plain, thử địa chỉ base58 và base64; kiểm tra phản hồi Copied. Dùng Tab rồi Enter/Space để thử copy; Enter trên icon mở trang. Test browser kiểm tra ghi đúng clipboard và thông báo khi quyền clipboard bị từ chối.
 
 ### 9. Lưu và tái sử dụng kết quả (0.4.0)
 

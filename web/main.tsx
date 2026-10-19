@@ -4,6 +4,7 @@ import { BigNumber } from "bignumber.js";
 import { WorkflowOverview, type PreparedCase } from "./workflow-overview";
 import { SkillSettings, SkillFindings } from "./skill-settings";
 import { SkillList, RunHistory, groups, plainResult } from "./skill-console";
+import { SkillIcon } from "./skill-icon";
 import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-text";
 import {ChatPanel} from "./chat-panel";
 import {MarkdownText} from "./markdown-text";
@@ -11,6 +12,8 @@ import {createApiClient} from "./api";
 import {WorkflowImportsPanel} from "./workflow-imports";
 import {CustomerDemos} from "./customer-demos";
 import "./style.css";
+
+import {metricAddressKind, operationSubject} from "./birdeye-address";
 
 type Data = Record<string, any>;
 type View = "research" | "usage" | "settings" | "imports" | "demos";
@@ -148,11 +151,11 @@ function exportFile(value: unknown, name: string, type = "application/json") {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-function Metrics({ rows }: { rows: Data[] }) {
+function Metrics({ rows, sources }: { rows: Data[]; sources: Data[] }) {
   const [sort, setSort] = useState<string>("");
   const grouped: Record<string, Data[]> = {};
   for (const row of rows) (grouped[row.operation || "token observations"] ??= []).push(row);
-  if (Object.keys(grouped).length > 1) return <div className="metric-groups">{Object.entries(grouped).map(([operation, data]) => <section key={operation}><h3>{operation}</h3><Metrics rows={data!} /></section>)}</div>;
+  if (Object.keys(grouped).length > 1) return <div className="metric-groups">{Object.entries(grouped).map(([operation, data]) => <section key={operation}><h3>{operation}</h3><Metrics rows={data!} sources={sources} /></section>)}</div>;
   const all = [...new Set(rows.flatMap((r) => Object.keys(r)))].filter(
     (k) => k in labels,
   );
@@ -219,7 +222,7 @@ function Metrics({ rows }: { rows: Data[] }) {
                     className={k === "address" ? "address" : ""}
                     title={display(row[k])}
                   >
-                    <AddressText text={display(row[k])} compact />
+                    <AddressText text={display(row[k])} compact chain={row.chain ?? sources.find(s => s.meta.requestId === row.sourceId)?.meta.chain} kind={metricAddressKind(k, row.operation ?? sources.find(s => s.meta.requestId === row.sourceId)?.meta.operation)} />
                   </td>
                 ))}
               </tr>
@@ -543,14 +546,12 @@ function App() {
       <header className="console-header">
         <Brand />
         <nav aria-label="Workspace">{(["research", "demos", "imports", "usage", "settings"] as View[]).map(v => <button key={v} aria-current={view === v ? "page" : undefined} className={view === v ? "nav-item selected" : "nav-item"} onClick={() => {setView(v); setError("");}}>{v === "research" ? "Research" : v === "demos" ? "Demos" : v === "imports" ? "Imports" : v === "usage" ? "Usage & credits" : "Settings"}</button>)}</nav>
-        <span className="network">Solana</span><span className="version">v0.4.0</span>
+        <span className="network">Solana</span>
         <button className="quiet" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button>
       </header>
       <div className="connection-bar">
         <span><span className={`status-dot ${config.birdeyeConfigured ? "" : "off"}`} /> Birdeye: {config.birdeyeConfigured ? "key configured" : "key required"}</span>
         <span>AI: {aiConfigured ? status.config.ai.profiles[status.activeAiProfile]?.model : "not configured"}</span>
-        <span className="storage-state">{status.configStorage?.persisted ? "SQLite · saved settings" : "Session settings"}</span>
-        <button className="text-link" onClick={() => setView("settings")}>Manage connections</button>
       </div>
       {view === "research" && <div className="console-groups" role="group" aria-label="Skill group">{groups.map(([value,label]) => <button key={value} aria-pressed={skillGroup === value} className={skillGroup === value ? "case-choice active" : "case-choice"} onClick={() => {setSkillGroup(value); const first=status.cases.find((c:Data)=>value === "all" ? c.family === "data-skills" : c.group === value); if(first) chooseWorkflow(first.kind);}}>{label}<span aria-hidden="true">{status.cases.filter((c:Data)=>value === "all" ? c.family === "data-skills" : c.group === value).length}</span></button>)}</div>}
       <div className={`console-layout ${view === "research" ? "" : "utility-layout"}`}>
@@ -562,9 +563,8 @@ function App() {
             <>
               <div className="page-heading">
                 <h1>Connections</h1>
-                <p>Your data and AI providers, configured in one place.</p>
               </div>
-              <div className="storage-info"><strong>{status.configStorage?.persisted ? "Settings loaded from local SQLite" : "Current changes apply to this session"}</strong><code>{status.configStorage?.path}</code><p>API keys stay hidden. Leave a key field blank to keep its saved value.</p></div>
+              <details className="source"><summary>Storage details</summary><code>{status.configStorage?.path}</code><p>Environment variables override saved credentials. Blank key fields keep saved keys.</p></details>
               <form className="settings-form" onSubmit={save}>
                 <section>
                   <div className="section-title">
@@ -577,10 +577,6 @@ function App() {
                         : "Not configured"}
                     </span>
                   </div>
-                  <p className="muted">
-                    Used for market data. Environment variables take priority
-                    over saved credentials.
-                  </p>
                   <label htmlFor="bkey">API key</label>
                   <input
                     id="bkey"
@@ -607,10 +603,6 @@ function App() {
                       {aiConfigured ? "Configured" : "Optional"}
                     </span>
                   </div>
-                  <p className="muted">
-                    Connect an OpenAI-compatible provider for questions that
-                    span multiple datasets.
-                  </p>
                   <label htmlFor="baseurl">Base URL</label>
                   <input
                     id="baseurl"
@@ -627,7 +619,7 @@ function App() {
                     <option value="responses">OpenAI Responses</option>
                     <option value="chat-completions">Chat Completions</option>
                   </select>
-                  <p className="muted">Use the format supported by your provider. The base URL should end at /v1, without /responses or /chat/completions.</p>
+                  <p className="muted">Base URL ends at /v1.</p>
                   <div className="form-grid">
                     <div>
                       <label htmlFor="model">Model ID</label>
@@ -663,9 +655,9 @@ function App() {
                       setSettings({ ...settings, persist: e.target.checked })
                     }
                   />
-                  Save keys and provider settings on this machine for future sessions.
+                  Save on this machine
                 </label>
-                <p className="muted">Saved locally in SQLite. Uncheck to apply changes only until the server stops; previously saved settings stay on disk.</p>
+                <p className="muted">Unchecked: session only; existing saved settings remain.</p>
                 <div className="form-actions">
                   <button className="primary" disabled={busy}>
                     Save connections
@@ -681,11 +673,7 @@ function App() {
           ) : view === "usage" ? (
             <>
               <div className="page-heading">
-                <h1>Know what each query costs.</h1>
-                <p>
-                  Local documentation estimates and account-wide credits are
-                  tracked separately.
-                </p>
+                <h1>Usage & credits</h1>
               </div>
               <div className="usage-summary">
                 <UsageStat
@@ -705,8 +693,7 @@ function App() {
               <section className="usage-detail">
                 <h2>Account credits</h2>
                 <p>
-                  Fetch a billing-cycle snapshot from Birdeye. This account-wide
-                  total may include other apps and API keys.
+                  Account-wide, including other apps and keys.
                 </p>
                 <button
                   className="secondary"
@@ -741,11 +728,7 @@ function App() {
                 <div className="setup-note">
                   <Icon name="key" />
                   <div>
-                    <strong>Start with your Birdeye API key.</strong>
-                    <p>
-                      Connect your data source to run research. Add an AI
-                      provider whenever you’re ready.
-                    </p>
+                    <strong>Birdeye API key required</strong>
                   </div>
                   <button
                     className="secondary"
@@ -773,18 +756,14 @@ function App() {
                     className={mode === "chat" ? "active" : ""}
                     onClick={() => setMode("chat")}
                   >
-                    Ask AI <span className="small-label">Your provider</span>
+                    Ask AI
                   </button>
                 </div>
                 <form onSubmit={start}>
                   {mode === "case" ? (
                     <>
-                      <div className="selected-skill-heading"><h1>{selectedCase?.title || titleFor[kind]}</h1><code>{kind}</code></div>
-                      <div className="case-purpose">
-                        <h3>Purpose</h3>
-                        <p>{status.cases?.find((c: Data) => c.kind === kind)?.purpose}</p>
-                        <p><strong>What you get:</strong> {status.cases?.find((c: Data) => c.kind === kind)?.produces}</p>
-                      </div>
+                      <div className="selected-skill-heading"><SkillIcon kind={kind} size={24}/><h1>{selectedCase?.title || titleFor[kind]}</h1></div>
+                      <details className="source"><summary>About this skill</summary><p>{selectedCase?.purpose}</p><p>{selectedCase?.produces}</p></details>
                       {!noAddress && <>
                         <label htmlFor="address">{walletCase ? "Wallet address" : "Token address"}{optionalAddress ? " (optional)" : ""}</label>
                         <input id="address" className="address-input" value={address} onChange={e => setAddress(e.target.value)} placeholder={optionalAddress ? "Leave blank to discover candidates" : "Paste a Solana address"} required={!optionalAddress} spellCheck={false} />
@@ -931,13 +910,9 @@ function App() {
                     {!!run.cu?.uncertainAttempts && (
                       <span>{run.cu.uncertainAttempts} uncertain</span>
                     )}
-                    <span>
-                      {run.ai?.calls
-                        ? `${run.ai.inputTokens} input / ${run.ai.outputTokens} output AI tokens${run.ai.unknownCalls ? " · some usage unknown" : ""}`
-                        : "No AI tokens used"}
-                    </span>
+                    {!!run.ai?.calls && <span>{run.ai.inputTokens} in / {run.ai.outputTokens} out AI tokens{run.ai.unknownCalls ? " · usage incomplete" : ""}</span>}
                   </div>
-                  {run.saved && <div className="notice"><strong>{run.fromStorage ? "Reused saved result" : "Saved to SQLite"}</strong><p>Report created {new Date(result?.meta?.retrievedAt || run.createdAt).toLocaleString()}. Reopening/exporting uses 0 CU and 0 AI tokens. Usage above belongs to the original run.</p></div>}
+                  {run.saved && <p className="field-hint">{run.fromStorage ? "Saved snapshot" : "Saved"} · {new Date(result?.meta?.retrievedAt || run.createdAt).toLocaleString()}</p>}
                   {run.status === "incomplete" && <p className="notice">Saved checkpoint only. This run is not active here; some data or analysis may be missing.</p>}
                   {run.storageError && <p className="notice error" role="alert">{run.storageError}</p>}
                   {result && mode !== "chat" && <button type="button" className="secondary" onClick={()=>{setMode("chat");setLiveData(true);setQuestion("");setChatMessages([]);}}>Discuss saved data with AI</button>}
@@ -958,11 +933,11 @@ function App() {
                   )}
                   {result && (
                     <>
-                      {result.data?.missing?.length > 0 && <div className="warnings"><h3>Checks not completed</h3><ul>{result.data.missing.map((m: Data, i: number) => <li key={i}>{m.operation || m.step}: {m.message || m.reason}{m.subject ? <> · <AddressText text={String(m.subject)} /></> : ""}</li>)}</ul></div>}
-                      {result.data?.outcomes?.length > 0 && <div className="warnings"><h3>Screening outcomes</h3><ul>{result.data.outcomes.map((o: Data, i: number) => <li key={i}><AddressText text={o.address} /> · {o.status}: {o.reasons.join("; ")}</li>)}</ul></div>}
+                      {result.data?.missing?.length > 0 && <details className="source"><summary>Missing checks · {result.data.missing.length}</summary><ul>{result.data.missing.map((m: Data, i: number) => <li key={i}>{m.operation || m.step}: {m.message || m.reason}{m.subject ? <> · <AddressText text={String(m.subject)} /></> : ""}</li>)}</ul></details>}
+                      {result.data?.outcomes?.length > 0 && <details className="source"><summary>Screening outcomes · {result.data.outcomes.length}</summary><ul>{result.data.outcomes.map((o: Data, i: number) => <li key={i}><AddressText text={o.address} kind="token" chain={result.meta.chain} /> · {o.status}: {o.reasons.join("; ")}</li>)}</ul></details>}
                       {result.data?.scopeNotes?.length > 0 && <details className="source"><summary>Scope and calculation notes</summary><p className="footnote"><AddressText text={result.data.scopeNotes.join(" ")} /></p></details>}
                       {result.data?.selections?.length > 0 && <details className="source"><summary>Candidate selection and coverage</summary><pre><AddressText text={JSON.stringify(result.data.selections, null, 2)} /></pre></details>}
-                      {metrics.length > 0 && <Metrics rows={metrics} />}
+                      {metrics.length > 0 && <Metrics rows={metrics} sources={sources} />}
                       {!sources.length && ((run.cu?.attempts ?? 0) > 0
                         ? <p className="notice error">No dataset was returned. Review the request errors before retrying. Reserved CU may still be billed by Birdeye.</p>
                         : <p className="notice">No API datasets attached. No Birdeye API request was made in this run.</p>)}
@@ -988,8 +963,8 @@ function App() {
                         </details>
                       )}
                       {result.meta.warnings?.length > 0 && (
-                        <div className="warnings">
-                          <h3>Coverage & limitations</h3>
+                        <details className="source">
+                          <summary>Coverage & limitations · {result.meta.warnings.length}</summary>
                           <ul>
                             {result.meta.warnings.map(
                               (w: string, i: number) => (
@@ -997,20 +972,9 @@ function App() {
                               ),
                             )}
                           </ul>
-                        </div>
+                        </details>
                       )}
-                      <div className="section-title sources-heading">
-                        <h3>
-                          Source datasets{" "}
-                          <span className="count">{sources.length}</span>
-                        </h3>
-                        <span className="muted">
-                          Collected{" "}
-                          {new Date(
-                            result.meta.retrievedAt,
-                          ).toLocaleTimeString()}
-                        </span>
-                      </div>
+                      <details className="source"><summary>Source datasets · {sources.length}</summary>
                       {sources.map((s: Data, i: number) => (
                         <details className="source" key={i}>
                           <summary>
@@ -1024,6 +988,7 @@ function App() {
                             Source ID: {s.meta.requestId} · retrieved{" "}
                             {s.meta.retrievedAt} (UTC)
                           </p>
+                          {(s.meta.params?.address || s.meta.params?.wallet || s.meta.params?.token_address) && <p className="source-subject">Subject: <AddressText text={String(s.meta.params.wallet ?? s.meta.params.address ?? s.meta.params.token_address)} kind={operationSubject(s.meta.operation)} chain={s.meta.chain} /></p>}
                           <pre>
                             <AddressText text={JSON.stringify(
                               { data: s.data, meta: s.meta },
@@ -1033,36 +998,17 @@ function App() {
                           </pre>
                         </details>
                       ))}
+                      </details>
                     </>
                   )}
                   </div>
                 </section>
               )}
-              {!run && (
-                <div className="workspace-notes">
-                  <div>
-                    <h3>Evidence in every answer</h3>
-                    <p>
-                      Inspect the source datasets and calculation basis behind
-                      your metrics.
-                    </p>
-                  </div>
-                  <div>
-                    <h3>A budget you control</h3>
-                    <p>
-                      Requests stop at your CU limit. AI token usage stays
-                      separate.
-                    </p>
-                  </div>
-                </div>
-              )}
+
             </>
           )}
         </main>
-        <footer className="footer">
-          <span>Birdeye CLI · Local research workspace</span>
-          <span>CU estimates follow the bundled pricing catalog.</span>
-        </footer>
+
       </div>
       <AddressCopyNotice />
       <RunHistory remove={removeHistory} busy={busy} more={status.historyNextCursor ? () => {void loadHistory();} : undefined} loading={historyLoading} runs={status.runs} selected={run?.id} choose={id => {void watch(id).catch(e => setError(e.message));}} clear={() => {viewedRun.current=null;setRun(null);setChatMessages([]);setQuestion("");setLiveData(true);setView("research");}} />

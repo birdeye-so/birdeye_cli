@@ -1,5 +1,8 @@
 import {AddressText} from "./address-text";
+import {operationSubject} from "./birdeye-address";
 import React, { useEffect, useRef, useState } from "react";
+import {CliPreview} from "./cli-preview";
+import {caseCliArgs} from "../src/cli-preview";
 
 type Data = Record<string, any>;
 export type PreparedCase = { key: string; input: Data };
@@ -127,11 +130,12 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
       <h3 id="workflow-overview-title">Workflow overview</h3>
       {customized && <button type="button" className="quiet" onClick={() => reset()}>Reset all steps</button>}
     </div>
-    <p className="overview-help">Review each API step and adjust its parameters. Changes apply to this run; changing workflow settings above resets step edits. Planning uses no Birdeye CU.</p>
-    {plan?.needsAddress && <p className="overview-help">Enter the workflow address above to run. The steps below show the recipe before a subject is selected.</p>}
+    {plan?.needsAddress && <p className="overview-help">Enter the workflow address above to run.</p>}
     {error && <p role="alert" className="notice error">{error} Fix the parameter or reset the edited step.</p>}
     {!plan && checking && <p role="status" className="overview-help">Loading workflow steps…</p>}
-    {plan && <details className="workflow-details"><summary>Review API steps · {plan.steps.length}{customized ? " · Customized" : ""}</summary><ol className="workflow-steps">
+    <CliPreview args={plan && !checking && !error && !plan.needsAddress && Number.isInteger(budget) && budget >= 0 && budget <= 100000 ? caseCliArgs(plan.input, budget) : null}
+      status={checking ? "Updating command…" : error ? "Fix the parameters to preview the command." : undefined} />
+    {plan && <details className="workflow-details"><summary>API steps · {plan.steps.length}{customized ? " · Customized" : ""}</summary><ol className="workflow-steps">
       {plan.steps.map((step: Data, index: number) => {
         const original = baseline.current?.steps.find((s: Data) => s.id === step.id) ?? step;
         const fields = Object.entries(step.inputSchema.properties as Record<string, Data>)
@@ -148,7 +152,7 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
           <dl className="step-facts">
             <div><dt>Information</dt><dd>{step.collects}</dd></div>
             <div><dt>API</dt><dd><code>{step.method} {step.path}</code></dd></div>
-            <div><dt>Subject</dt><dd><AddressText text={step.subjects
+            <div><dt>Subject</dt><dd><AddressText kind={operationSubject(step.operation)} chain={step.params.chain} text={step.subjects
               ? `Up to ${step.subjects.take} ${step.subjects.kind}(s) from ${step.subjects.from.map((id: string) => { const i = plan.steps.findIndex((s: Data) => s.id === id); return `step ${i + 1} (${plan.steps[i]?.title ?? id})`; }).join(" + ")}. ${step.subjects.sort ? "Ranked locally by 24h USD volume." : "Uses provider order."}`
               : step.lockedParams.length ? `Workflow subject: ${step.lockedParams.map((name: string) => step.params[name]).filter(Boolean).join(", ") || "enter the address or wallet list above"}.` : "Market discovery; no address required."} /></dd></div>
           </dl>

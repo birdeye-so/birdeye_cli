@@ -12,14 +12,15 @@ export function ChatPanel({messages,question,change,live,setLive,busy,saved,know
   const dates = sources.map((s:Data)=>s.meta.retrievedAt).filter(Boolean).sort();
   useEffect(()=>{if(log.current)log.current.scrollTop=log.current.scrollHeight;},[messages]);
   return <section className="chat-panel" aria-label="AI research chat">
-    <h2>Research with AI</h2>
-    <p className="field-hint">{knowledge ? `${knowledge.documents} local documents · snapshot ${knowledge.sourceCommit.slice(0,8)}` : "Loading local documentation…"}. AI can run existing workflows, call data tools and analyze the evidence.</p>
     <div className="chat-context">
-      {workflow && <p><strong>Workflow: {workflow.title}</strong>{workflow.address && <> · <AddressText text={workflow.address} /></>}<br />{workflow.ready ? "AI has the selected inputs and API-step settings." : "AI can help complete the required inputs before running this workflow."}</p>}
-      <strong>{sources.length ? "Saved data attached" : saved ? "Saved conversation attached" : "Documentation context"}</strong>
-      <p>{saved ? <><AddressText text={saved.title} />{dates.length ? <> · source data collected {new Date(dates[0]).toLocaleString()}{dates.at(-1)!==dates[0] ? ` – ${new Date(dates.at(-1)).toLocaleString()}` : ""}</> : " · no API datasets attached"}</> : "Run a workflow or open History to attach previously collected datasets."}</p>
+      {workflow && <p><strong>{workflow.title}</strong>{workflow.address && <> · <AddressText text={workflow.address} compact /></>}{!workflow.ready&&<span className="badge">Inputs incomplete</span>}</p>}
       <label className="check"><input type="checkbox" checked={live} disabled={busy} onChange={e=>setLive(e.target.checked)} />Allow new Birdeye requests</label>
-      <p className="field-hint">{live ? "AI can call tools and run workflows for your research. Catalog calls use the CU limit below; MCP costs are unknown. AI provider tokens also apply." : "Uses saved data and docs only: 0 new Birdeye CU. AI provider tokens still apply."}</p>
+      <span className="field-hint">{live?"MCP cost unknown · AI tokens billed separately":"Saved data only · 0 new CU"}</span>
+      <details className="source"><summary>Context{sources.length?` · ${sources.length} datasets`:""}</summary>
+        {saved&&<p><AddressText text={saved.title}/></p>}
+        {dates.length>0&&<p>{new Date(dates[0]).toLocaleString()}{dates.at(-1)!==dates[0]?` – ${new Date(dates.at(-1)).toLocaleString()}`:""}</p>}
+        <p>{knowledge?`${knowledge.documents} documents · ${knowledge.sourceCommit.slice(0,8)}`:"Loading documentation…"}</p>
+      </details>
     </div>
     <div className="chat-transcript" ref={log} role="log" aria-label="Conversation" aria-live="polite">
       {messages.length ? messages.map(m=><article className="chat-turn" key={m.id}>
@@ -27,9 +28,9 @@ export function ChatPanel({messages,question,change,live,setLive,busy,saved,know
         <div className="chat-answer"><strong>AI</strong><MarkdownText text={m.answer || (m.status === "running" ? "Researching…" : "No answer was completed. Inspect the run details below.")} />
           {!!m.docSources?.length && <details><summary>Documentation consulted · {m.docSources.length}</summary><ul>{m.docSources.map((d:Data)=><li key={d.id}>{typeof d.source === "string" && d.source.startsWith("https://docs.birdeye.so/") ? <a href={d.source} target="_blank" rel="noreferrer">{d.title}</a> : <span>{d.title}</span>} <code>{d.id}</code></li>)}</ul></details>}
         </div>
-      </article>) : <p className="chat-empty">Ask about a saved result, compare available evidence, or design a workflow using Birdeye APIs.</p>}
+      </article>) : null}
     </div>
-    <label htmlFor="question">Your research question</label>
-    <textarea id="question" value={question} onChange={e=>change(e.target.value)} placeholder="Research the selected workflow, reuse available evidence and fetch any missing data…" rows={3} required disabled={busy} />
+    <label htmlFor="question">Message</label>
+    <textarea id="question" value={question} onChange={e=>change(e.target.value)} placeholder="Ask about a token, wallet or saved result…" rows={3} required disabled={busy} />
   </section>;
 }
