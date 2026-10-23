@@ -2,6 +2,7 @@ import { BigNumber } from "bignumber.js";
 import { caseSchema, planCase, executePlan, type CaseInput, type Execution } from "./workflows.js";
 import { workflowMetrics } from "./metrics.js";
 import { skillAnalysis } from "./skill-metrics.js";
+import { attachDdCu } from "./token-dd-rescore.js";
 export { caseSchema, type CaseInput };
 import { Runner, type Result } from "./runner.js";
 import { object, decimal, errorData, now, type Data } from "./shared.js";
@@ -121,6 +122,7 @@ export async function runCase(
     result.data.status = state.missing.length || state.warnings.length || state.sources.some(s => s.meta.coverage === "empty") ? "partial" : "complete-for-requested-scope";
     if (plan.kind.startsWith("skill-")) {
       result.data.skillAnalysis = skillAnalysis(plan.input, state.sources);
+      attachDdCu(result,runner.ledger,run);
       const missing = result.data.skillAnalysis.findings.flatMap((f: Data) => f.missing ?? []);
       if (missing.length) {
         result.data.status = "partial";

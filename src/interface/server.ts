@@ -6,6 +6,7 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { Ledger } from "../ledger.js";
 import { RunStore } from "../run-store.js";
+import { rescoreDd } from "../token-dd-rescore.js";
 import { KnowledgeBase } from "../knowledge.js";
 import { Runner, type Result } from "../runner.js";
 import { BirdeyeMcp } from "../mcp.js";
@@ -49,7 +50,7 @@ const requestSchema = z
     question: z.string().min(1).max(10000).optional(),
     parentId: z.string().optional(),
     dataPolicy: z.enum(["saved-only","live"]).optional(),
-    maxCu: z.number().int().min(0).max(100000).optional(),
+    maxCu: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable().optional(),
     short: z.boolean().optional(),
   })
   .strict();
@@ -294,7 +295,7 @@ export async function startInterface(options: ServerOptions) {
       docs();
     }
     const id = options.ledger.createRun(
-      input.maxCu ?? options.maxCu ?? 250,
+      input.maxCu === undefined ? options.maxCu ?? null : input.maxCu,
       sessionWorkflow,
       demoPlan ? Math.max(20,demoPlan.maxRequests*2) : importedPlan ? Math.max(20,importedPlan.maxRequests*2) : input.mode === "case" && input.case ? Math.max(20, planCase(input.case).maxRequests * 2) : 20,
     );
@@ -487,7 +488,7 @@ export async function startInterface(options: ServerOptions) {
             activeAiProfile: options.aiProfile || config.ai.defaultProfile,
             capabilities: capabilities(),
             cases: workflowCatalog(),
-            maxCu: options.maxCu ?? 250,
+            maxCu: options.maxCu ?? null,
             short: !!options.short,
             active,
             activeRunId:
@@ -591,6 +592,14 @@ export async function startInterface(options: ServerOptions) {
             initialId = launch({ mode: "operation", query: options.initial });
           json(res, 200, { id: initialId || null });
           return;
+        }
+        if (path === "/api/rescore" && req.method === "POST") {
+          const input=z.object({runId:z.string().uuid(),ddMode:z.enum(["standard","advanced"]).optional(),topN:z.number().int().min(10).max(50).optional(),liqCandles:z.number().int().min(1).max(100).optional()}).strict().parse(await body(req));
+          const {runId,...overrides}=input;
+          const parent=runs.get(runId)||archive.get(runId);
+          if(parent.status==="running"||!parent.result)throw new AppError("RESCORE_INVALID","Wait until the source run finishes before re-scoring.");
+          const saved=rescoreDd(parent.result,overrides,options.ledger,archive);
+          json(res,200,{id:saved.id});return;
         }
         if (path === "/api/runs" && req.method === "POST") {
           const input = requestSchema.parse(await body(req));

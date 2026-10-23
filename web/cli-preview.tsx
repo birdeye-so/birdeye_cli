@@ -11,7 +11,7 @@ export function CliPreview({args, status, note}: {args: string[] | null; status?
     try {await navigator.clipboard.writeText(command);if (request === latest.current) setCopied("Copied");}
     catch {if (request === latest.current) setCopied("Could not copy. Select the command and copy manually.");}
   }
-  return <details className="source cli-preview">
+  return <details className="source cli-preview" open>
     <summary>CLI command</summary>
     {command ? <>
       <pre><code>{command}</code></pre>

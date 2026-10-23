@@ -6,7 +6,7 @@ const caseFlags = [
   "excludeFreezeable", "baselineLiquidity", "baselineTime", "wallets", "intervals",
   "skillDepth", "listSource", "sortBy", "platform", "resolution", "windowDays",
   "include", "skipKline", "skipPortfolio", "skipFirstFunded", "skipTransactions",
-  "skipPositions", "stepOverrides",
+  "skipPositions", "stepOverrides", "ddMode", "topN", "liqResolution", "liqCandles",
 ];
 function flags(input: Input, names: string[]): string[] {
   return names.flatMap(name => {
@@ -19,15 +19,15 @@ function flags(input: Input, names: string[]): string[] {
     return [flag, String(value)];
   });
 }
-const outputFlags = (budget: number) => ["--chain", "solana", "--max-cu", String(budget), "--format", "json"];
-export function caseCliArgs(input: Input, budget: number): string[] {
+const outputFlags = (budget: number | null) => ["--chain", "solana", ...(budget === null ? [] : ["--max-cu", String(budget)]), "--format", "json"];
+export function caseCliArgs(input: Input, budget: number | null): string[] {
   return ["case", String(input.kind), ...flags(input, caseFlags), ...outputFlags(budget)];
 }
-export function demoCliArgs(input: Input, budget: number): string[] {
+export function demoCliArgs(input: Input, budget: number | null): string[] {
   return ["demo", String(input.id), ...flags(input, ["address", "limit", "from", "to",
     ...(input.id === "security-signals" ? ["minLiquidity", "maxTop10Pct"] : [])]), ...outputFlags(budget)];
 }
-export function importedCliArgs(id: string, input: Input, budget: number): string[] {
+export function importedCliArgs(id: string, input: Input, budget: number | null): string[] {
   const params = Object.fromEntries(["from", "to", "limit", "stepOverrides"]
     .filter(key => input[key] !== undefined).map(key => [key, input[key]]));
   return ["workflow", "imports", "run", id, ...flags(input, ["address"]),

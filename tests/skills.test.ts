@@ -51,14 +51,15 @@ function fixture(url:URL,init?:RequestInit){
   else if(path.endsWith("distribution"))data={summary:{},holders:[{address:wallet}]};
   else if(path.endsWith("ohlcv"))data={items:candles};
   else if(path.endsWith("liquidity/history/token"))data={items:[{unix_time:at-3600,liquidity_usd:"1000"},{unix_time:at,liquidity_usd:"900"}]};
+  else if(path.endsWith("liquidity/ohlc/token"))data={items:[{unix_time:at-900,close_liquidity_usd:1000,close_exit_liquidity_usd:500,total_pairs:2}]};
   else if(path==="/defi/v3/token/list")data={items:[{address:token,price:1,volume_24h_usd:1000}]};
   else if(path==="/defi/v3/token/holder"||path.endsWith("seek_by_time"))data={items:[{address:token}]};
   else throw new Error(`Unhandled fixture ${path}`);
   return Response.json({success:true,data});
 }
 
-test("all 11 skill recipes execute planned documented requests with bounded CU",async()=>{
-  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,11);
+test("all 12 skill recipes execute planned documented requests with bounded CU",async()=>{
+  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,12);
   for(const kind of skillKinds){
     const info=skillInfo[kind];
     const input={kind,...(info.subject==="token"?{address:token}:info.subject==="wallet"?{address:wallet}:info.subject==="wallets"?{wallets:[wallet]}:{}),from:at-86400*7,to:at,resolution:"1H",skillDepth:"deep",include:["list","advanced_security","risk_history"]};
@@ -72,7 +73,7 @@ test("all 11 skill recipes execute planned documented requests with bounded CU",
       assert.equal(out.meta.cu.estimated,seen.length?out.meta.cu.budgetUsed:0);
       assert.ok(out.meta.cu.estimated<=plan.estimatedCu,kind);
       assert.ok(seen.length<=plan.maxRequests,kind);
-      assert.ok(out.data.skillAnalysis.referenceCommit);
+      assert.ok(out.data.skillAnalysis.referenceCommit||out.data.skillAnalysis.formulaVersion);
       if(kind==="skill-smart-wallets")assert.equal(out.data.sources.find((s:any)=>s.meta.operation==="portfolio.pnl-summary").meta.params.wallet,wallet,"Select owner wallet, not the token address");
       if(kind==="skill-wallet-score")assert.ok(out.data.skillAnalysis.findings[0].alphaScore>0);
       if(kind==="skill-smart-money-leaderboard")assert.equal(out.data.skillAnalysis.findings[0].rows[0].rank,1,"Documented summary.unique_tokens permits ranking");
@@ -101,7 +102,7 @@ test("leaderboard subjects deduplicate, placeholders cannot run and skip switche
   const preview=previewCase({kind:"skill-smart-money-leaderboard"});
   assert.equal(preview.needsAddress,true);assert.equal(preview.input.wallets,undefined);
   assert.throws(()=>planCase(preview.input));
-  assert.equal(planCase({kind:"skill-contract-dd",address:token,skipKline:true}).estimatedCu,70);
+  assert.equal(planCase({kind:"skill-contract-dd",address:token,skipKline:true}).estimatedCu,78);
   assert.equal(planCase({kind:"skill-wallet-analysis",address:wallet,intervals:["7d"],skipPortfolio:true,skipFirstFunded:true,skipTransactions:true}).estimatedCu,50);
   assert.throws(()=>planCase({kind:"skill-trending-list",listSource:"trending",platform:"pump.fun"}));
   assert.throws(()=>planCase({kind:"skill-wallet-score",address:wallet,duration:"7d"}));

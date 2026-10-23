@@ -44,7 +44,7 @@ export const extendedCatalog = {
     schema: z.object({ address, frames: z.array(z.enum([...flowFrames, "6h", "12h"])).min(1).max(10).default(["1h", "24h"]), ui_amount_mode: uiMode }).strict(), dataSchema: record,
   },
   "token.holder-profile": {
-    path: "/token/v1/holder-profile", cost: 25,
+    path: "/token/v1/holder-profile", cost: 30,
     description: "Labeled holder cohorts and supply shares; volume window is 1h",
     schema: z.object({ ...tokenAddress, interval: z.literal("1h").default("1h"), ui_amount_mode: uiMode, include_zero_balance: z.boolean().default(false) }).strict(),
     dataSchema: z.object({ token: record, holder_summary: record, tags: list }).passthrough(), warnings: [cohortWarning],

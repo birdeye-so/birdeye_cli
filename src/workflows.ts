@@ -29,6 +29,10 @@ export const caseSchema = z.object({
   wallets: z.array(address).min(1).max(10).optional(),
   intervals: z.array(duration).min(1).max(5).refine(values => new Set(values).size === values.length, "Intervals must be unique").default(["24h", "7d", "30d", "90d", "all"]),
   skillDepth: z.enum(["fast", "standard", "deep"]).default("fast"),
+  ddMode: z.enum(["standard", "advanced"]).default("advanced"),
+  topN: z.number().int().min(10).max(50).default(50),
+  liqResolution: z.enum(["1m","5m","15m","30m","1h","4h","1D"]).default("15m"),
+  liqCandles: z.number().int().min(1).max(100).default(96),
   listSource: z.enum(["v3-list", "trending"]).default("v3-list"),
   sortBy: z.enum(["volume", "liquidity", "market_cap", "holder", "trade_count", "rank"]).default("volume"),
   platform: z.string().min(1).max(100).optional(),
@@ -185,6 +189,14 @@ export function planCase(input: unknown, at = Math.floor(Date.now() / 1000)): Ca
     if (!steps.some(step => step.id === id)) throw new AppError("INVALID_INPUT", `Unknown step ${id} for this workflow and depth. Reset the step overrides.`);
   }
   if (Object.keys(a.stepOverrides).length) notes.push("Step parameters were customized. Metrics and source scopes reflect each request; different windows and filters are not directly comparable.");
+  if(a.kind==="skill-token-dd-score") {
+    const liquidity=steps.find(s=>s.id==="liquidity"),distribution=steps.find(s=>s.id==="distribution");
+    if(liquidity){a.liqCandles=liquidity.params.count;a.liqResolution=liquidity.params.resolution;}
+    if(distribution?.params.top_n!==undefined) {
+      if(distribution.params.top_n<10||distribution.params.top_n>50)throw new AppError("INVALID_INPUT","Token DD Score supports top_n 10–50 within one holder page.");
+      a.topN=distribution.params.top_n;
+    }
+  }
   const maxRequests = steps.reduce((n, s) => n + (s.subjects?.take ?? 1), 0);
   const estimatedCu = steps.reduce((n, s) => n + s.cost * (s.subjects?.take ?? 1), 0);
   return {kind: a.kind, input: a, steps, estimatedCu, maxRequests, pricingVersion: PRICING_VERSION, notes};

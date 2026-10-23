@@ -7,6 +7,8 @@ Require a Solana contract address. `token search <keyword>` returns candidates; 
 
 Choose the smallest workflow that answers the request:
 
+- Scored due diligence: `case skill-token-dd-score --address <mint> --dd-mode advanced`. Use [Token DD Score](../token-duediligence/doc.md) for pillar formulas, coverage, provisional CU and zero-call SQLite re-score. This is a separate reconstructed risk heuristic; the existing observation-only Token DD recipe remains available.
+
 - Reference collection: `case skill-token-dd`, `case skill-contract-dd`, `case skill-rugcheck-audit`, `case skill-kline-pattern`, each with `--address <address>`. See [reference workflows](../../docs/workflows/birdeye-data-skills.md) for steps, costs and adaptations. Token DD supports `--include list,advanced_security,risk_history`; Contract DD supports `--skip-kline`; candle recipes accept `--resolution` and `--window-days`.
 - Kline scores are versioned heuristics using closed candles. Contract/Token DD report observations, not the source's unsafe composite or Safe tier. RugCheck Audit uses Birdeye liquidity history, not RugCheck.org or price-derived liquidity; unresolved checks keep the report partial.
 

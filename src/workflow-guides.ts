@@ -53,6 +53,7 @@ export const workflowGuides: Record<(typeof caseKinds)[number], Guide> = {
 
 type StepGuide = { title: string; purpose: string; collects: string };
 export const stepGuides: Partial<Record<Operation, StepGuide>> = {
+  "token.liquidity-ohlc": {title: "Liquidity & exit depth candles", purpose: "Measure depth, deterioration and liquidity stability; apply a maximum 15% drawdown discount.", collects: "Up to 100 timestamped liquidity and exit-liquidity candles, with pair counts. Missing series remain unknown."},
   "token.top-traders": {title: "Token traders", purpose: "Find wallets trading each selected token, then deduplicate a wallet shortlist.", collects: "One page of traders for each token and time window. Token-scoped PnL is not wallet-wide PnL."},
   "token.holder-distribution": {title: "Holder distribution", purpose: "Inspect concentration in a defined holder segment.", collects: "Distribution summary and optional holder rows for the requested top-N or percentage range."},
   "market.token-list": {title: "Token discovery", purpose: "Rank a token sample by the selected market metric and platform.", collects: "One page of token price, market cap, liquidity, activity and holder data."},

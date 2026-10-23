@@ -40,7 +40,7 @@ test("CLI preflight needs no API key and produces one JSON line", () => {
     },
   );
   assert.equal(result.trim().split("\n").length, 1);
-  assert.equal(JSON.parse(result).estimatedCu, 15);
+  assert.equal(JSON.parse(result).estimatedCu, 18);
 });
 test("CLI workflow and config commands honor trailing config-dir", () => {
   const dir = mkdtempSync(join(tmpdir(), "birdeye-cli-"));
@@ -89,7 +89,7 @@ test("new CLI command schemas parse booleans, CSV lists and POST preflight witho
   const details = call(["portfolio", "pnl-details", address, "--duration", "7d", "--pnl-method", "wac"]);
   assert.equal(details.params.wallet, address); assert.equal(details.estimatedCu, 30);
   const plan = call(["case", "early-project-screening", "--stage", "near-graduation", "--min-progress", "80", "--limit", "2"]);
-  assert.equal(plan.estimatedCu, 160); assert.equal(plan.steps[0].params.min_progress_percent, 80);
+  assert.equal(plan.estimatedCu, 186); assert.equal(plan.steps[0].params.min_progress_percent, 80);
 });
 
 test("invalid workflow subjects and boolean flags fail preflight with exit 2", () => {

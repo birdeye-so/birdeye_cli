@@ -4,8 +4,9 @@ import {build} from "esbuild";
 import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {demoReports} from "./fixtures/demo-reports.mjs";
-await build({entryPoints:["web/demo-views.tsx","web/demo-data.ts"],outdir:".test-dist/demo-ui",bundle:true,packages:"external",platform:"node",format:"esm",jsx:"automatic",outExtension:{".js":".mjs"}});
+await build({entryPoints:["web/demo-views.tsx","web/demo-data.ts","web/customer-demos.tsx"],outdir:".test-dist/demo-ui",bundle:true,packages:"external",platform:"node",format:"esm",jsx:"automatic",outExtension:{".js":".mjs"}});
 const {DemoView}=await import("../.test-dist/demo-ui/demo-views.mjs");
+const {CustomerDemos}=await import("../.test-dist/demo-ui/customer-demos.mjs");
 const {money,percent,ratio,sorted,observedAt}=await import("../.test-dist/demo-ui/demo-data.mjs");
 const render=(id,report=demoReports[id])=>renderToStaticMarkup(React.createElement(DemoView,{id,report}));
 test("demo units preserve zero, tiny prices, negative PnL and missing observations",()=>{
@@ -39,10 +40,23 @@ test("security evidence renders quantitative context, controls and holder values
   for(const value of ["24,983","$80.00M","68.00%","18.00%","11.00%","151,845.12"])assert.ok(html.includes(value),value);
   assert.match(html,/32 \/ 38 observations available/);assert.match(html,/provider heuristics/);
   assert.match(html,/title="151845.12345"/);
+  const checks=html.match(/class="demo-rule" data-state="([^"]+)"/g);
+  assert.deepEqual(checks.map(s=>s.match(/data-state="([^"]+)"/)[1]),["attention","unknown","within-threshold"]);
+  assert.equal((html.match(/class="security-evidence-group" hidden=""/g)||[]).length,3,"Supporting groups stay accessible through the category selector instead of a long initial wall of metrics");
   const old={...demoReports["security-signals"],sections:demoReports["security-signals"].sections.slice(0,2)};
   const legacy=render("security-signals",old);assert.match(legacy,/No supporting evidence in this snapshot/);assert.match(legacy,/Manual review required/);
   const partial=render("security-signals",{id:"security-signals",sections:[]});
   assert.match(partial,/Evidence incomplete/);assert.doesNotMatch(partial,/No configured rule triggered/);
+});
+
+test("demo result distinguishes partial evidence from a complete requested scope",()=>{
+  const shell=coverage=>renderToStaticMarkup(React.createElement(CustomerDemos,{
+    api:async()=>({items:[]}),busy:false,budget:250,setBudget:()=>{},progress:"",start:async()=>{},
+    run:{id:"fixture-run",title:"Research terminal",createdAt:"2026-10-16T08:00:00Z",status:"completed",input:{mode:"demo",demo:{id:"terminal"}},cu:{estimated:70,attempts:3},result:{data:{demo:{...demoReports.terminal,coverage}}}}
+  }));
+  assert.match(shell("partial"),/Partial evidence/);
+  assert.doesNotMatch(shell("complete-for-requested-scope"),/Partial evidence/);
+  assert.match(shell("complete-for-requested-scope"),/Export JSON/);
 });
 
 test("source timestamps accept Birdeye Unix seconds, milliseconds and ISO without 1970 drift",()=>{

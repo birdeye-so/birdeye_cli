@@ -4,7 +4,8 @@
   "description": "Birdeye data CLI with CU accounting and a local AI research interface",
   "type": "module",
   "bin": {
-    "birdeye-cli": "dist/index.js"
+    "birdeye-cli": "dist/index.js",
+    "token-dd-score": "skills/token-duediligence/token-dd-score.mjs"
   },
   "files": [
     "dist",

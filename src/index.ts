@@ -25,6 +25,7 @@ import { prepare, capabilities } from "./catalog.js";
 import { render, project } from "./output.js";
 import type { Result } from "./runner.js";
 import { runCase } from "./analysis.js";
+import { loadDdEvidence, rescoreDd } from "./token-dd-rescore.js";
 import { planCase, workflowCatalog, type CaseInput } from "./workflows.js";
 import { registerDataCommands } from "./commands.js";
 import { completion } from "./ai.js";
@@ -44,9 +45,8 @@ program
   .option("--chain <chain>", "chain supported by this release", "solana")
   .option(
     "--max-cu <cu>",
-    "maximum estimated CU reservation per invocation/run",
-    (v) => integer(v, "max-cu"),
-    250,
+    "optional maximum estimated CU per run (default: unlimited)",
+    (v) => integer(v, "max-cu", 0, Number.MAX_SAFE_INTEGER),
   )
   .option("--workflow <id>", "charge requests to an existing workflow budget")
   .option("--estimate-cu", "show the request and cost without calling Birdeye")
@@ -55,7 +55,7 @@ program
   .option("--ai-profile <name>", "AI provider profile")
   .option("--require-code", "require a connection code even on loopback")
   .option("--session-max-cu <cu>", "interface session budget", (v) =>
-    integer(v, "session-max-cu"),
+    integer(v, "session-max-cu", 0, Number.MAX_SAFE_INTEGER),
   )
   .option("--tls-cert <path>", "HTTPS certificate for non-loopback bind")
   .option("--tls-key <path>", "HTTPS private key for non-loopback bind")
@@ -351,6 +351,11 @@ program
   .option("--wallets <addresses>", "leaderboard wallets, comma-separated (1–10)", value => value.split(",").map((s: string) => s.trim()))
   .option("--intervals <durations>", "multi-window PnL: 24h,7d,30d,90d,all", value => value.split(",").map((s: string) => s.trim()))
   .option("--skill-depth <depth>", "Smart Wallets: fast, standard or deep")
+  .option("--dd-mode <mode>", "Token DD Score: standard (2 calls) or advanced (7 calls)")
+  .option("--top-n <n>", "Token DD Score: first holder page size (10–50)", Number)
+  .option("--liq-resolution <resolution>", "Token DD Score liquidity candles: 1m,5m,15m,30m,1h,4h,1D")
+  .option("--liq-candles <n>", "Token DD Score liquidity candles (1–100, default 96)", Number)
+  .option("--rescore <source>", "Token DD Score: saved run ID, full JSON path or base64:JSON; 0 API calls")
   .option("--list-source <source>", "Trending List: v3-list or trending")
   .option("--sort-by <field>", "volume, liquidity, market_cap, holder, trade_count or rank")
   .option("--platform <name>", "V3 token list platform filter")
@@ -366,6 +371,14 @@ program
   .action(async (kind: string, o: Data, c: Command) => {
     const opts = options(c);
     if (opts.chain !== "solana") throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");
+    if (o.rescore) {
+      if(kind!=="skill-token-dd-score")throw new AppError("INVALID_INPUT","--rescore requires skill-token-dd-score.");
+      if(opts.estimateCu)throw new AppError("INVALID_INPUT","Re-score always uses 0 CU; omit --estimate-cu to save the local calculation.");
+      const {rescore,...overrides}=o;
+      const saved=rescoreDd(loadDdEvidence(rescore,archive()),overrides,db(),archive());
+      if(opts.format==="interface") {await serve(opts,undefined,undefined,saved.id);return;}
+      print(saved.result,opts);return;
+    }
     const plan = planCase({kind, ...o});
     if (opts.estimateCu) { print(plan, {...opts, format: opts.format === "interface" ? "json" : opts.format}); return; }
     if (opts.format === "interface") { await serve(opts, undefined, plan.input); return; }

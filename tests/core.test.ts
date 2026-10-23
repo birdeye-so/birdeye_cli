@@ -20,6 +20,29 @@ import {
 const address = "So11111111111111111111111111111111111111112";
 const ok = (data: unknown) => Response.json({ success: true, data });
 const withDb = () => new Ledger(":memory:");
+test("unlimited runs and workflows keep accounting, request limits and explicit CU caps", () => {
+  const ledger = withDb();
+  try {
+    const workflow = ledger.createWorkflow("unlimited");
+    const run = ledger.createRun(undefined, workflow.id, 2);
+    assert.equal(workflow.maxCu, null);
+    const attempt = ledger.reserve(run, "fixture", 200001, "fixture");
+    ledger.finish(attempt, "completed", 200001);
+    ledger.reserve(run, "unknown-price", null, "fixture");
+    assert.equal(ledger.summary(run).estimated, 200001);
+    assert.equal(ledger.summary(run).budgetUsed, 200001);
+    assert.equal(ledger.summary(run).unknownCostAttempts, 1);
+    assert.throws(() => ledger.reserve(run, "fixture", 1, "fixture"), {code:"REQUEST_LIMIT"});
+    const zero = ledger.createRun(0);
+    assert.throws(() => ledger.reserve(zero, "unknown", null, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
+    const capped = ledger.createWorkflow("explicit cap", 10);
+    const uncappedRun = ledger.createRun(null, capped.id);
+    assert.throws(() => ledger.reserve(uncappedRun, "fixture", 11, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
+    const large = ledger.createRun(200001);
+    ledger.reserve(large, "fixture", 200001, "fixture");
+    assert.throws(() => ledger.reserve(large, "fixture", 1, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
+  } finally { ledger.close(); }
+});
 test("validates Solana bytes, unsupported chains, parameters and pagination before billing", () => {
   assert.throws(() => prepare("token.price", { address: "SOL" }));
   assert.throws(() => prepare("token.price", { address: "z".repeat(44) }));
@@ -231,9 +254,9 @@ test("short projection retains warnings, coverage, false/null and all OHLCV rows
     [null, 2],
   ]);
 });
-test("token research costs 70 CU and computes ratio/security share with provenance", async () => {
+test("token research costs 78 CU and computes ratio/security share with provenance", async () => {
   const ledger = withDb(),
-    run = ledger.createRun(70);
+    run = ledger.createRun(78);
   const r = new Runner(ledger, "key", {
     fetch: async (url) => {
       const path = new URL(String(url)).pathname;
@@ -247,7 +270,7 @@ test("token research costs 70 CU and computes ratio/security share with provenan
     },
   });
   const result = await runCase(r, run, { kind: "token-research", address });
-  assert.equal(result.meta.cu.estimated, 70);
+  assert.equal(result.meta.cu.estimated, 78);
   assert.equal(result.data.metrics[0].volumeLiquidityRatio, "2.000000");
   assert.equal(result.data.metrics[1].top10HolderPct, "25");
   assert.ok(result.data.metrics[0].sourceId);
@@ -255,14 +278,14 @@ test("token research costs 70 CU and computes ratio/security share with provenan
 });
 test("partial workflow keeps successful datasets and a budget warning", async () => {
   const ledger = withDb(),
-    run = ledger.createRun(15);
+    run = ledger.createRun(18);
   const r = new Runner(ledger, "key", {
     fetch: async () => ok({ address, price: 1 }),
   });
   const result = await runCase(r, run, { kind: "token-research", address });
   assert.equal(result.meta.coverage, "partial");
   assert.equal(result.data.sources.length, 1);
-  assert.equal(result.meta.cu.estimated, 15);
+  assert.equal(result.meta.cu.estimated, 18);
   assert.equal(result.meta.warnings.length, 2);
   ledger.close();
 });
@@ -371,7 +394,7 @@ test("AI tool loop uses shared runner, deduplicates identical calls, tracks AI s
     short: true,
   });
   assert.equal(requests, 1);
-  assert.equal(result.meta.cu.estimated, 15);
+  assert.equal(result.meta.cu.estimated, 18);
   assert.equal(result.meta.ai.inputTokens, 20);
   assert.equal(result.meta.ai.outputTokens, 10);
   assert.equal(result.data.sources.length, 1);

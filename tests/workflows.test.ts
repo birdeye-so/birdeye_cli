@@ -139,7 +139,7 @@ function fixture(url: URL, init?: RequestInit): Response {
 }
 
 test("new schemas enforce endpoint-specific tags, pagination and accounting before billing", () => {
-  assert.equal(capabilities().length, 35);
+  assert.equal(capabilities().length, 36);
   assert.throws(() => prepare("token.money-flow", {token_address: token, wallet_tags: ["smart_trader"]}));
   assert.throws(() => prepare("token.tags-tracker", {token_address: token, time_from: at-86400, time_to: at, tags: ["bundler"]}));
   assert.throws(() => prepare("token.holder-positions", {token_address: token, labels: ["kol"], limit: 50, offset: 9980}));
@@ -216,19 +216,19 @@ test("invalid upstream response stays uncertain rather than generating metrics",
 
 test("recipe plans have reviewed costs, bounded candidate counts and no network dependency", () => {
   const cases: [string, number, Record<string, unknown>?][] = [
-    ["token-research", 70], ["token-research", 130, {depth: "full"}],
-    ["token-due-diligence", 40], ["token-due-diligence", 100, {depth: "full"}],
-    ["project-deep-report", 240], ["wallet-analysis", 50], ["wallet-analysis", 200, {depth: "full"}],
-    ["smart-money-profile", 70], ["risk-warning", 70], ["risk-warning", 185, {depth: "full"}],
+    ["token-research", 78], ["token-research", 143, {depth: "full"}],
+    ["token-due-diligence", 48], ["token-due-diligence", 113, {depth: "full"}],
+    ["project-deep-report", 253], ["wallet-analysis", 50], ["wallet-analysis", 224, {depth: "full"}],
+    ["smart-money-profile", 70], ["risk-warning", 78], ["risk-warning", 198, {depth: "full"}],
     ["wallet-exposure", 20],
   ];
   for (const [kind, expected, extra] of cases) assert.equal(planCase({kind, address: token, ...extra}, at).estimatedCu, expected, kind);
   assert.equal(planCase({kind: "smart-money-profile"}, at).estimatedCu, 235);
-  assert.equal(planCase({kind: "early-project-screening"}, at).estimatedCu, 225);
-  assert.equal(planCase({kind: "daily-brief"}, at).estimatedCu, 130);
-  assert.equal(planCase({kind: "daily-brief", depth: "full"}, at).estimatedCu, 220);
-  assert.equal(planCase({kind: "market-opportunities", depth: "full"}, at).estimatedCu, 250);
-  assert.equal(planCase({kind: "market-shortlist"}, at).estimatedCu, 225);
+  assert.equal(planCase({kind: "early-project-screening"}, at).estimatedCu, 264);
+  assert.equal(planCase({kind: "daily-brief"}, at).estimatedCu, 146);
+  assert.equal(planCase({kind: "daily-brief", depth: "full"}, at).estimatedCu, 236);
+  assert.equal(planCase({kind: "market-opportunities", depth: "full"}, at).estimatedCu, 289);
+  assert.equal(planCase({kind: "market-shortlist"}, at).estimatedCu, 265);
 });
 
 test("all nine recipes and legacy cases execute fixture APIs under their planned CU bounds", async () => {
@@ -256,7 +256,7 @@ test("listing discovery keeps event semantics and filters unknown or out-of-wind
     }});
     const r = await runCase(runner, ledger.createRun(215), {kind: "early-project-screening", stage: "newly-listed", from: at-86400, to: at});
     assert.deepEqual(r.data.selections[0].selected, [token]);
-    assert.equal(r.meta.cu.estimated, 85);
+    assert.equal(r.meta.cu.estimated, 98);
   } finally {ledger.close();}
 });
 
@@ -264,7 +264,7 @@ test("cohort shares stay separate and liquidity baseline computes zero without c
   const ledger = new Ledger(":memory:");
   try {
     const runner = new Runner(ledger, "key", {fetch: async (u, init) => fixture(new URL(String(u)), init)});
-    const r = await runCase(runner, ledger.createRun(70), {kind: "risk-warning", address: token, baselineLiquidity: 10000, baselineTime: at-100, from: at-86400, to: at});
+    const r = await runCase(runner, ledger.createRun(78), {kind: "risk-warning", address: token, baselineLiquidity: 10000, baselineTime: at-100, from: at-86400, to: at});
     assert.equal(r.data.metrics.at(-1).liquidityChangePct, "0.000000");
     const rows = metricsFor([{schemaVersion: 1, meta: {operation: "token.holder-profile", params: {token_address: token}}, data: {tags: [{tag: "dev", percent_of_supply: 70}, {tag: "sniper", percent_of_supply: 70}]}}]);
     assert.equal(rows.length, 2); assert.equal(rows[0].percentOfSupply, 70); assert.equal(rows[1].percentOfSupply, 70);
@@ -287,7 +287,7 @@ test("market scan deduplicates candidates, selects by local volume and gates fur
     assert.deepEqual(r.data.selections[0].selected, [second, token]);
     assert.equal(seen.includes(`/defi/token_overview:${second}`), false);
     assert.equal(r.data.outcomes[0].status, "exclude-by-policy");
-    assert.equal(r.meta.cu.estimated, 90); // discovery 25 + two security 50 + one overview 15
+    assert.equal(r.meta.cu.estimated, 103); // discovery 25 + two security 60 + one overview 18
     assert.equal(r.data.missing.length, 1);
   } finally {ledger.close();}
 });
@@ -297,7 +297,7 @@ test("unknown required security fields stop dependent checks without a safe verd
   try {
     const runner = new Runner(ledger, "key", {fetch: async () => {calls++; return ok({freezeable: null});}});
     const r = await runCase(runner, ledger.createRun(200), {kind: "risk-warning", address: token, excludeFreezeable: true});
-    assert.equal(calls, 1); assert.equal(r.data.outcomes[0].status, "insufficient-data"); assert.equal(r.meta.cu.estimated, 25);
+    assert.equal(calls, 1); assert.equal(r.data.outcomes[0].status, "insufficient-data"); assert.equal(r.meta.cu.estimated, 30);
   } finally {ledger.close();}
 });
 
@@ -305,8 +305,8 @@ test("budget stops dispatch and retains paid evidence plus missing steps", async
   const ledger = new Ledger(":memory:"); let calls = 0;
   try {
     const runner = new Runner(ledger, "key", {fetch: async (u, init) => {calls++; return fixture(new URL(String(u)), init);}});
-    const r = await runCase(runner, ledger.createRun(70), {kind: "project-deep-report", address: token});
-    assert.equal(calls, 3); assert.equal(r.data.sources.length, 3); assert.equal(r.meta.cu.estimated, 70);
+    const r = await runCase(runner, ledger.createRun(78), {kind: "project-deep-report", address: token});
+    assert.equal(calls, 3); assert.equal(r.data.sources.length, 3); assert.equal(r.meta.cu.estimated, 78);
     assert.equal(r.meta.coverage, "partial"); assert.ok(r.data.missing.length >= 5);
   } finally {ledger.close();}
 });
@@ -331,7 +331,7 @@ test("short workflow output preserves security observations and makes truncated 
       if (url.pathname === "/defi/v3/token/holder") return ok({items: Array.from({length: 10}, () => ({owner: second, amount: "999999999999999999999"}))});
       return fixture(url, init);
     }});
-    const result = await runCase(runner, ledger.createRun(70), {kind: "token-research", address: token});
+    const result = await runCase(runner, ledger.createRun(78), {kind: "token-research", address: token});
     const short = project(result, true);
     assert.equal(short.data.sources[1].data.nonTransferable, false);
     assert.equal(short.data.sources[2].data.items.length, 5);
@@ -345,7 +345,7 @@ test("AI workflow tools estimate for free and execute under the shared CU budget
   try {
     const runner = new Runner(ledger, "key", {fetch: async (u, init) => {apiCalls++; return fixture(new URL(String(u)), init);}});
     const args = JSON.stringify({kind: "token-due-diligence", address: token});
-    const result = await runChat(runner, ledger.createRun(40), {provider: "openai-compatible", baseUrl: "https://provider.test/v1", model: "fixture", apiKeyEnv: "BIRDEYE_TEST_ONLY_UNUSED", apiKey: "fixture"}, "Check the token", {
+    const result = await runChat(runner, ledger.createRun(48), {provider: "openai-compatible", baseUrl: "https://provider.test/v1", model: "fixture", apiKeyEnv: "BIRDEYE_TEST_ONLY_UNUSED", apiKey: "fixture"}, "Check the token", {
       fetch: async (_u, init) => {
         const body = JSON.parse(String(init?.body));
         assert.ok(body.tools.some((t: any) => t.function.name === "run_workflow"));
@@ -353,6 +353,6 @@ test("AI workflow tools estimate for free and execute under the shared CU budget
         return Response.json({choices: [{message: aiCalls === 1 ? {role: "assistant", tool_calls: [{id: "estimate", type: "function", function: {name: "estimate_workflow", arguments: args}}, {id: "run", type: "function", function: {name: "run_workflow", arguments: args}}]} : {role: "assistant", content: "Reviewed observations."}}], usage: {prompt_tokens: 10, completion_tokens: 5}});
       },
     });
-    assert.equal(apiCalls, 2); assert.equal(result.meta.cu.estimated, 40); assert.equal(result.meta.ai.calls, 2);
+    assert.equal(apiCalls, 2); assert.equal(result.meta.cu.estimated, 48); assert.equal(result.meta.ai.calls, 2);
   } finally {ledger.close();}
 });

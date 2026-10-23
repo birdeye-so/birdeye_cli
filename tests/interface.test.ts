@@ -14,6 +14,30 @@ process.env.BIRDEYE_CONFIG_DIR = configDir;
 after(() => rmSync(configDir, {recursive: true, force: true}));
 
 const address = "So11111111111111111111111111111111111111112";
+test("interface defaults to unlimited CU and accepts null, zero and limits above 100000", async () => {
+  const ledger = new Ledger(":memory:");
+  try {
+    for (const maxCu of [undefined, 5]) {
+      const app = await startInterface({ledger, maxCu, listen:false, config:{birdeyeApiKey:"fixture",ai:{defaultProfile:"research",profiles:{}}}, runnerFactory:()=>new Runner(ledger,"fixture",{fetch:async()=>Response.json({success:true,data:{value:1}})})});
+      try {
+        const fetch = inProcessFetch(app.handler, app.url);
+        const login = await fetch(app.url+"/api/connect",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:app.connectCode})});
+        const headers = {"Content-Type":"application/json",Cookie:login.headers.get("set-cookie")!.split(";")[0]};
+        const status = await (await fetch(app.url+"/api/status",{headers})).json();
+        assert.equal(status.maxCu, maxCu ?? null);
+        for (const limit of [undefined, null, 0, 100001]) {
+          const response = await fetch(app.url+"/api/runs",{method:"POST",headers,body:JSON.stringify({mode:"operation",query:{operation:"token.price",params:{address}},maxCu:limit})});
+          assert.equal(response.status,202);
+          const {id} = await response.json();
+          await fetch(app.url+`/api/runs/${id}/events`,{headers});
+          const record = ledger.db.prepare("SELECT max_cu FROM runs WHERE id=?").get(id)!;
+          assert.equal(record.max_cu,limit===undefined?maxCu??null:limit);
+          assert.equal(ledger.summary(id).estimated, limit===0?0:3);
+        }
+      } finally {await app.close();}
+    }
+  } finally {ledger.close();}
+});
 test("loopback browsers reconnect automatically; cross-origin, missing browser headers and require-code cannot bypass authentication", async () => {
   const ledger=new Ledger(":memory:");
   try {
@@ -175,7 +199,7 @@ test("interface previews and executes edited steps while rejecting invalid edits
     }
     assert.equal(ledger.summary().attempts, 0);
     assert.equal(requests.length, 0);
-    const created = await (await post("/api/runs", {mode: "case", case: plan.input, maxCu: 70})).json();
+    const created = await (await post("/api/runs", {mode: "case", case: plan.input, maxCu: 78})).json();
     await fetch(`${app.url}/api/runs/${created.id}/events`, {headers});
     const result = await (await fetch(`${app.url}/api/runs/${created.id}`, {headers})).json();
     assert.equal(result.status, "completed");
@@ -256,8 +280,8 @@ test("cancelled interface run retains paid evidence and exposes active run ID", 
     assert.equal(done.status, "cancelled");
     assert.equal(done.result.data.sources.length, 1);
     assert.equal(done.result.meta.coverage, "partial");
-    assert.equal(done.cu.estimated, 15);
-    assert.equal(done.cu.budgetUsed, 40);
+    assert.equal(done.cu.estimated, 18);
+    assert.equal(done.cu.budgetUsed, 48);
   } finally {
     await app.close();
     ledger.close();

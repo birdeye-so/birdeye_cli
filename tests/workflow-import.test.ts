@@ -16,7 +16,7 @@ const manifest={version:1,title:"Token evidence",purpose:"Inspect token identity
 const source=(value:unknown)=>sourceDocument("evidence.workflow.json","fixture:json",JSON.stringify(value));
 test("custom manifests plan offline, validate all steps, and reject code, unsupported chains and dependency cycles",()=>{
   const record=migrateWorkflow(source(manifest));
-  assert.equal(planImported(record,{},true).estimatedCu,40);assert.equal(planImported(record,{},true).needsAddress,true);
+  assert.equal(planImported(record,{},true).estimatedCu,48);assert.equal(planImported(record,{},true).needsAddress,true);
   assert.throws(()=>planImported(record),/Provide a Solana/);
   for(const bad of [{...manifest,chain:"base"},{...manifest,script:"rm -rf /"},{...manifest,steps:[{id:"x",operation:"__proto__"}]},{...manifest,steps:[{id:"x",operation:"token.price",params:{address:"{{process.env.KEY}}"}}]},{...manifest,steps:[{id:"x",operation:"token.price",subjects:{from:["x"],kind:"token",take:2}}]}])assert.throws(()=>migrateWorkflow(source(bad)));
   assert.throws(()=>planImported(record,{address:token,stepOverrides:{missing:{}}}),/Unknown step/);
@@ -88,8 +88,8 @@ test("custom workflow execution uses bounded deduplicated dependencies, accounti
   try {
     const record=migrateWorkflow(source({...manifest,steps:[{id:"trending",operation:"market.trending",params:{limit:3}},{id:"overview",operation:"token.overview",subjects:{from:["trending"],kind:"token",take:2}}]}));
     const runner=new Runner(ledger,"fixture",{retries:0,fetch:async(url)=>{calls++;return Response.json({success:true,data:new URL(String(url)).pathname==="/defi/token_trending"?{tokens:[{address:token},{address:token},{address:other}]}:{address:new URL(String(url)).searchParams.get("address"),price:1}});}});
-    const result=await runImported(runner,ledger.createRun(55),record);
-    assert.equal(calls,3);assert.equal(result.data.sources.length,3);assert.equal(result.meta.cu.estimated,55);
+    const result=await runImported(runner,ledger.createRun(61),record);
+    assert.equal(calls,3);assert.equal(result.data.sources.length,3);assert.equal(result.meta.cu.estimated,61);
     const partial=await runImported(runner,ledger.createRun(25),record);
     assert.equal(calls,4);assert.equal(partial.meta.coverage,"partial");assert.equal(partial.data.sources.length,1);
     assert.equal(partial.data.missing.length,2);
@@ -101,7 +101,7 @@ test("local imports scan workflow files only and CLI import/plan never spends CU
     const folder=join(dir,"sources");mkdirSync(folder);writeFileSync(join(folder,"a.workflow.json"),JSON.stringify(manifest));writeFileSync(join(folder,"secret.pem"),"not a document");
     const docs=await loadWorkflowSources(folder);assert.equal(docs.length,1);
     const cli=spawnSync(process.execPath,[resolve(".test-dist/src/index.js"),"workflow","import",folder,"--config-dir",join(dir,"config")],{encoding:"utf8"});
-    assert.equal(cli.status,0,cli.stderr);const [record]=JSON.parse(cli.stdout);assert.equal(record.plan.estimatedCu,40);
+    assert.equal(cli.status,0,cli.stderr);const [record]=JSON.parse(cli.stdout);assert.equal(record.plan.estimatedCu,48);
     const ledger=new Ledger(join(dir,"config/usage.sqlite"));assert.equal(ledger.summary().attempts,0);ledger.close();
     await assert.rejects(loadWorkflowSources(join(folder,"secret.pem")),/Markdown or workflow JSON/);
   }finally{rmSync(dir,{recursive:true,force:true});}
@@ -160,9 +160,9 @@ test("HTTP import, preview and execution persist to History without requiring an
     const gmgn=await request("/api/workflow-imports",{url:"https://github.com/GMGNAI/gmgn-skills/tree/main/docs"});
     assert.equal(gmgn.status,200);assert.equal((await gmgn.json()).items.length,9);assert.equal(ledger.summary().attempts,0);
     const imported=await(await request("/api/workflow-imports",{name:"custom.workflow.json",content:JSON.stringify(manifest)})).json(),id=imported.items[0].id;
-    const preview=await(await request(`/api/workflow-imports/${id}/plan`,{address:token})).json();assert.equal(preview.plan.estimatedCu,40);assert.equal(calls,0);
-    const started=await(await request("/api/runs",{mode:"imported",importId:id,importParams:{address:token},maxCu:40})).json();
+    const preview=await(await request(`/api/workflow-imports/${id}/plan`,{address:token})).json();assert.equal(preview.plan.estimatedCu,48);assert.equal(calls,0);
+    const started=await(await request("/api/runs",{mode:"imported",importId:id,importParams:{address:token},maxCu:48})).json();
     await request(`/api/runs/${started.id}/events`);
-    const saved=new RunStore(ledger).get(started.id);assert.equal(calls,2);assert.equal(saved.input.mode,"imported");assert.equal(saved.result!.data.importedWorkflow.id,id);assert.equal(saved.cu.estimated,40);
+    const saved=new RunStore(ledger).get(started.id);assert.equal(calls,2);assert.equal(saved.input.mode,"imported");assert.equal(saved.result!.data.importedWorkflow.id,id);assert.equal(saved.cu.estimated,48);
   }finally{await app.close();ledger.close();}
 });

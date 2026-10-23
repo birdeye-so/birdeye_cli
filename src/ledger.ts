@@ -19,8 +19,8 @@ export class Ledger {
       CREATE INDEX IF NOT EXISTS attempts_run ON attempts(run);
       CREATE TABLE IF NOT EXISTS snapshots(id TEXT PRIMARY KEY,credential TEXT,data TEXT,created_at TEXT);`);
   }
-  createWorkflow(label: string, maxCu = 250) {
-    integer(maxCu, "max-cu");
+  createWorkflow(label: string, maxCu: number | null = null) {
+    if (maxCu !== null) integer(maxCu, "max-cu", 0, Number.MAX_SAFE_INTEGER);
     const id = randomUUID();
     this.db
       .prepare("INSERT INTO workflows VALUES(?,?,?,?)")
@@ -36,8 +36,8 @@ export class Ledger {
       );
     return { ...value, usage: this.summary(undefined, id) };
   }
-  createRun(maxCu = 250, workflow?: string, maxRequests = 20) {
-    integer(maxCu, "max-cu");
+  createRun(maxCu: number | null = null, workflow?: string, maxRequests = 20) {
+    if (maxCu !== null) integer(maxCu, "max-cu", 0, Number.MAX_SAFE_INTEGER);
     integer(maxRequests, "max-requests", 1, 1000);
     if (workflow) this.workflow(workflow);
     const id = randomUUID();
@@ -51,12 +51,12 @@ export class Ledger {
     try {
       const r = this.db.prepare("SELECT * FROM runs WHERE id=?").get(run)!;
       if (!r) throw new AppError("RUN_NOT_FOUND", "Run not found.");
-      if (cost === null && Number(r.max_cu) === 0)
+      if (cost === null && r.max_cu !== null && Number(r.max_cu) === 0)
         throw new AppError("CU_BUDGET_EXCEEDED", "A zero CU budget does not permit calls with unknown cost.");
       const own = this.summary(run);
       if (own.attempts >= Number(r.max_requests))
         throw new AppError("REQUEST_LIMIT", "Request-attempt limit reached.");
-      if (own.budgetUsed + (cost ?? 0) > Number(r.max_cu))
+      if (r.max_cu !== null && own.budgetUsed + (cost ?? 0) > Number(r.max_cu))
         throw new AppError(
           "CU_BUDGET_EXCEEDED",
           `Request needs ${cost} CU; run has ${Number(r.max_cu) - own.budgetUsed} CU available.`,
@@ -66,9 +66,9 @@ export class Ledger {
           .prepare("SELECT * FROM workflows WHERE id=?")
           .get(r.workflow)!;
         if (
-          (cost === null && Number(w.max_cu) === 0) ||
+          w.max_cu !== null && ((cost === null && Number(w.max_cu) === 0) ||
           this.summary(undefined, String(r.workflow)).budgetUsed + (cost ?? 0) >
-          Number(w.max_cu)
+          Number(w.max_cu))
         )
           throw new AppError(
             "CU_BUDGET_EXCEEDED",

@@ -77,7 +77,7 @@ test("CLI archives complete datasets even when the printed output is short",()=>
     const run=spawnSync(process.execPath,["--import",pathToFileURL(preload).href,resolve(".test-dist/src/index.js"),"token","overview",address,"--short","--config-dir",dir],{encoding:"utf8",env:{...process.env,BIRDEYE_API_KEY:"fixture-only"}});
     assert.equal(run.status,0,run.stderr);assert.ok(!run.stdout.includes("complete stored dataset"));
     const ledger=new Ledger(join(dir,"usage.sqlite"));
-    try {const store=new RunStore(ledger);const saved=store.get(store.list().items[0].id);assert.equal(saved.result!.data.description,"complete stored dataset");assert.equal(saved.cu.estimated,15);}finally{ledger.close();}
+    try {const store=new RunStore(ledger);const saved=store.get(store.list().items[0].id);assert.equal(saved.result!.data.description,"complete stored dataset");assert.equal(saved.cu.estimated,18);}finally{ledger.close();}
   }finally{rmSync(dir,{recursive:true,force:true});}
 });
 test("chat conversations persist across restart and continue without a Birdeye key in saved-only mode",async()=>{

@@ -3,6 +3,13 @@ import type { Entry } from "./catalog.js";
 import { address, timestamp, amount, direction, page, validPage } from "./schemas.js";
 const list = z.array(z.record(z.string(), z.unknown()));
 export const skillCatalog = {
+  "token.liquidity-ohlc": {
+    path: "/defi/v3/liquidity/ohlc/token", cost: 30, provisional: true,
+    description: "Liquidity and exit-liquidity candles; provisional 30 CU from DD specification",
+    warnings: ["OHLC CU is provisional: the DD specification states 30 CU, while provider pricing documentation still describes resolution-dependent pricing. This estimate is not a verified upper bound or confirmed bill."],
+    schema: z.object({address, resolution: z.enum(["1m","5m","15m","30m","1h","4h","1D"]).default("15m"), time: timestamp, direction: z.literal("back").default("back"), count: z.number().int().min(1).max(100).default(96)}).strict(),
+    dataSchema: z.object({items: list}).passthrough(),
+  },
   "market.token-list": {
     path: "/defi/v3/token/list", cost: 50, paginated: true,
     description: "Token discovery ranked by market data, with optional platform filter",

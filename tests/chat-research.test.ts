@@ -27,7 +27,7 @@ for (const apiFormat of ["responses", "chat-completions"] as const) test(`chat r
     const login = await fetch(app.url + "/api/connect", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({code: app.connectCode})});
     const headers = {"Content-Type": "application/json", Cookie: login.headers.get("set-cookie")!.split(";")[0]};
     const request = (path: string, body?: Data) => fetch(app.url + path, {headers, ...(body ? {method: "POST", body: JSON.stringify(body)} : {})});
-    const {id} = await (await request("/api/runs", {mode: "chat", question: "Research the selected flow", case: {kind: "token-research", address, stepOverrides: {holders: {limit: 3}}}, maxCu: 70})).json();
+    const {id} = await (await request("/api/runs", {mode: "chat", question: "Research the selected flow", case: {kind: "token-research", address, stepOverrides: {holders: {limit: 3}}}, maxCu: 78})).json();
     await request(`/api/runs/${id}/events`);
     const run = await (await request(`/api/runs/${id}`)).json();
     const names = bodies[0].tools.map((t: Data) => t.name || t.function?.name);
@@ -39,7 +39,7 @@ for (const apiFormat of ["responses", "chat-completions"] as const) test(`chat r
     assert.equal(requests.find(url => url.pathname.endsWith("holder"))!.searchParams.get("limit"), "3");
     assert.equal(run.input.dataPolicy, "live");
     assert.equal(run.result.data.sources.length, 3);
-    assert.equal(run.cu.estimated, 70);
+    assert.equal(run.cu.estimated, 78);
     assert.equal(run.saved, true);
     assert.equal(run.input.case.address, address);
     // Continuing a saved chat inherits the selected flow and an explicit saved-only choice.

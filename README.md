@@ -146,7 +146,7 @@ birdeye-cli token price So11111111111111111111111111111111111111112 --max-cu 3 -
 birdeye-cli usage show --short
 ```
 
-`--short` rút gọn output để tiết kiệm token khi đưa vào AI; không giảm số CU của cùng request. Muốn JSON đầy đủ, bỏ `--short`. `--estimate-cu` chỉ lập kế hoạch; bỏ cờ này mới chạy API. `--max-cu` giới hạn CU ước tính cho lượt chạy, mặc định 250.
+`--short` rút gọn output để tiết kiệm token khi đưa vào AI; không giảm số CU của cùng request. Muốn JSON đầy đủ, bỏ `--short`. `--estimate-cu` chỉ lập kế hoạch; bỏ cờ này mới chạy API. `--max-cu` đặt giới hạn CU ước tính khi cần; mặc định không giới hạn CU.
 
 ### 5. Dùng giao diện nghiên cứu
 
@@ -157,7 +157,7 @@ birdeye-cli --format interface --bind 127.0.0.1:8787 --max-cu 250 --session-max-
 Giữ terminal này mở, truy cập URL được in ra. Cổng 8787 là lựa chọn trong hướng dẫn; nếu bỏ `--bind`, mặc định hiện tại là `127.0.0.1:3000`. Chỉ mở UI chưa gọi API; các lệnh mở kèm token/workflow có thể chạy tác vụ khởi đầu sau khi kết nối.
 
 1. Trong **Case studies**, chọn workflow/skill, đọc mục đích và nhập địa chỉ nếu được yêu cầu.
-2. Xem **Workflow overview**, chỉnh tham số từng bước và kiểm tra CU trước khi **Run research**. Mở **CLI command** để xem/copy lệnh tương ứng, gồm window, CU limit và tham số API đã chỉnh. Demos và Imports cũng có mục này; Imports cần preview mapping trước. Copy lệnh không gọi API. Lệnh dùng cú pháp Bash/Zsh và cấu hình CLI trên máy thực thi.
+2. Xem **Workflow overview**, chỉnh tham số từng bước và kiểm tra CU trước khi **Run research**. **CLI command** mở sẵn mặc định để xem/copy lệnh tương ứng, gồm window, CU limit và tham số API đã chỉnh. Demos và Imports cũng có mục này; Imports cần preview mapping trước. Copy lệnh không gọi API. Lệnh dùng cú pháp Bash/Zsh và cấu hình CLI trên máy thực thi.
 3. Dùng **History** để mở lại kết quả hoặc export dữ liệu, không gọi lại API. Chạy research mới sẽ gọi API mới.
 4. Trong **Imports**, nhập URL GMGN hoặc upload/paste workflow. Xem mapping, phần chưa hỗ trợ, tham số và CU; bấm **Preview mapping & CU** trước khi chạy. Import/preview không tiêu Birdeye CU.
 5. Nhấn `Ctrl+C` ở terminal để dừng. Chạy lại cùng lệnh để mở lại; cấu hình, imports và History vẫn được giữ.
@@ -389,7 +389,7 @@ birdeye-cli capabilities
 | `--format <format>` | `json`; nhận `json`, `table`, `interface` | JSON cho automation; table để đọc nhanh; interface mở UI ở các lệnh có hỗ trợ. |
 | `--short` | Tắt | Output ngắn, JSON một dòng; không giảm CU của request. Không cần truyền `true`. |
 | `--chain <chain>` | `solana` | Chain cho tác vụ dữ liệu; bản này chỉ thực thi Solana. |
-| `--max-cu <cu>` | `250`, số nguyên ≥ 0 | Budget CU ước tính mỗi lượt; với `workflow create` là budget của nhóm workflow mới. Không bao gồm AI tokens hoặc chi phí MCP chưa xác định. |
+| `--max-cu <cu>` | Không giới hạn; nếu đặt thì số nguyên ≥ 0 | Budget CU ước tính mỗi lượt; với `workflow create` là budget của nhóm workflow mới. Không bao gồm AI tokens hoặc chi phí MCP chưa xác định. |
 | `--workflow <id>` | Không có | Khi chạy API qua CLI, ghi CU vào budget tích lũy đã tạo bằng `workflow create`; dùng với `usage show` để lọc tổng CU theo nhóm. Đây không phải ID workflow import; UI dùng `--session-max-cu` cho budget phiên. |
 | `--estimate-cu` | Tắt | Lập kế hoạch cho lệnh dữ liệu, `case` hoặc `workflow imports run`, không gửi request Birdeye. Không phải dry-run chung cho lệnh ghi config/import. |
 | `--config-dir <path>` | `BIRDEYE_CONFIG_DIR`, nếu không có thì `~/.config/birdeye` | Chọn thư mục SQLite/config cho lệnh; ưu tiên hơn environment. |
@@ -1000,7 +1000,7 @@ node dist/index.js demo wallet-intelligence --address WALLET_ADDRESS --estimate-
 node dist/index.js demo wallet-intelligence --address WALLET_ADDRESS --max-cu 120 > wallet-analysis.json
 ```
 
-Để trống ví (`address` bị bỏ qua, `""` hoặc chỉ có khoảng trắng) đều chạy discovery. Địa chỉ không rỗng nhưng sai định dạng vẫn bị từ chối. Trên UI, chọn **Preview APIs & CU** trước; **Run live snapshot** chỉ bật khi preview hợp lệ và CU limit đủ cho estimate. Không cần điền ví để mở khóa discovery.
+Để trống ví (`address` bị bỏ qua, `""` hoặc chỉ có khoảng trắng) đều chạy discovery. Địa chỉ không rỗng nhưng sai định dạng vẫn bị từ chối. Trên UI, chọn **Preview APIs & CU** trước; **Run live snapshot** chỉ bật khi preview hợp lệ và không đặt CU limit hoặc limit đủ cho estimate. Không cần điền ví để mở khóa discovery.
 
 ```bash
 # Regression cho input ví rỗng; estimate miễn CU, không cần key
@@ -1066,7 +1066,7 @@ birdeye-cli usage credits --short
 ```
 
 - SQLite local ghi từng request attempt, run và workflow. Retry/pagination được tính riêng; reservation atomic giữa nhiều tiến trình.
-- `--max-cu` mặc định 250, chặn dispatch khi không còn đủ budget theo catalog. `--workflow` áp dụng thêm budget tích lũy của workflow.
+- Mặc định không giới hạn CU. Khi đặt `--max-cu`, chặn dispatch khi không còn đủ budget theo catalog. `--workflow` áp dụng thêm budget tích lũy của workflow.
 - `estimated` là CU tính theo docs; `reported` để null vì docs chưa có billing xác nhận riêng cho request.
 - `budgetUsed` gồm request đã hoàn tất và reservation của request pending/uncertain. Timeout, cancel hay crash không được coi là request miễn phí.
 - OHLCV range dùng bound bảo thủ 100 CU. Các rule CU còn mâu thuẫn ngoài phạm vi MVP chưa được bật.
@@ -1226,7 +1226,7 @@ node dist/index.js case token-research --address So11111111111111111111111111111
 node dist/index.js usage show --short
 ```
 
-Kỳ vọng: estimate cho price là **3 CU**, token research là **70 CU** theo catalog hiện tại. Estimate không gửi request và không tăng usage; `usage show` đọc ledger local.
+Kỳ vọng: estimate cho price là **3 CU**, token research là **78 CU** theo catalog hiện tại. Estimate không gửi request và không tăng usage; `usage show` đọc ledger local.
 
 ### 3. Birdeye live và budget — cần Birdeye key
 
@@ -1240,7 +1240,7 @@ node dist/index.js case token-research --address So11111111111111111111111111111
 node dist/index.js usage show --short
 ```
 
-Kỳ vọng: `doctor --live` dùng 1 CU, price dùng 3 CU, research dùng 70 CU khi đủ dữ liệu và không retry. Kết quả kèm CU; ledger tăng tương ứng các request attempts.
+Kỳ vọng: `doctor --live` dùng 1 CU, price dùng 3 CU, research dùng 78 CU khi đủ dữ liệu và không retry. Kết quả kèm CU; ledger tăng tương ứng các request attempts.
 
 Sau khi đã cấu hình key, thử chặn request vượt budget:
 
@@ -1252,7 +1252,70 @@ Kỳ vọng: lỗi `CU_BUDGET_EXCEEDED`, exit code `4`; không gửi request Bir
 
 ### Workflows theo Birdeye Data Skills
 
-UI có 11 skill theo source `./birdeye-data-skills`, chia **Discover / Token / Wallet**. Các case cũ nằm trong **Earlier workflows**. Xem [workflow, mục đích, API steps, CU và các điểm điều chỉnh](docs/workflows/birdeye-data-skills.md).
+UI có thêm Token DD Score Advanced và 11 skill theo source `./birdeye-data-skills`, chia **Discover / Token / Wallet**. Các case cũ nằm trong **Earlier workflows**. Xem [workflow, mục đích, API steps, CU và các điểm điều chỉnh](docs/workflows/birdeye-data-skills.md).
+
+### Token DD Score Advanced · Node.js
+
+Skill mới có entrypoint **Node.js**, dùng chung công thức với CLI/UI. Sau `npm run build`, có thể chạy file `.mjs`; khi cài package bằng npm sẽ có thêm lệnh `token-dd-score`. Chi tiết công thức và các giả định tái dựng nằm trong [doc.md](skills/token-duediligence/doc.md).
+
+```bash
+npm ci
+npm run build
+
+# Xem help và plan offline: không cần API key, không tốn CU
+node skills/token-duediligence/token-dd-score.mjs --help
+node skills/token-duediligence/token-dd-score.mjs So11111111111111111111111111111111111111112 --mode advanced --estimate-cu --format json
+
+# Chạy thật: dùng Birdeye key đã lưu trong Settings hoặc BIRDEYE_API_KEY
+node skills/token-duediligence/token-dd-score.mjs So11111111111111111111111111111111111111112 --mode advanced --format plain --explain
+
+# Cùng workflow qua CLI
+node dist/index.js case skill-token-dd-score --address So11111111111111111111111111111111111111112 --dd-mode advanced --format json
+
+# UI: Token → Token DD Score · Advanced
+node dist/index.js case skill-token-dd-score --address So11111111111111111111111111111111111111112 --format interface --bind 127.0.0.1:8787
+```
+
+| Arg | Ý nghĩa |
+|---|---|
+| `--mode standard/advanced` | Entrypoint Node; mặc định advanced. Trong `birdeye-cli case` dùng `--dd-mode` |
+| `--top-n 10..50` | Số hàng holder lấy trong một trang; mặc định 50 |
+| `--liq-resolution` | `1m/5m/15m/30m/1h/4h/1D`; mặc định 15m |
+| `--liq-candles 1..100` | Số nến liquidity; mặc định 96, tương ứng cửa sổ yêu cầu 24h ở 15m |
+| `--rescore <source>` | ID History, full JSON path, hoặc `base64:<JSON đã encode>`; tính lại local, 0 API calls / 0 CU |
+| `--weights-preset default` | Entrypoint Node chỉ hỗ trợ default; tài liệu chưa định nghĩa các preset còn lại |
+| `--explain` | Entrypoint Node thêm quy tắc từng tín hiệu vào plain output |
+| `--format` | Entrypoint Node: `plain`, `telegram`, `ui`, `json`, `raw-json`, `interface`. JSON/UI có CU trong metadata; plain/Telegram có footer CU |
+| `--short` | Tóm tắt tiết kiệm token; raw data vẫn lưu SQLite. Dùng ID hoặc full JSON để re-score |
+| `--estimate-cu` | Chỉ lập kế hoạch, không gọi API |
+| `--max-cu` | Budget CU ước tính tùy chọn; mặc định không trần |
+| `--config-dir` | Chọn thư mục cấu hình và SQLite đang chứa lượt chạy |
+| `--chain` | Hiện hỗ trợ `solana` |
+| `--bind`, `--public-url` | Địa chỉ bind và origin công khai cho `--format interface` |
+
+Standard dùng overview + security: **2 calls / 51 CU**. Advanced thêm distribution, holder profile, top holders, tagged money flow và liquidity OHLC: **7 calls / tạm tính 181 CU** trước retry. Giá OHLC 30 CU lấy từ đặc tả; docs provider còn mô tả giá theo resolution nên đây **không phải upper bound đã xác minh**. `cu_billed_total` để null, còn CU ước tính/reserved lấy từ ledger.
+
+UI hiển thị điểm, rating, 5 trụ cột, coverage, từng rule/input, liquidity stats, holder concentration và các giả định. Dữ liệu thiếu giữ N/A; standard và advanced không có cùng coverage. LST/canonical-mint chưa có danh sách chuẩn nên giữ N/A; `--pace` và preset khác default chưa hỗ trợ. Không có dữ liệu live giả lập để làm đầy kết quả.
+
+Lấy run ID từ `meta.runId` hoặc History, rồi tái sử dụng:
+
+```bash
+node skills/token-duediligence/token-dd-score.mjs --rescore <run-id> --mode standard --format plain
+node skills/token-duediligence/token-dd-score.mjs --rescore ./full-export.json --liq-candles 32 --explain
+node dist/index.js case skill-token-dd-score --rescore <run-id> --dd-mode standard --short
+```
+
+Nút **Re-score saved evidence · 0 CU** trên UI cho đổi mode, topN và số nến. Mỗi lần tạo một History mới, giữ nguyên raw sources và thời gian quan sát; không cần API key. Tăng giới hạn không thể bổ sung dữ liệu chưa fetch. Đổi resolution/địa chỉ/API params cần lượt gọi mới. Xóa History sẽ xóa dữ liệu dùng để replay.
+
+Các lệnh kiểm thử (fixture, không gọi Birdeye thật):
+
+```bash
+npm run typecheck
+npm run build
+npx tsc -p tsconfig.test.json
+node --test .test-dist/tests/token-dd-score.test.js .test-dist/tests/token-dd-interface.test.js tests/token-dd-ui.test.mjs
+npm test
+```
 
 ```bash
 # Preflight miễn phí
@@ -1286,7 +1349,7 @@ curl -i -H 'Host: evil.test:8787' http://127.0.0.1:8787/ # 403
 Nếu bản cũ trả `ORIGIN_DENIED` khi dùng `localhost`, dùng URL `127.0.0.1` hoặc build lại (`npm run build`) rồi dừng và khởi động lại interface.
 
 1. Chọn case study, đọc **Purpose** và **What you get**. Mở **Workflow overview → Review API steps** để xem các bước kể cả khi chưa nhập địa chỉ: mục đích, thông tin lấy về, method/path API, nguồn subject và CU mỗi request. Xem hoặc chỉnh overview không gọi Birdeye.
-2. Chọn **Earlier workflows → Token Research**, nhập `So11111111111111111111111111111111111111112`. Mở **Review API steps → Adjust parameters** ở bước **Top holders**, đổi **Rows per request** thành `3` và **Holder grouping** thành `token_account`. Overview kiểm tra lại tham số và hiển thị `70 CU before retries · at most 3 requests`.
+2. Chọn **Earlier workflows → Token Research**, nhập `So11111111111111111111111111111111111111112`. Mở **Review API steps → Adjust parameters** ở bước **Top holders**, đổi **Rows per request** thành `3` và **Holder grouping** thành `token_account`. Overview kiểm tra lại tham số và hiển thị `78 CU before retries · at most 3 requests`.
 3. Thử nhập `101` vào Rows per request: phải có lỗi ở bước holders và nút Run research bị khóa. Sửa về `3` hoặc dùng **Reset this step** để về mặc định `10`/`wallet`. **Reset all steps** xóa mọi chỉnh sửa riêng của các bước.
 4. Chạy research khi tham số hợp lệ. Bước này dùng Birdeye CU thật, không cần AI key. Kiểm tra request params trong Sources: API holders phải nhận đúng `limit`/`mode` đã chọn. Kết quả JSON lưu `data.plan.input.stepOverrides` và `data.plan.steps` để đối chiếu.
 5. Chọn **Earlier workflows → Wallet Analysis**, mở **Review API steps → PnL summary**, đổi **PnL period** hoặc **PnL accounting method**. Kiểm tra tham số/metrics của run mới khớp lựa chọn; sửa cửa sổ PnL không tự sửa cửa sổ trades hoặc các bước khác.
@@ -1413,6 +1476,26 @@ Trong sandbox triển khai ban đầu, TCP listen và Chrome launch bị chặn.
 Ba skill có trong `skills/birdeye-token`, `skills/birdeye-market`, `skills/birdeye-portfolio`. Cài thư mục skill vào nơi agent của bạn đọc skills, và bảo đảm executable `birdeye-cli` nằm trên PATH. Skills dùng CU do CLI trả về, không nhân bản bảng giá.
 
 Phạm vi tiếp theo: multi-chain, multi-price batching, pagination tự động, scheduler/WebSocket, provider capability probing/fallback, biểu đồ và kiểm thử live. Workflow hiện chạy một lần; không tự giao dịch, không backtest copy-trade ROI. Hai [plan core](docs/plans/cli-core.md) và [interface](docs/plans/interface.md) mô tả đích triển khai rộng hơn bản thử này.
+
+### CU limit tùy chọn và command preview
+
+CLI/interface mặc định không đặt trần CU. Trong Research, Demos và Imports, để trống **CU limit** (`Unlimited`) để chạy không giới hạn CU; có thể đặt số nguyên không âm nếu muốn tự giới hạn. Bỏ trần nhập 100.000 CU. Giá trị `0` vẫn chặn request có phí và request chưa biết chi phí; chat **saved-only** vẫn dùng 0 CU cho dữ liệu mới. Ledger SQLite vẫn ghi CU/reservation/attempts, kể cả khi không đặt limit. Giới hạn số request và phạm vi workflow vẫn áp dụng.
+
+`--max-cu` đặt budget mặc định cho từng lượt; UI có thể xóa ô để chạy unlimited. `--session-max-cu` nếu được đặt vẫn giới hạn tổng CU của phiên. Các nhóm workflow đã lưu trước đây giữ budget đã được đặt. Trong HTTP API, bỏ `maxCu` để dùng mặc định server; `maxCu: null` yêu cầu không đặt budget riêng cho lượt chạy.
+
+**CLI command** ở Workflows, Demos và Imports mặc định mở rộng, vẫn có thể bấm để thu gọn. Khi unlimited, lệnh copy không có `--max-cu`; nếu nhập limit thì lệnh giữ đúng số đó.
+
+```bash
+# Không giới hạn CU mặc định
+node dist/index.js --format interface --bind 127.0.0.1:8787
+# Preview miễn phí, cho phép đặt limit lớn hơn 100.000 khi cần
+node dist/index.js case market-shortlist --max-cu 200000 --estimate-cu --short
+# Regression: accounting unlimited, giới hạn chủ động, HTTP và command serialization
+npx tsc -p tsconfig.test.json
+node --test .test-dist/tests/core.test.js .test-dist/tests/interface.test.js .test-dist/tests/cli-preview.test.js
+```
+
+Test UI: mở Research/Demos/Imports, kiểm tra ô CU limit trống và CLI command đã mở. Lệnh preview phải không có `--max-cu`; nhập `200000` để thấy cờ này xuất hiện, xóa giá trị để trở lại unlimited. Preview/copy không gọi Birdeye API; Run có gọi API và vẫn ghi CU.
 
 ### 8. Copy địa chỉ và mở Birdeye trong interface (0.4.0)
 

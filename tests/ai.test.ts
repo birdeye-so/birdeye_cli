@@ -19,12 +19,12 @@ test("selected workflow calls enforce the CU budget and preserve partial evidenc
   const runner = new Runner(ledger, "fixture", {fetch: async () => {dataCalls++; return Response.json({success: true, data: {address, price: 42}});}});
   try {
     const input = planCase({kind: "token-research", address}).input;
-    const result = await runChat(runner, ledger.createRun(15), profile, "Research this workflow", {
+    const result = await runChat(runner, ledger.createRun(18), profile, "Research this workflow", {
       workflow: {kind: input.kind, input},
       fetch: async () => rounds++ ? response([message("Only overview was within budget.")]) : response([call("selected", "run_selected_workflow", {})]),
     });
     assert.equal(dataCalls, 1);
-    assert.equal(result.meta.cu.estimated, 15);
+    assert.equal(result.meta.cu.estimated, 18);
     assert.equal(result.data.sources.length, 1);
     assert.equal(result.meta.coverage, "partial");
     assert.ok(result.data.missing.length > 0);
@@ -65,7 +65,7 @@ test("Responses tool rounds preserve reasoning, correlate call_id, deduplicate r
   const first = [reasoning, message("Checking data."), call("one", "token_overview", {address}), call("two", "token_overview", {address})];
   const second = [call("blocked", "token_security", {address}), call("estimate", "estimate_workflow", {kind: "skill-token-dd", address})];
   try {
-    const result = await runChat(runner, ledger.createRun(15), profile, "Research this token", {
+    const result = await runChat(runner, ledger.createRun(18), profile, "Research this token", {
       short: true, history: [{role: "user", content: "Earlier question"}, {role: "assistant", content: "Earlier answer"}],
       fetch: async (url, init) => {
         aiCalls++;
@@ -88,13 +88,13 @@ test("Responses tool rounds preserve reasoning, correlate call_id, deduplicate r
         if (aiCalls === 2) return response(second);
         assert.deepEqual(body.input.slice(10, 12), second);
         assert.equal(JSON.parse(outputs[2].output).error.code, "CU_BUDGET_EXCEEDED");
-        assert.equal(JSON.parse(outputs[3].output).estimatedCu, 50);
+        assert.equal(JSON.parse(outputs[3].output).estimatedCu, 58);
         return response([message("Observed liquidity."), message("Security check exceeded budget.")]);
       },
     });
     assert.equal(dataCalls, 1);
     assert.equal(aiCalls, 3);
-    assert.equal(result.meta.cu.estimated, 15);
+    assert.equal(result.meta.cu.estimated, 18);
     assert.deepEqual(result.meta.ai, {inputTokens: 30, outputTokens: 15, calls: 3, unknownCalls: 0});
     assert.equal(result.data.sources.length, 1);
     assert.match(JSON.stringify(result.data), /Observed liquidity.\\nSecurity check/);

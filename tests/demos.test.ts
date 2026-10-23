@@ -28,7 +28,7 @@ function fixture(security:Record<string,unknown>={freezeable:false,top10HolderPe
   };
 }
 test("all customer demos preview without keys and freeze the window used by execution",()=>{
-  const costs:Record<string,number>={terminal:145,"dex-inspector":130,"wallet-intelligence":110,"security-signals":70,"telegram-brief":50};
+  const costs:Record<string,number>={terminal:169,"dex-inspector":143,"wallet-intelligence":110,"security-signals":78,"telegram-brief":58};
   for(const demo of demoCatalog){
     const preview=planDemo({id:demo.id},true);
     assert.equal(preview.estimatedCu,costs[demo.id]);
@@ -71,13 +71,13 @@ test("security signals distinguish missing, malformed, zero and breached observa
       [{freezeable:"false",top10HolderPercent:200},"unknown","unknown"],
     ] as const) {
       const runner=new Runner(ledger,"fixture",{fetch:fixture(security,liquidity),retries:0});
-      const result=await runDemo(runner,ledger.createRun(70),{id:"security-signals",address:token});
+      const result=await runDemo(runner,ledger.createRun(78),{id:"security-signals",address:token});
       assert.equal(result.data.demo.signalState,expected);
       assert.equal(result.data.demo.sections[1].rows.length,3);
       assert.ok(result.data.demo.sections[1].rows.every((r:any)=>r.sourceId));
       assert.equal(result.data.demo.sections.length,7);
       assert.equal(result.meta.cu.attempts,Object.keys(security).length?3:2,"Empty required security evidence stops the dependent holder step");
-      assert.equal(result.meta.cu.estimated,Object.keys(security).length?70:40);
+      assert.equal(result.meta.cu.estimated,Object.keys(security).length?78:48);
       const holders=result.data.demo.sections.find((s:any)=>s.title.startsWith("Holder wallets")).rows;
       assert.equal(holders.length,Object.keys(security).length?1:0);
       if(holders.length) {assert.equal(holders[0].address,token);assert.equal(holders[0].amount,"120000.25");assert.equal(holders[0].supplySharePct,"12");assert.ok(holders[0].sourceId);}
@@ -94,7 +94,7 @@ test("demo CLI listing and preflight are offline and require no configured crede
     for(const args of [["demos","--short"],["demo","terminal","--limit","2","--estimate-cu","--short"],["demo","wallet-intelligence","--limit","2","--estimate-cu","--short"],["demo","wallet-intelligence","--address","","--limit","2","--estimate-cu","--short"]]) {
       const result=spawnSync(process.execPath,[resolve(".test-dist/src/index.js"),...args,"--config-dir",dir],{encoding:"utf8"});
       assert.equal(result.status,0,result.stderr);const value=JSON.parse(result.stdout);
-      if(args[0]==="demos")assert.equal(value.length,5);else assert.equal(value.estimatedCu,args[1]==="wallet-intelligence"?80:105);
+      if(args[0]==="demos")assert.equal(value.length,5);else assert.equal(value.estimatedCu,args[1]==="wallet-intelligence"?80:121);
     }
   }finally{rmSync(dir,{recursive:true,force:true});}
 });
@@ -108,9 +108,9 @@ test("HTTP demo execution persists a reusable product report across SQLite resta
     const request=(path:string,input?:unknown)=>fetch(app.url+path,{headers,...(input===undefined?{}:{method:"POST",body:JSON.stringify(input)})});
     assert.equal((await(await request("/api/demos")).json()).items.length,5);
     const plan=await(await request("/api/demos/plan",{id:"telegram-brief",address:token})).json();assert.equal(ledger.summary().attempts,0);
-    const response=await request("/api/runs",{mode:"demo",demo:plan.demoInput,maxCu:50});assert.equal(response.status,202);
+    const response=await request("/api/runs",{mode:"demo",demo:plan.demoInput,maxCu:58});assert.equal(response.status,202);
     const {id}=await response.json();await request(`/api/runs/${id}/events`);
-    const saved=new RunStore(ledger).get(id);assert.equal(saved.input.mode,"demo");assert.equal(saved.cu.estimated,50);
+    const saved=new RunStore(ledger).get(id);assert.equal(saved.input.mode,"demo");assert.equal(saved.cu.estimated,58);
     assert.equal(saved.result!.data.demo.delivery,"preview-only");const before=ledger.summary().attempts;
     await request(`/api/runs/${id}`);assert.equal(ledger.summary().attempts,before);
     await app.close();ledger.close();ledger=new Ledger(join(dir,"usage.sqlite"));

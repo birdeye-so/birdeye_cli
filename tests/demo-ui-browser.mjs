@@ -1,7 +1,7 @@
 // No HTTP server, keys or paid API calls. Playwright fulfills every document request locally.
 import {chromium} from "playwright-core";
 import {build} from "esbuild";
-import {readFile,mkdir} from "node:fs/promises";
+import {readFile,mkdir,writeFile} from "node:fs/promises";
 import assert from "node:assert/strict";
 const built=await build({stdin:{contents:`
 import React,{useState} from 'react';
@@ -14,6 +14,8 @@ function Fixture(){const [id,setId]=useState('terminal');const [theme,setTheme]=
 createRoot(document.getElementById('root')).render(<Fixture/>);`,resolveDir:process.cwd(),loader:"tsx"},bundle:true,write:false,format:"iife",jsx:"automatic",define:{"process.env.NODE_ENV":'"production"'}});
 const css=await readFile("web/style.css","utf8");
 const html=`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo UI fixtures</title><style>${css}</style><div id="root"></div><script>${built.outputFiles[0].text.replaceAll("</script", "<\\/script")}</script></html>`;
+await mkdir(".impeccable/review",{recursive:true});
+await writeFile(".impeccable/review/demos-preview.html",html);
 let browser;
 try {
   browser=await chromium.launch({executablePath:process.env.CHROME_PATH||"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",headless:true});
@@ -32,24 +34,33 @@ try {
   await page.getByRole("button",{name:/Sample pool B/}).click();
   assert.match(await page.locator(".demo-inspector").innerText(),/Sample pool B/);
   await page.getByLabel("Demo",{exact:true}).selectOption("wallet-intelligence");
+  assert.equal(await page.locator(".demo-position-details").evaluate(el=>el.open),false);
+  await page.locator(".demo-position-details > summary").click();
   await page.getByRole("button",{name:"30 days",exact:true}).click();
   await page.getByRole("heading",{name:"PnL breakdown · 30d"}).waitFor();
   assert.match(await page.locator(".demo-wallet .demo-stats").innerText(),/\$1,400.00/);
   await page.getByLabel("Demo",{exact:true}).selectOption("security-signals");
-  await page.getByRole("heading",{name:"Ownership concentration",exact:true}).waitFor();
+  await page.getByRole("heading",{name:"Market depth & activity",exact:true}).waitFor();
   assert.match(await page.locator(".security-evidence").innerText(),/24,983/);
   await page.locator(".security-evidence-group > .demo-provenance > summary").first().click();
   assert.match(await page.locator(".security-evidence-group > .demo-provenance").first().innerText(),/fixture-request/);
+  for (const [category,heading] of [["Ownership","Ownership concentration"],["Controls","Token control observations"],["Authorities","Authority addresses"],["Holders","Holder wallets · fetched page"],["Market","Market depth & activity"]]) {
+    await page.getByRole("group",{name:"Evidence category"}).getByRole("button",{name:new RegExp("^"+category)}).click();
+    await page.getByRole("heading",{name:heading,exact:true}).waitFor();
+    assert.equal(await page.locator(".security-evidence-group:visible, .security-holder-section:visible").count(),1);
+  }
+  assert.match(await page.locator(".demo-rule").first().innerText(),/Top-10 token-account/);
   await page.getByLabel("Filter checks").selectOption("attention");
   assert.equal(await page.locator(".demo-rule").count(),1);
   await page.getByLabel("Filter checks").selectOption("unknown");
   assert.match(await page.locator(".demo-rule").innerText(),/Freezeable/);
+  await page.getByLabel("Filter checks").selectOption("all");
   await page.getByLabel("Demo",{exact:true}).selectOption("telegram-brief");
   await page.getByRole("button",{name:"Inspect plain text"}).click();
   await page.getByRole("button",{name:"Export message",exact:true}).click();
   assert.match(await page.evaluate(()=>window.exportedMessage),/Synthetic UI fixture/);
   await page.getByLabel("Demo",{exact:true}).selectOption("wallet-discovery");
-  await page.getByRole("heading",{name:"Discover smart wallets",exact:true}).waitFor();
+  await page.getByRole("heading",{name:/^Discover smart wallets/}).waitFor();
   await page.getByRole("button",{name:/Select wallet/}).click();
   assert.equal(await page.evaluate(()=>window.selectedWallet),"So11111111111111111111111111111111111111112");
   await page.getByLabel("Filter wallets").fill("no-match");
@@ -60,6 +71,7 @@ try {
     await page.getByLabel("Demo",{exact:true}).selectOption(id);
     for(const [name,width,height] of [["desktop",1440,1000],["mobile",390,844]]){
       await page.setViewportSize({width,height});
+      if(id==="security-signals") await page.getByRole("group",{name:"Evidence category"}).getByRole("button",{name:/^Market/}).click();
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${id} ${name} overflow`);
       await page.screenshot({path:`.impeccable/review/demo-${id}-${name}.png`,fullPage:true});
     }

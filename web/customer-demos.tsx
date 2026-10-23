@@ -3,13 +3,13 @@ import {AddressText} from "./address-text";
 import {DemoView} from "./demo-views";
 import {CliPreview} from "./cli-preview";
 import {demoCliArgs} from "../src/cli-preview";
+import {DemoIcon, demoLabels} from "./demo-icon";
 type Data=Record<string,any>;
 function download(value:unknown,name:string,type="application/json") {
   const url=URL.createObjectURL(new Blob([typeof value==="string"?value:JSON.stringify(value,null,2)],{type}));
   const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-const demoIcons:Record<string,string>={terminal:"M3 4h18v16H3z M3 9h18 M9 9v11", "dex-inspector":"M4 8h15m-4-4 4 4-4 4 M20 16H5m4-4-4 4 4 4", "wallet-intelligence":"M3 6h18v14H3z M3 6l14-3v3 M16 11h5v5h-5z", "security-signals":"m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z M12 8v5 M12 16v1", "telegram-brief":"m3 10 18-7-6 18-4-7-8-4Z M11 14l10-11"};
-export function CustomerDemos({api,busy,budget,setBudget,run,progress,start}:{api:(path:string,input?:unknown)=>Promise<Data>;busy:boolean;budget:number;setBudget:(n:number)=>void;run:Data|null;progress:string;start:(input:Data)=>Promise<void>}) {
+export function CustomerDemos({api,busy,budget,setBudget,run,progress,start}:{api:(path:string,input?:unknown)=>Promise<Data>;busy:boolean;budget:number|null;setBudget:(n:number|null)=>void;run:Data|null;progress:string;start:(input:Data)=>Promise<void>}) {
   const [items,setItems]=useState<Data[]>([]),[input,setInput]=useState<Data>({id:"terminal",limit:3,minLiquidity:100000,maxTop10Pct:50}),[plan,setPlan]=useState<Data|null>(null);
   const [working,setWorking]=useState(false),[error,setError]=useState("");
   const inputKey=JSON.stringify(input),currentKey=useRef(inputKey);
@@ -28,7 +28,7 @@ export function CustomerDemos({api,busy,budget,setBudget,run,progress,start}:{ap
   async function createDraft(e:React.FormEvent) {
     e.preventDefault();
     if(busy||pending.current)return;
-    if(!Number.isInteger(budget)||budget<0||budget>100000){setError("CU limit must be an integer from 0 to 100000.");return;}
+    if(budget!==null&&(!Number.isSafeInteger(budget)||budget<0)){setError("Enter a non-negative whole CU limit, or leave it blank for unlimited.");return;}
     const key=inputKey,id=++submission.current;
     pending.current=true;setWorking(true);setError("");setPlan(null);
     try {
@@ -36,55 +36,64 @@ export function CustomerDemos({api,busy,budget,setBudget,run,progress,start}:{ap
       if(submission.current!==id||currentKey.current!==key)return;
       setPlan({...value,inputKey:key});
       if(value.needsAddress){setError("Enter a token or wallet address.");return;}
-      if(!Number.isFinite(value.estimatedCu)||value.estimatedCu>budget){setError(`Draft needs ${value.estimatedCu} estimated CU; your limit is ${budget}.`);return;}
+      if(!Number.isFinite(value.estimatedCu)||(budget!==null&&value.estimatedCu>budget)){setError(`Draft needs ${value.estimatedCu} estimated CU; your limit is ${budget}.`);return;}
       await start(value.demoInput);
     } catch(e:any) {if(submission.current===id&&currentKey.current===key)setError(e.message);}
     finally {if(submission.current===id){pending.current=false;setWorking(false);}}
   }
   return <div className="customer-demos">
-    <div className="page-heading"><h1>Demos</h1></div>
+    <div className="demo-page-title"><h1>Demos</h1><span className="field-hint">Solana</span></div>
+    <nav className="demo-navigation" aria-label="Product use case">{items.map(d =>
+      <button key={d.id} type="button" disabled={disabled} aria-label={d.title} aria-pressed={input.id===d.id}
+        onClick={()=>{setInput({id:d.id,limit:3,minLiquidity:100000,maxTop10Pct:50});setPlan(null);setError("");}}>
+        <DemoIcon id={d.id}/><span>{demoLabels[d.id] || d.title}</span>
+      </button>)}</nav>
     {error&&<p className="notice error" role="alert">{error}</p>}
-    <nav className="demo-navigation" aria-label="Product use case">{items.map(d=><button key={d.id} type="button" disabled={disabled} aria-pressed={input.id===d.id} onClick={()=>{setInput({id:d.id,limit:3,minLiquidity:100000,maxTop10Pct:50});setPlan(null);setError("");}}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={demoIcons[d.id]}/></svg>{d.title}</button>)}</nav>
     {!items.length&&!error&&<p role="status">Loading demo workflows…</p>}
     {definition&&<>
-      <section className="demo-purpose"><details><summary>Details</summary><p>{definition.purpose}</p><dl><dt>For</dt><dd>{definition.audience}</dd><dt>Use the result to</dt><dd>{definition.decision}</dd><dt>What you get</dt><dd>{definition.output}</dd></dl><p className="field-hint">{definition.limitation}</p></details></section>
-      {walletDemo&&<div className="demo-wallet-steps"><button className="secondary" type="button" disabled={disabled} aria-pressed={walletDiscovery} onClick={()=>edit({address:undefined})}>1. Discover smart wallets</button><span className={!walletDiscovery?"active":""}>2. Analyze selected wallet</span></div>}
+      <div className="demo-workspace-heading"><h2>{definition.title}</h2>
+        <details className="demo-about"><summary>About</summary><div><p>{definition.purpose}</p><p className="field-hint">{definition.limitation}</p></div></details>
+      </div>
+      {walletDemo&&<div className="demo-wallet-steps" role="group" aria-label="Wallet research stage">
+        <button className="secondary" type="button" disabled={disabled} aria-pressed={walletDiscovery} onClick={()=>edit({address:undefined})}>Discover smart wallets</button>
+        <span className={!walletDiscovery?"active":""}>Analyze wallet</span>
+      </div>}
       <form className="demo-run-form" onSubmit={createDraft}>
-        {walletDemo&&input.address&&<div className="demo-selected-wallet" role="status"><strong>Selected wallet</strong><p><AddressText text={input.address} kind="wallet" chain={input.chain}/></p></div>}
-        {definition.subject!=="none"&&<label>{definition.subject==="wallet"?"Wallet address":"Token address"}<input required value={input.address||""} disabled={disabled} onChange={e=>edit({address:e.target.value.trim()})} spellCheck={false} placeholder="Paste a Solana address" /></label>}
-        <div className="form-grid">
-          {(input.id==="terminal"||walletDiscovery)&&<label>{walletDiscovery?"Maximum tokens / wallets":"Maximum tokens"}<input type="number" min={1} max={5} value={input.limit} disabled={disabled} onChange={e=>edit({limit:Number(e.target.value)})} /></label>}
-          {input.id==="security-signals"&&<><label>Minimum liquidity · USD<input type="number" min={0} value={input.minLiquidity} disabled={disabled} onChange={e=>edit({minLiquidity:Number(e.target.value)})} /></label><label>Maximum top-10 accounts · %<input type="number" min={0} max={100} step="any" value={input.maxTop10Pct} disabled={disabled} onChange={e=>edit({maxTop10Pct:Number(e.target.value)})} /></label></>}
-          <label>CU limit per run<input type="number" min={0} max={100000} value={budget} disabled={disabled} onChange={e=>setBudget(Number(e.target.value))} /></label>
+        <div className="demo-query-row">
+          {walletDemo&&input.address&&<div className="demo-selected-wallet" role="status"><span className="field-hint">Selected wallet</span><AddressText text={input.address} kind="wallet" chain={input.chain}/></div>}
+          {definition.subject!=="none"&&<label className="demo-subject">{definition.subject==="wallet"?"Wallet address":"Token address"}<input required value={input.address||""} disabled={disabled} onChange={e=>edit({address:e.target.value.trim()})} spellCheck={false} placeholder="Paste a Solana address" /></label>}
+          {(input.id==="terminal"||walletDiscovery)&&<label className="demo-limit">{walletDiscovery?"Maximum tokens / wallets":"Maximum tokens"}<input type="number" min={1} max={5} value={input.limit} disabled={disabled} onChange={e=>edit({limit:Number(e.target.value)})} /></label>}
+          <label className="demo-budget">CU limit per run<input type="number" min={0} placeholder="Unlimited" value={budget ?? ""} disabled={disabled} onChange={e=>setBudget(e.target.value === "" ? null : Number(e.target.value))} /></label>
+          <button ref={runButton} type="submit" className="primary" disabled={disabled}>{working||busy?"Running…":"Create draft"}</button>
         </div>
-        <div className="form-actions"><button ref={runButton} type="submit" className="primary" disabled={disabled}>{working||busy?"Running…":"Create draft"}</button></div>
-        {ready&&<p className="demo-plan-cost"><strong>{plan!.estimatedCu} estimated CU</strong> · at most {plan!.maxRequests} requests before retries{plan!.needsAddress?" · address required":""}</p>}
-
+        {input.id==="security-signals"&&<details className="demo-query-settings"><summary>Rule thresholds <span>{Number(input.minLiquidity??100000).toLocaleString()} USD · {input.maxTop10Pct??50}%</span></summary><div className="form-grid">
+          <label>Minimum liquidity · USD<input type="number" min={0} value={input.minLiquidity} disabled={disabled} onChange={e=>edit({minLiquidity:Number(e.target.value)})} /></label>
+          <label>Maximum top-10 accounts · %<input type="number" min={0} max={100} step="any" value={input.maxTop10Pct} disabled={disabled} onChange={e=>edit({maxTop10Pct:Number(e.target.value)})} /></label>
+        </div></details>}
+        {ready&&<p className="demo-plan-cost">{plan!.estimatedCu} estimated CU · up to {plan!.maxRequests} requests before retries</p>}
       </form>
-
+      <div className="demo-command-row"><CliPreview args={(definition.subject==="none" || input.address) && (budget === null || (Number.isSafeInteger(budget) && budget>=0)) ? demoCliArgs(ready?plan!.demoInput:input,budget) : null} /></div>
     </>}
-    {definition&&<CliPreview args={(!definition.subject || definition.subject==="none" || input.address) && Number.isInteger(budget) && budget>=0 && budget<=100000 ? demoCliArgs(ready?plan!.demoInput:input,budget) : null} />}
-    {!report&&definition&&<p className="demo-empty">Create a draft to view results.</p>}
+    {!report&&definition&&!relevant&&<div className="demo-empty demo-start"><DemoIcon id={input.id} size={28}/><h3>{definition.subject==="none"?"Ready to explore":"Start with a token"}</h3><p>{definition.subject==="none"?"Create a draft to view results.":"Paste an address and create a draft to view results."}</p></div>}
     {relevant&&<section className="demo-result" aria-label="Demo result">
-      <div className="section-title"><h2>{relevant.title} · result</h2><span className="badge">{relevant.status}</span></div>
-      <p className="field-hint">Result from {new Date(relevant.createdAt).toLocaleString()}{relevant.input.demo.address?<> · <AddressText text={relevant.input.demo.address} kind={relevant.input.demo.id==="wallet-intelligence"?"wallet":"token"} chain={relevant.input.demo.chain} /></>:null}</p>
-      <div className="run-usage"><span>{relevant.cu?.estimated??"Unknown"} estimated CU</span><span>{relevant.cu?.attempts??0} API attempts</span>{!!relevant.cu?.uncertainAttempts&&<span>{relevant.cu.uncertainAttempts} uncertain</span>}</div>
-      {relevant.status==="running"&&<div className="form-actions"><p role="status">{progress||"Fetching evidence…"}</p><button type="button" className="secondary" onClick={()=>void api(`/runs/${relevant.id}/stop`,{}).catch(e=>setError(e.message))}>Stop run</button></div>}
+      <div className="demo-result-bar">
+        <div className="demo-result-meta"><span className={`demo-run-state ${relevant.status}`}><span aria-hidden="true"/>{relevant.status}</span><time dateTime={relevant.createdAt}>{new Date(relevant.createdAt).toLocaleString()}</time>
+          {relevant.input.demo.address&&<AddressText text={relevant.input.demo.address} compact kind={relevant.input.demo.id==="wallet-intelligence"?"wallet":"token"} chain={relevant.input.demo.chain}/>}</div>
+        <div className="demo-result-actions"><span>{relevant.cu?.estimated??"Unknown"} CU est.</span>{report&&<button type="button" className="quiet" onClick={()=>download(relevant.result,`birdeye-demo-${relevant.id}.json`)}>Export JSON</button>}</div>
+      </div>
+      {relevant.status==="running"&&<div className="demo-progress" role="status"><p>{progress||"Fetching evidence…"}</p><button type="button" className="secondary" onClick={()=>void api(`/runs/${relevant.id}/stop`,{}).catch(e=>setError(e.message))}>Stop run</button></div>}
       {relevant.error&&<p className="notice error" role="alert">{relevant.error.message}</p>}
       {relevant.storageError&&<p className="notice error" role="alert">{relevant.storageError}</p>}
-
+      {!report&&relevant.status!=="running"&&!relevant.error&&<p className="demo-empty">No evidence returned. Adjust the inputs and create a new draft.</p>}
       {report&&<>
-        <span className="badge">{report.coverage}</span>
+        {report.coverage==="partial"&&<p className="demo-coverage-note">Partial evidence<span>Some observations are unavailable.</span></p>}
         <DemoView key={relevant.id} id={input.id} report={report} onExportMessage={()=>download(report.message,`birdeye-brief-${relevant.id}.txt`,"text/plain")} onSelectWallet={selectWallet} selectedWallet={input.address} busy={disabled} />
-        {(relevant.result.data.missing||[]).length>0&&<details className="source"><summary>Missing evidence · {relevant.result.data.missing.length}</summary><ul>{relevant.result.data.missing.map((m:Data,i:number)=><li key={i}>{m.step||m.operation}: {m.reason||m.message}</li>)}</ul></details>}
-        <details className="source"><summary>Sources & details</summary><p>{report.limitation}</p><pre><AddressText text={JSON.stringify({input:relevant.input,result:relevant.result},null,2)} /></pre></details>
-        <button type="button" className="secondary" onClick={()=>download(relevant.result,`birdeye-demo-${relevant.id}.json`)}>Export evidence JSON</button>
+        <div className="demo-result-details">
+          {(relevant.result.data.missing||[]).length>0&&<details className="source"><summary>Missing evidence · {relevant.result.data.missing.length}</summary><ul>{relevant.result.data.missing.map((m:Data,i:number)=><li key={i}>{m.step||m.operation}: {m.reason||m.message}</li>)}</ul></details>}
+          <details className="source"><summary>Sources & details</summary><p>{report.limitation}</p><p className="field-hint">{relevant.cu?.attempts??0} API attempts · {relevant.cu?.uncertainAttempts??0} uncertain</p><pre><AddressText text={JSON.stringify({input:relevant.input,result:relevant.result},null,2)} /></pre></details>
+        </div>
       </>}
     </section>}
-    {definition&&<>
-      {plan&&ready&&<section className="demo-plan" aria-label="Demo API plan">
-        <details className="source"><summary>API steps and purpose · {plan.steps.length}</summary><ol>{plan.steps.map((s:Data)=><li key={s.id}><strong>{s.title||s.id}</strong><p>{s.purpose||s.description}</p><code>{s.method} {s.path}</code><p className="field-hint">{s.cuPerRequest} CU/request{s.subjects?` · up to ${s.subjects.take} subjects from ${s.subjects.from.join(", ")}`:""}</p><pre><AddressText text={JSON.stringify(s.params,null,2)} /></pre></li>)}</ol></details>
-      </section>}
-    </>}
+    {plan&&ready&&<details className="source demo-plan" aria-label="Demo API plan"><summary>API steps · {plan.steps.length}</summary><ol>{plan.steps.map((s:Data)=><li key={s.id}><strong>{s.title||s.id}</strong><p>{s.purpose||s.description}</p><code>{s.method} {s.path}</code><p className="field-hint">{s.cuPerRequest} CU/request{s.subjects?` · up to ${s.subjects.take} subjects from ${s.subjects.from.join(", ")}`:""}</p><pre><AddressText text={JSON.stringify(s.params,null,2)} /></pre></li>)}</ol></details>}
   </div>;
 }

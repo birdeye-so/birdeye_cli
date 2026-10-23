@@ -252,7 +252,7 @@ function App() {
     [kind, setKind] = useState("skill-trending-list"),
     [address, setAddress] = useState(""),
     [question, setQuestion] = useState(""),
-    [budget, setBudget] = useState(250),
+    [budget, setBudget] = useState<number | null>(null),
     [short, setShort] = useState(true);
   const [depth, setDepth] = useState("core"),
     [candidateLimit, setCandidateLimit] = useState(3),
@@ -818,10 +818,10 @@ function App() {
                           id="budget"
                           type="number"
                           min="0"
-                          max="100000"
-                          value={mode === "chat" && !liveData ? 0 : budget}
+                          placeholder="Unlimited"
+                          value={mode === "chat" && !liveData ? 0 : budget ?? ""}
                           disabled={mode === "chat" && !liveData}
-                          onChange={(e) => setBudget(Number(e.target.value))}
+                          onChange={(e) => setBudget(e.target.value === "" ? null : Number(e.target.value))}
                         />
                       </label>
                       <label className="check compact">
@@ -941,7 +941,7 @@ function App() {
                       {!sources.length && ((run.cu?.attempts ?? 0) > 0
                         ? <p className="notice error">No dataset was returned. Review the request errors before retrying. Reserved CU may still be billed by Birdeye.</p>
                         : <p className="notice">No API datasets attached. No Birdeye API request was made in this run.</p>)}
-                      {result.data?.skillAnalysis?.findings?.length > 0 && <SkillFindings analysis={result.data.skillAnalysis} />}
+                      {result.data?.skillAnalysis?.findings?.length > 0 && <SkillFindings key={run.id} analysis={result.data.skillAnalysis} onRescore={run.status!=="running"?async changes=>{const next=await api("/rescore",{runId:run.id,...changes});await watch(next.id);await refresh();}:undefined} />}
                       {metrics.length > 0 && (
                         <details className="source">
                           <summary>Calculation basis and source links</summary>

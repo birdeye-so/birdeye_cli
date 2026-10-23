@@ -933,12 +933,19 @@
           "frames": {
             "type": "string"
           },
+          "includes": {
+            "type": "string",
+            "enum": [
+              "money_flow"
+            ]
+          },
           "ui_amount_mode": {
             "type": "string",
             "enum": [
               "raw",
               "scaled"
-            ]
+            ],
+            "default": "scaled"
           }
         },
         "requiredQuery": [
@@ -964,13 +971,20 @@
           "address": {
             "type": "string"
           },
+          "token_id": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "maxLength": 78
+          },
           "offset": {
             "type": "integer",
+            "default": 0,
             "minimum": 0,
             "maximum": 10000
           },
           "limit": {
             "type": "integer",
+            "default": 10,
             "minimum": 1,
             "maximum": 100
           },
@@ -979,17 +993,20 @@
             "enum": [
               "token_account",
               "wallet"
-            ]
+            ],
+            "default": "token_account"
           },
           "get_holder_infos": {
-            "type": "boolean"
+            "type": "boolean",
+            "default": false
           },
           "ui_amount_mode": {
             "type": "string",
             "enum": [
               "raw",
               "scaled"
-            ]
+            ],
+            "default": "scaled"
           }
         },
         "requiredQuery": [
@@ -1038,6 +1055,50 @@
               "raw",
               "scaled"
             ]
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/v3/liquidity/ohlc/token": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "1m",
+              "5m",
+              "15m",
+              "30m",
+              "1h",
+              "4h",
+              "1D"
+            ],
+            "default": "1m"
+          },
+          "time": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "back",
+              "forward"
+            ],
+            "default": "back"
+          },
+          "count": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 100
           }
         },
         "requiredQuery": [

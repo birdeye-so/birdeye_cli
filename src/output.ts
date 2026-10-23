@@ -47,6 +47,10 @@ function strip(value: any): any {
 export function project(result: Result, short = false): Result {
   if (!short) return result;
   let data = strip(result.data);
+  if(result.data?.plan?.kind==="skill-token-dd-score") {
+    data={...data,sources:[],skillAnalysis:{...data.skillAnalysis,findings:data.skillAnalysis.findings.map((f:Data)=>({...f,pillars:Object.fromEntries(Object.entries(f.pillars).map(([k,p])=>[k,{score:(p as Data).score,coverage:(p as Data).coverage}])),holder_cohorts:undefined,top_holders:undefined,flow_evidence:undefined}))}};
+    return {...result,data,meta:{...result.meta,outputTruncation:"Short DD summary; re-score requires SQLite ID or full export."}};
+  }
   if (result.meta.operation === "analysis" && Array.isArray(data?.sources))
     data = {
       ...data,

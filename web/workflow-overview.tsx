@@ -9,7 +9,7 @@ export type PreparedCase = { key: string; input: Data };
 type Props = {
   input: Data;
   inputKey: string;
-  budget: number;
+  budget: number | null;
   onPrepared: (value: PreparedCase | null) => void;
 };
 
@@ -133,7 +133,7 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
     {plan?.needsAddress && <p className="overview-help">Enter the workflow address above to run.</p>}
     {error && <p role="alert" className="notice error">{error} Fix the parameter or reset the edited step.</p>}
     {!plan && checking && <p role="status" className="overview-help">Loading workflow steps…</p>}
-    <CliPreview args={plan && !checking && !error && !plan.needsAddress && Number.isInteger(budget) && budget >= 0 && budget <= 100000 ? caseCliArgs(plan.input, budget) : null}
+    <CliPreview args={plan && !checking && !error && !plan.needsAddress && (budget === null || (Number.isSafeInteger(budget) && budget >= 0)) ? caseCliArgs(plan.input, budget) : null}
       status={checking ? "Updating command…" : error ? "Fix the parameters to preview the command." : undefined} />
     {plan && <details className="workflow-details"><summary>API steps · {plan.steps.length}{customized ? " · Customized" : ""}</summary><ol className="workflow-steps">
       {plan.steps.map((step: Data, index: number) => {
@@ -174,7 +174,7 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
       <button type="button" className="quiet" disabled={checking} onClick={() => {onPrepared(null); setChecking(true); setRefresh(n => n + 1);}}>Estimate CU</button>
       <span role="status" className="estimate-status">{checking ? "Checking parameters and CU…" : error ? "Fix the parameters to estimate and run." : plan ? `${plan.estimatedCu} CU before retries · at most ${plan.maxRequests} requests` : "Estimate is free."}</span>
     </div>
-    {plan && !checking && !error && plan.estimatedCu > budget && <p className="notice">The planned work exceeds this run’s budget. Reduce the scope or expect a partial report.</p>}
+    {plan && !checking && !error && budget !== null && plan.estimatedCu > budget && <p className="notice">The planned work exceeds this run’s budget. Reduce the scope or expect a partial report.</p>}
     {plan && <details className="workflow-scope"><summary>Scope and cost notes</summary><ul>{plan.notes.map((note: string) => <li key={note}>{note}</li>)}</ul></details>}
   </section>;
 }

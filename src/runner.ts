@@ -55,10 +55,10 @@ export class Runner {
       params: p.params,
       chain,
       estimatedCu: p.entry.cost,
-      upperBoundCu: p.entry.cost,
+      upperBoundCu: operation === "token.liquidity-ohlc" ? null : p.entry.cost,
       pricingVersion: PRICING_VERSION,
       pricingStatus: p.entry.provisional ? "provisional" : "verified",
-      note: p.entry.provisional
+      note: operation === "token.liquidity-ohlc" ? "Provisional 30 CU from DD specification; provider documentation disagrees. Not a verified upper bound or confirmed bill." : p.entry.provisional
         ? "Conservative documented upper bound; actual billing is not confirmed."
         : "Documentation estimate, not confirmed billing.",
     };
@@ -171,7 +171,9 @@ export class Runner {
         const rows = Array.isArray(data) ? data : p.entry.rowsKey ? d[p.entry.rowsKey] : d.items || d.tokens;
         const warnings = p.entry.provisional
           ? [
-              `${operation} reserves an upper bound of ${p.entry.cost} CU per request; actual billing is not confirmed.`,
+              operation === "token.liquidity-ohlc"
+                ? "Liquidity OHLC reserves a provisional 30 CU; no verified upper bound or confirmed billing is available."
+                : `${operation} reserves an upper bound of ${p.entry.cost} CU per request; actual billing is not confirmed.`,
             ]
           : [];
         warnings.push(...(p.entry.warnings || []));

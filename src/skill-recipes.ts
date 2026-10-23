@@ -2,8 +2,9 @@ import type { Operation } from "./catalog.js";
 import type { Step, CaseInput } from "./workflows.js";
 import type { Data } from "./shared.js";
 
-export const skillKinds = ["skill-trending-list", "skill-smart-wallets", "skill-token-dd", "skill-contract-dd", "skill-rugcheck-audit", "skill-kline-pattern", "skill-wallet-score", "skill-wallet-style", "skill-wallet-analysis", "skill-smart-money-profile", "skill-smart-money-leaderboard"] as const;
+export const skillKinds = ["skill-token-dd-score", "skill-trending-list", "skill-smart-wallets", "skill-token-dd", "skill-contract-dd", "skill-rugcheck-audit", "skill-kline-pattern", "skill-wallet-score", "skill-wallet-style", "skill-wallet-analysis", "skill-smart-money-profile", "skill-smart-money-leaderboard"] as const;
 export const skillInfo: Record<(typeof skillKinds)[number], {title: string; group: string; subject: string; purpose: string; produces: string}> = {
+  "skill-token-dd-score": {title: "Token DD Score · Advanced", group: "token", subject: "token", purpose: "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.", produces: "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU."},
   "skill-trending-list": {title: "Trending List", group: "discover", subject: "none", purpose: "Discover tokens by activity, liquidity or market size, optionally within a launch platform.", produces: "A ranked token page. Choose V3 token list or native trending; sorting options follow the selected API."},
   "skill-smart-wallets": {title: "Smart Wallets", group: "discover", subject: "none", purpose: "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.", produces: "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed."},
   "skill-token-dd": {title: "Token DD", group: "token", subject: "token", purpose: "Check market activity, security and smart-money context before taking a token further in research.", produces: "Security observations, activity and labeled money flow. Optional holder list, holder groups and historical liquidity add evidence. No automatic buy recommendation."},
@@ -31,8 +32,19 @@ export function addSkillSteps(a: CaseInput, add: Add, notes: string[]) {
   const holdings = (id: string, wallet: string | undefined, subjects?: Step["subjects"]) => add(id, "portfolio.holdings", {...(wallet ? {wallet} : {}), limit: 100}, subjects, "wallet");
   const funded = () => {if (!a.skipFirstFunded) add("first-funded", "portfolio.first-funded", {wallet: a.address});};
   const transactions = () => {if (!a.skipTransactions) add("transactions", "portfolio.transactions", {wallet: a.address, limit: 100});};
-  notes.push("Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.");
-  if (kind === "trending-list") {
+  notes.push(`${kind === "token-dd-score" ? "Reconstructed from the supplied Token DD Score specification." : "Adapted from TheNang2710/birdeye-data-skills."} Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.`);
+  if (kind === "token-dd-score") {
+    add("overview", "token.overview", {...token, includes: "money_flow", frames: ["1m","5m","15m","30m","1h","2h","4h","24h"]});
+    add("security", "token.security", token);
+    if (a.ddMode === "advanced") {
+      add("distribution", "token.holder-distribution", {token_address:a.address, mode:"top", address_type:"wallet", top_n:a.topN, include_list:true, limit:a.topN, offset:0});
+      profile();
+      add("holders", "token.holders", {...token, mode:"wallet", get_holder_infos:true, limit:100});
+      add("flow", "token.money-flow", {token_address:a.address, frames:["5m","1h","4h","24h"], wallet_tags:["smart_money","whales","kol"]});
+      add("liquidity", "token.liquidity-ohlc", {...token, resolution:a.liqResolution, count:a.liqCandles, time:a.to});
+    }
+    notes.push("Reconstructed from the supplied Token DD Score specification, not original Python source. Default weights only; undefined pace, LST and canonical-mint checks are not invented. Scores across modes or different coverage are not comparable. OHLC pricing is provisional.");
+  } else if (kind === "trending-list") {
     if (a.listSource === "trending") add("trending", "market.trending", {interval: a.interval, sort_by: a.sortBy === "volume" ? "volumeUSD" : a.sortBy, sort_type: a.sortBy === "rank" ? "asc" : "desc", limit: a.scanLimit});
     else add("tokens", "market.token-list", {sort_by: a.sortBy === "volume" ? `volume_${a.interval}_usd` : a.sortBy === "trade_count" ? `trade_${a.interval}_count` : a.sortBy, limit: a.scanLimit, ...(a.platform ? {platform_name: a.platform} : {})});
   } else if (kind === "smart-wallets") {

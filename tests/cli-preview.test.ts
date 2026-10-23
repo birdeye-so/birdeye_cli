@@ -13,6 +13,16 @@ import {WorkflowImports} from "../src/workflow-import.js";
 import {sourceDocument} from "../src/workflow-sources.js";
 
 const address = "So11111111111111111111111111111111111111112";
+test("unlimited CLI previews omit max-cu while explicit zero and large limits survive", () => {
+  for (const budget of [null, 0, 100001]) {
+    const commands = [caseCliArgs({kind:"market-shortlist"}, budget), demoCliArgs({id:"terminal"}, budget), importedCliArgs("fixture", {}, budget)];
+    for (const args of commands) {
+      const index = args.indexOf("--max-cu");
+      if (budget === null) assert.equal(index, -1);
+      else assert.equal(args[index + 1], String(budget));
+    }
+  }
+});
 const cli = fileURLToPath(new URL("../src/index.js", import.meta.url));
 const window = {from: 1770000000, to: 1770086400};
 const estimate = (args: string[]) => JSON.parse(execFileSync(process.execPath,

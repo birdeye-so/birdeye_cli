@@ -9,7 +9,7 @@ const positive = (max: number, fallback: number) =>
 const offset = z.coerce.number().int().min(0).max(10000).default(0);
 const token = z.object({ address }).strict();
 // Snapshot plus the two endpoint-page CU corrections documented in workflow-import-mapping.md.
-export const PRICING_VERSION = "bds-b34378ea-2026-10-09+traders-positions-2026-10-16";
+export const PRICING_VERSION = "bds-2026-10-22-dd-score-v1";
 export type Entry = {
   method?: "GET" | "POST";
   bareArray?: boolean;
@@ -37,13 +37,14 @@ export const catalog = {
   },
   "token.overview": {
     path: "/defi/token_overview",
-    cost: 15,
-    schema: token,
+    cost: 18,
+    costFor: (p: Data) => p.includes === "money_flow" ? 21 : 18,
+    schema: z.object({address, includes: z.literal("money_flow").optional(), frames: z.array(z.enum(["1m","5m","15m","30m","1h","2h","4h","24h"])).min(1).max(8).optional()}).strict(),
     description: "Token price, liquidity and 24h activity",
   },
   "token.security": {
     path: "/defi/token_security",
-    cost: 25,
+    cost: 30,
     schema: token,
     description: "Upstream security observations",
   },
@@ -56,6 +57,7 @@ export const catalog = {
         limit: positive(100, 10),
         offset,
         mode: z.enum(["wallet", "token_account"]).default("wallet"),
+        get_holder_infos: z.boolean().optional(),
       })
       .strict()
       .refine(

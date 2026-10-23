@@ -239,11 +239,12 @@ try {
   await page.getByRole("alert").filter({hasText:"Draft needs 70 estimated CU"}).waitFor();
   assert.equal(ledger.summary().estimated,185,"Insufficient draft budget must not spend CU");
   await page.getByLabel("CU limit per run",{exact:true}).fill("1000");
+  await page.locator(".demo-query-settings > summary").click();
   await page.getByLabel("Minimum liquidity · USD",{exact:true}).fill("200000");
   assert.equal(await page.getByRole("button",{name:"Create draft",exact:true}).isDisabled(),false);
   await page.getByRole("button",{name:"Create draft",exact:true}).click();
   await page.getByRole("heading",{name:"Configured rule checks",exact:true}).waitFor();
-  await page.locator(".demo-result .badge").filter({hasText:"partial"}).waitFor();
+  await page.locator(".demo-coverage-note").filter({hasText:"Partial evidence"}).waitFor();
   assert.equal(ledger.summary().estimated,255);
   await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:".impeccable/review/demos-desktop.png",fullPage:true});
@@ -279,7 +280,7 @@ try {
   const candidate=page.getByRole("button",{name:`Select wallet ${address}`,exact:true});
   await candidate.waitFor();
   // The fixture discovers one token: 20 CU discovery + 30 CU traders, not the upper bound.
-  await page.locator(".demo-result > .section-title > .badge").filter({hasText:/^(completed|partial)$/}).waitFor();
+  await page.locator(".demo-run-state").filter({hasText:/^(completed|partial)$/}).waitFor();
   const afterDiscovery=ledger.summary().estimated;
   assert.equal(afterDiscovery-discoveryBefore,50);
   for(const [name,width,height] of [["desktop",1440,1000],["mobile",390,844]]){
@@ -292,7 +293,7 @@ try {
   assert.equal(await page.getByRole("button",{name:"Create draft",exact:true}).isDisabled(),false);
   await page.getByRole("button",{name:"Create draft",exact:true}).click();
   await page.getByRole("heading",{name:"PnL breakdown · 7d",exact:true}).waitFor();
-  await page.locator(".demo-result > .section-title > .badge").filter({hasText:/^(completed|partial)$/}).waitFor();
+  await page.locator(".demo-run-state").filter({hasText:/^(completed|partial)$/}).waitFor();
   assert.equal(ledger.summary().estimated,afterDiscovery+90);
   if(!await page.locator(".history-rail").evaluate(el=>el.open))await page.locator(".history-rail > summary").click();
   await page.locator(".history-item").filter({hasText:"Wallet intelligence · discover"}).click();

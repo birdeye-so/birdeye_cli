@@ -11,10 +11,10 @@ Costs are upper estimates before retries. Each requested page/attempt is charged
 | Group | Workflow | API steps | Default CU |
 |---|---|---|---:|
 | Discover | `skill-trending-list` | V3 token list; native trending can replace it | 50; native 25 |
-| Discover | `skill-smart-wallets` | Smart-money tokens → top traders per selected token → wallet deduplication; standard adds PnL; deep adds holdings/details | fast 95; standard 155; deep 305 at limit 3 |
-| Token | `skill-token-dd` | Overview → security → token-specific smart-money flow | 50 |
-| Token | `skill-contract-dd` | Overview → security → holder distribution → optional OHLCV | 170; skip kline 70 |
-| Token | `skill-rugcheck-audit` | Overview → security → holders → holder groups → measured liquidity history | 245 |
+| Discover | `skill-smart-wallets` | Smart-money tokens → top traders per selected token → wallet deduplication; standard adds PnL; deep adds holdings/details | fast 110; standard 170; deep 320 at limit 3 |
+| Token | `skill-token-dd` | Overview → security → token-specific smart-money flow | 58 |
+| Token | `skill-contract-dd` | Overview → security → holder distribution → optional OHLCV | 178; skip kline 78 |
+| Token | `skill-rugcheck-audit` | Overview → security → holders → holder groups → measured liquidity history | 258 |
 | Token | `skill-kline-pattern` | OHLCV → closed-candle measurements → pattern and heuristic score | 100 |
 | Wallet | `skill-wallet-score` | 30d/90d/24h PnL → 30d positions → holdings → first funding | 150 |
 | Wallet | `skill-wallet-style` | Chosen-period PnL → positions → first funding → transactions | 140 |
@@ -22,7 +22,7 @@ Costs are upper estimates before retries. Each requested page/attempt is charged
 | Wallet | `skill-smart-money-profile` | 7d/30d PnL → positions → holdings → first funding → trader swaps → net-worth history | 190 |
 | Wallet | `skill-smart-money-leaderboard` | 7d/30d PnL + position page for each explicit wallet | 70 per unique wallet |
 
-Token DD `--include list,advanced_security,risk_history` adds holders (30), holder groups (25) and liquidity history (150 default). First funding costs 40 per wallet; transaction pages cost 50. Skip flags remove the associated steps. Smart Wallets uses at most five selected tokens and five selected wallets; provider rows are deduplicated, not automatically replaced. Smart-money discovery fetches at most 20 token rows.
+Token DD `--include list,advanced_security,risk_history` adds holders (30), holder groups (30) and liquidity history (150 default). First funding costs 40 per wallet; transaction pages cost 50. Skip flags remove the associated steps. Smart Wallets uses at most five selected tokens and five selected wallets; provider rows are deduplicated, not automatically replaced. Smart-money discovery fetches at most 20 token rows.
 
 Liquidity-history CU reserves the highest documented lookback multiplier: 60 at 1m, 150 at 4h, 600 at 1D, for at most 100 snapshots. Editing the resolution changes plan, preview and request reservation together. It is an upper bound, not a claim about the account's billed CU. OHLCV retains the existing 100-CU upper bound; candle windows above 5000 supported intervals must be narrowed.
 
