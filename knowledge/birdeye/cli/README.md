@@ -19,6 +19,41 @@ The CLI currently supports **Solana only**, even though the bundled provider doc
 - A [Birdeye API key](https://data.birdeye.so/) with access to the endpoints you use. Help, cost estimates and saved data do not need a key.
 - An AI provider is optional. Data commands and workflows work without AI credentials.
 
+## Install Birdeye skills in your AI agent
+
+Copy this prompt into an agent that can run terminal commands:
+
+```text
+Set up Birdeye skills from https://github.com/birdeye-so/birdeye_cli.
+Read docs/INSTALLATION.md, section "Install agent skills". Install the
+birdeye-market, birdeye-token, birdeye-portfolio and token-duediligence
+skills for my agent. Install the CLI separately from source or a built
+.tgz if it is missing. If GitHub access fails, use my existing checkout
+or explain which repository access is needed. Keep the source checkout
+for referenced documentation. Verify with --estimate-cu only. For live
+queries, guide me to enter my Birdeye API key locally via config init;
+do not ask me to paste the key into chat. Show the plan and CU estimate
+before fetching data.
+```
+
+Already have this repository checked out? Run from its root:
+
+```bash
+# Inspect the four available skills; this does not install them.
+npx skills add ./skills --list
+
+# Install all four in your user scope for the agent you select.
+npx skills add ./skills --skill birdeye-market birdeye-token birdeye-portfolio token-duediligence --global
+```
+
+For direct GitHub installation when your Git credentials can access the repository:
+
+```bash
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill birdeye-market --global
+```
+
+Change `birdeye-market` to another skill name to install it individually. The third-party `skills` installer registers agent instructions; it does **not** install `birdeye-cli` or configure a Birdeye key. Continue with [CLI installation below](#install-from-source), then follow [skill verification and example prompts](docs/INSTALLATION.md#install-agent-skills). No public demo key is bundled.
+
 ## Install from source
 
 ```bash
