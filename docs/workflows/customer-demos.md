@@ -12,7 +12,7 @@ Các demo chạy trong tab **Demos** và qua lệnh `demo`. Đây là snapshot d
 | Security signals / `security-signals` | Token review desk muốn xếp hàng kiểm tra theo ngưỡng | Contract DD skill, bỏ nến | 3 rule + 38 metrics/quan sát bổ sung, bảng holder ví; source ID và thời gian | 70 / 3 |
 | Telegram research brief / `telegram-brief` | Community bot muốn trả lời lookup token bằng bản tin ngắn | Token DD skill | Plain-text message + đầy đủ JSON evidence để bot sử dụng | 50 / 3 |
 
-CU là output của catalog hiện tại, trước retries; nhánh phụ thuộc có thể gọi ít hơn nếu thiếu subjects. **Không phải báo giá billing hiện hành**: nghiên cứu ngày 2026-10-16 ghi nhận Security live 30 CU so với catalog 25; Wallet PnL summary live 30 so với catalog 20. Chưa đối chiếu toàn bộ giá nên không cộng ra tổng “live” mới. Xem [nghiên cứu và nguồn chính thức](../research/customer-live-demos.md). `--max-cu` giới hạn theo catalog; không phải trần hóa đơn được upstream bảo đảm.
+CU là output của catalog hiện tại, trước retries; nhánh phụ thuộc có thể gọi ít hơn nếu thiếu subjects. **Không phải báo giá billing hiện hành**: nghiên cứu ngày 2026-10-16 ghi nhận Security live 30 CU so với catalog 25; Wallet PnL summary live 30 so với catalog 20. Chưa đối chiếu toàn bộ giá nên không cộng ra tổng “live” mới. Xem [phạm vi và giới hạn workflow](migration-audit.md). `--max-cu` giới hạn theo catalog; không phải trần hóa đơn được upstream bảo đảm.
 
 ## Chạy demo trên UI
 
@@ -143,7 +143,7 @@ Demo đã tạo bản tin thật từ dữ liệu Birdeye, không đăng ký bot
 3. Đọc exit 0/5 và `data.demo.message`, lưu `meta.runId` để truy vết/dedup; không tự chạy lại workflow chỉ để gửi lại tin.
 4. Gửi message bằng Bot API trong hạ tầng của bạn, dùng plain text (không đặt parse_mode). Giữ bot token trên server; bổ sung authorization, dedup update và rate limit trước khi mở cho nhiều chat.
 
-Xem [nghiên cứu Telegram và tài liệu Bot API chính thức](../research/customer-live-demos.md#5-telegram-lớp-truy-vấn-nghiên-cứu-qua-chat). Bản tin có source IDs, run ID, thời gian, coverage và CU, không đưa API key vào nội dung. Không có Telegram network call trong demo CLI/UI.
+Bản tin có source IDs, run ID, thời gian, coverage và CU, không đưa API key vào nội dung. Không có Telegram network call trong demo CLI/UI.
 
 ## Kiểm tra
 

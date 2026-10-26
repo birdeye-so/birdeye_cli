@@ -1,13 +1,14 @@
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
-import {join,dirname,resolve,relative} from 'node:path';
+import {join,dirname,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {isPrivatePath} from './public-files.mjs';
 const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const root=resolve(process.argv[2] || join(project,'../bds-docs-mintlify'));
 const target=join(project,'knowledge/birdeye');
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const files=execFileSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8'}).split('\0').filter(p=>p && /\.mdx?$/.test(p) && !p.startsWith('.') && !p.split('/').includes('node_modules'));
+const files=execFileSync('git',['-C',root,'ls-files','-z'],{encoding:'utf8'}).split('\0').filter(p=>p && /\.mdx?$/.test(p) && !p.startsWith('.') && !p.split('/').includes('node_modules') && !isPrivatePath(p));
 const specs=new Map(['data/openapi_docs.json','blockchain/openapi_blockchain_docs.json','perps/openapi_perps_docs.json'].map(p=>['openapi/'+p,JSON.parse(readFileSync(join(root,'openapi',p),'utf8'))]));
 function resolveRefs(value,spec,seen=new Set()) {
  if(Array.isArray(value))return value.map(v=>resolveRefs(v,spec,seen));
@@ -37,17 +38,7 @@ for(const path of files) {
  }
  add('docs/'+path.replace(/\.mdx?$/,'.md'),body,'https://docs.birdeye.so/'+path.replace(/\.mdx?$/,''),hash(original));
 }
-// Include this CLI's reviewed recipes/skills, separately attributed from provider docs.
-const {readdirSync}=await import('node:fs');
-function localDocs(dir) {
- for(const ent of readdirSync(dir,{withFileTypes:true})) {
-  const path=join(dir,ent.name);
-  if(ent.isDirectory())localDocs(path);
-  else if(ent.isFile() && ent.name.endsWith('.md')){const rel=relative(project,path);const body=readFileSync(path,'utf8');add('cli/'+rel,body,'cli:'+rel,hash(body));}
- }
-}
-localDocs(join(project,'docs/workflows'));localDocs(join(project,'skills'));
-for(const path of ['README.md','docs/research/agent-harness-knowledge.md']){const body=readFileSync(join(project,path),'utf8');add('cli/'+path,body,'cli:'+path,hash(body));}
 const manifest={schemaVersion:1,sourceCommit:execFileSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),generatedAt:new Date().toISOString(),documentationPages:files.length,operationPages,specs:[...specs.keys()].map(path=>({path,sha256:hash(readFileSync(join(root,path),"utf8"))})),entries};
 writeFileSync(join(target,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
-console.log(`Knowledge snapshot: ${files.length} documentation pages, ${operationPages} resolved API pages, ${entries.length} total Markdown files.`);
+await import('./sync-cli-knowledge.mjs');
+console.log(`Provider snapshot: ${files.length} documentation pages, ${operationPages} resolved API pages.`);

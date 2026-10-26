@@ -4,7 +4,7 @@ import {tokenDdScore, drawdownGate} from "../src/token-dd-score.js";
 import {planCase} from "../src/workflows.js";
 import type {Result} from "../src/runner.js";
 
-// Reference: internaldocs/BDS-Token Due-Diligence Score Workflow Overview-231026-071108.pdf.
+// Scoring regression vectors; private source documents are not required or distributed.
 // Golden values are calculated separately from the production scorer.
 const address = "So11111111111111111111111111111111111111112";
 const input = planCase({kind:"skill-token-dd-score",address,ddMode:"advanced"}).input;

@@ -79,7 +79,7 @@ test("editing a recipe parameter preserves other source adaptation defaults",()=
   }
 });
 test("Birdeye Data Skills workflow documents use the reviewed native recipes",async()=>{
-  const sources=await loadWorkflowSources(resolve("birdeye-data-skills/docs"));
+  const sources=await loadWorkflowSources(resolve("tests/fixtures/birdeye-data-skills"));
   assert.equal(sources.length,6);
   for(const doc of sources) {const record=migrateWorkflow(doc);assert.equal(record.adapter,"birdeye-data-skills");assert.ok(planImported(record,{},true).steps.length>0);}
 });

@@ -8,7 +8,7 @@ birdeye-cli case risk-warning --address "$TOKEN" --max-cu 100 --short
 birdeye-cli case risk-warning --address "$TOKEN" --depth full --max-cu 220 --short
 ```
 
-Chọn core hoặc full để tránh gọi lại. Core security trước → overview → top holders: **70 CU**. Full thêm holder-profile (25), một trang positions dev/bundler/insider/sniper (25), tags-tracker (30), tracker details (30): **180 CU**.
+Chọn core hoặc full để tránh gọi lại. Core security trước → overview → top holders: **70 CU**. Full thêm holder-profile (25), một trang positions dev/bundler/insider/sniper (30), tags-tracker (30), tracker details (30): **185 CU**. Holder-positions được đối chiếu lại với trang endpoint ngày 2026-10-16.
 
 Optional policy: `--exclude-freezeable`, `--max-top10-pct <percent>`, `--min-liquidity <usd>`. Ngưỡng do người dùng chọn; field unknown không tự pass. Top10 policy dùng token-account basis. Labels của profile không thể truyền nguyên sang tracker: tracker chỉ hỗ trợ dev/sniper/smart_trader/kol. Một số token lớn như wSOL, USDC, USDT, BONK bị upstream loại khỏi tracker; kết quả sẽ partial khi endpoint không hỗ trợ.
 

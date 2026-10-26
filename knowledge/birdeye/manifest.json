@@ -3002,18 +3002,46 @@
       "sourceSha256": "d9e42b6e3873dc9ec83d76f13445cb16b6badb00e4e5a38b208d5bc5c9381264"
     },
     {
-      "id": "cli/docs/workflows/README.md",
-      "title": "Workflow Birdeye CLI — 0.2.0",
-      "source": "cli:docs/workflows/README.md",
-      "sha256": "90a60f3280e1a77109de853ba8dd910d1ca79c528a0ac335ee49dacfb18790c4",
-      "sourceSha256": "90a60f3280e1a77109de853ba8dd910d1ca79c528a0ac335ee49dacfb18790c4"
+      "id": "cli/README.md",
+      "title": "Birdeye CLI",
+      "source": "cli:README.md",
+      "sha256": "505f363d754e5131aa3594a14d47bf3203b39025e8b510fe15169f165c63b4e2",
+      "sourceSha256": "505f363d754e5131aa3594a14d47bf3203b39025e8b510fe15169f165c63b4e2"
+    },
+    {
+      "id": "cli/README.vi.md",
+      "title": "Birdeye CLI",
+      "source": "cli:README.vi.md",
+      "sha256": "b57e8d01c4a69fe670a56610b476c76f76ca821bd3d8abf2fe54d8831f31ccdb",
+      "sourceSha256": "b57e8d01c4a69fe670a56610b476c76f76ca821bd3d8abf2fe54d8831f31ccdb"
+    },
+    {
+      "id": "cli/docs/INSTALLATION.md",
+      "title": "Installation and upgrades",
+      "source": "cli:docs/INSTALLATION.md",
+      "sha256": "e81876cbf41c618119f19ae65c12935bb4c21dfc4a88340d107262fc1d1ba2ad",
+      "sourceSha256": "e81876cbf41c618119f19ae65c12935bb4c21dfc4a88340d107262fc1d1ba2ad"
+    },
+    {
+      "id": "cli/docs/USAGE.md",
+      "title": "Usage",
+      "source": "cli:docs/USAGE.md",
+      "sha256": "8e5e741d9685617a886f018c8f340b64eb2aa707f39bc685c9b94b10276c59d8",
+      "sourceSha256": "8e5e741d9685617a886f018c8f340b64eb2aa707f39bc685c9b94b10276c59d8"
     },
     {
       "id": "cli/docs/workflows/birdeye-data-skills.md",
       "title": "Workflows from Birdeye Data Skills",
       "source": "cli:docs/workflows/birdeye-data-skills.md",
-      "sha256": "65dcfbac57cd5b545896dadc84e98068ed4ffd9413ad17c3f977f380afaa36bf",
-      "sourceSha256": "65dcfbac57cd5b545896dadc84e98068ed4ffd9413ad17c3f977f380afaa36bf"
+      "sha256": "ae16d7c9c36f172699b8e64f70af96e9a41aab74cc5f35170aa1cc78538e0e5f",
+      "sourceSha256": "ae16d7c9c36f172699b8e64f70af96e9a41aab74cc5f35170aa1cc78538e0e5f"
+    },
+    {
+      "id": "cli/docs/workflows/customer-demos.md",
+      "title": "Customer demos: từ skill đến sản phẩm dùng được",
+      "source": "cli:docs/workflows/customer-demos.md",
+      "sha256": "3dbf3ce9231063675a7bb708f0c169e3e55ccd27b15961d995dfb1949d491860",
+      "sourceSha256": "3dbf3ce9231063675a7bb708f0c169e3e55ccd27b15961d995dfb1949d491860"
     },
     {
       "id": "cli/docs/workflows/migration-audit.md",
@@ -3021,6 +3049,13 @@
       "source": "cli:docs/workflows/migration-audit.md",
       "sha256": "79f5d3f636123008544c67a48a389bceeb0267de2e312ef53b5699f9990e3c8a",
       "sourceSha256": "79f5d3f636123008544c67a48a389bceeb0267de2e312ef53b5699f9990e3c8a"
+    },
+    {
+      "id": "cli/docs/workflows/README.md",
+      "title": "Workflow Birdeye CLI — 0.2.0",
+      "source": "cli:docs/workflows/README.md",
+      "sha256": "9030852f66125b0929bffa899351d358544d475babfbaa46a2c7d348d83cfbfb",
+      "sourceSha256": "9030852f66125b0929bffa899351d358544d475babfbaa46a2c7d348d83cfbfb"
     },
     {
       "id": "cli/docs/workflows/workflow-daily-brief.md",
@@ -3054,8 +3089,8 @@
       "id": "cli/docs/workflows/workflow-risk-warning.md",
       "title": "Risk warning",
       "source": "cli:docs/workflows/workflow-risk-warning.md",
-      "sha256": "211793fd54f820f75734f9ca1975f2d8fee859e102187c2dc0813d7d9963ecf0",
-      "sourceSha256": "211793fd54f820f75734f9ca1975f2d8fee859e102187c2dc0813d7d9963ecf0"
+      "sha256": "6ca631cce0089e3b2ebcbc20367d125b9cece8a9efffde02974602a55cfb9f3a",
+      "sourceSha256": "6ca631cce0089e3b2ebcbc20367d125b9cece8a9efffde02974602a55cfb9f3a"
     },
     {
       "id": "cli/docs/workflows/workflow-smart-money-profile.md",
@@ -3103,22 +3138,22 @@
       "id": "cli/skills/birdeye-token/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-token/SKILL.md",
-      "sha256": "228712ca9a7a1c7d8efd18a173b94e0726e9e0b254fc56a0b33dcb33f4b4ccf5",
-      "sourceSha256": "228712ca9a7a1c7d8efd18a173b94e0726e9e0b254fc56a0b33dcb33f4b4ccf5"
+      "sha256": "b52601491c5d90bd606b6317bc5e7193316ded626e68079aff0bfbc0129abb35",
+      "sourceSha256": "b52601491c5d90bd606b6317bc5e7193316ded626e68079aff0bfbc0129abb35"
     },
     {
-      "id": "cli/README.md",
-      "title": "Birdeye CLI",
-      "source": "cli:README.md",
-      "sha256": "fd3b8225f8f708323053b87b21d65208cabf56fb4390cd217973b1e110ab8b69",
-      "sourceSha256": "fd3b8225f8f708323053b87b21d65208cabf56fb4390cd217973b1e110ab8b69"
+      "id": "cli/skills/token-duediligence/doc.md",
+      "title": "Token DD Score · Node.js reconstruction",
+      "source": "cli:skills/token-duediligence/doc.md",
+      "sha256": "370e37b82fe5a71a0b39dfdc85e9fb764c9e672ef95b90b4e58ffe51bc8a98ea",
+      "sourceSha256": "370e37b82fe5a71a0b39dfdc85e9fb764c9e672ef95b90b4e58ffe51bc8a98ea"
     },
     {
-      "id": "cli/docs/research/agent-harness-knowledge.md",
-      "title": "Khung AI research và kho tri thức Markdown cho Birdeye",
-      "source": "cli:docs/research/agent-harness-knowledge.md",
-      "sha256": "7f49e04ad0b873c2dac2b4fc7a53bba52dd2ac30c56c81be948b77f922bf8b4f",
-      "sourceSha256": "7f49e04ad0b873c2dac2b4fc7a53bba52dd2ac30c56c81be948b77f922bf8b4f"
+      "id": "cli/skills/token-duediligence/SKILL.md",
+      "title": "SKILL.md",
+      "source": "cli:skills/token-duediligence/SKILL.md",
+      "sha256": "7cc0a647e6bcbb78dff349f20778b81835eee2d0e195fcd53dbb11d824519176",
+      "sourceSha256": "7cc0a647e6bcbb78dff349f20778b81835eee2d0e195fcd53dbb11d824519176"
     }
   ]
 }

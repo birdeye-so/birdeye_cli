@@ -937,11 +937,11 @@ function App() {
                       {result.data?.outcomes?.length > 0 && <details className="source"><summary>Screening outcomes · {result.data.outcomes.length}</summary><ul>{result.data.outcomes.map((o: Data, i: number) => <li key={i}><AddressText text={o.address} kind="token" chain={result.meta.chain} /> · {o.status}: {o.reasons.join("; ")}</li>)}</ul></details>}
                       {result.data?.scopeNotes?.length > 0 && <details className="source"><summary>Scope and calculation notes</summary><p className="footnote"><AddressText text={result.data.scopeNotes.join(" ")} /></p></details>}
                       {result.data?.selections?.length > 0 && <details className="source"><summary>Candidate selection and coverage</summary><pre><AddressText text={JSON.stringify(result.data.selections, null, 2)} /></pre></details>}
-                      {metrics.length > 0 && <Metrics rows={metrics} sources={sources} />}
+                      {metrics.length > 0 && (result.data?.skillAnalysis ? <details className="source"><summary>Market metrics & source data</summary><Metrics rows={metrics} sources={sources} /></details> : <Metrics rows={metrics} sources={sources} />)}
                       {!sources.length && ((run.cu?.attempts ?? 0) > 0
                         ? <p className="notice error">No dataset was returned. Review the request errors before retrying. Reserved CU may still be billed by Birdeye.</p>
                         : <p className="notice">No API datasets attached. No Birdeye API request was made in this run.</p>)}
-                      {result.data?.skillAnalysis?.findings?.length > 0 && <SkillFindings key={run.id} analysis={result.data.skillAnalysis} onRescore={run.status!=="running"?async changes=>{const next=await api("/rescore",{runId:run.id,...changes});await watch(next.id);await refresh();}:undefined} />}
+                      {result.data?.skillAnalysis && <SkillFindings key={run.id} analysis={result.data.skillAnalysis} kind={result.data.kind} sources={sources} onRescore={run.status!=="running"?async changes=>{const next=await api("/rescore",{runId:run.id,...changes});await watch(next.id);await refresh();}:undefined} />}
                       {metrics.length > 0 && (
                         <details className="source">
                           <summary>Calculation basis and source links</summary>

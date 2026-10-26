@@ -11,9 +11,17 @@
     "dist",
     "skills",
     "docs/workflows",
-    "docs/research",
     "README.md",
-    "knowledge/birdeye"
+    "knowledge/birdeye",
+    "README.vi.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "docs/INSTALLATION.md",
+    "docs/USAGE.md",
+    "docs/RELEASING.md"
   ],
   "engines": {
     "node": ">=22.16.0"
@@ -26,7 +34,22 @@
     "test:browser": "npm run build && node tests/browser-smoke.mjs",
     "prepack": "npm run build",
     "knowledge:sync": "node scripts/sync-knowledge.mjs",
-    "test:demos:browser": "node tests/demo-ui-browser.mjs"
+    "test:demos:browser": "node tests/demo-ui-browser.mjs",
+    "check:changelog": "node scripts/check-changelog.mjs",
+    "test:package": "npm run build && node scripts/package-smoke.mjs",
+    "landing:install": "npm --prefix apps/landing ci",
+    "landing:sync": "node scripts/sync-landing-catalog.mjs",
+    "landing:watch": "node scripts/sync-landing-catalog.mjs --watch",
+    "landing:dev": "node scripts/landing-dev.mjs",
+    "landing:build": "npm run landing:demo && npm --prefix apps/landing run build",
+    "landing:start": "npm --prefix apps/landing run start",
+    "landing:typecheck": "npm --prefix apps/landing run typecheck",
+    "test:landing": "node --test tests/landing-catalog.test.mjs",
+    "test:landing:browser": "node tests/landing-browser.mjs",
+    "pretest": "npm run build",
+    "check:public": "node scripts/check-public-files.mjs",
+    "knowledge:sync:cli": "node scripts/sync-cli-knowledge.mjs",
+    "landing:demo": "npm run landing:sync && node scripts/build-landing-demo.mjs"
   },
   "dependencies": {
     "bignumber.js": "9.3.1",
@@ -43,5 +66,14 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "typescript": "5.9.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/birdeye-so/birdeye_cli.git"
+  },
+  "homepage": "https://github.com/birdeye-so/birdeye_cli#readme",
+  "bugs": {
+    "url": "https://github.com/birdeye-so/birdeye_cli/issues"
   }
 }

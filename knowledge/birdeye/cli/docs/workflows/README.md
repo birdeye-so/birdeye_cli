@@ -1,6 +1,6 @@
 # Workflow Birdeye CLI — 0.2.0
 
-Chín workflow nghiên cứu lấy cảm hứng từ GMGN đã chạy được qua `case`, interface và AI tools. Hai case cũ `market-shortlist`, `wallet-exposure` vẫn được giữ. [Nghiên cứu GMGN](../research/gmgn-workflows.md) · [Đối chiếu dữ liệu và giới hạn API](../research/birdeye-workflow-mapping.md).
+Chín workflow nghiên cứu lấy cảm hứng từ GMGN đã chạy được qua `case`, interface và AI tools. Hai case cũ `market-shortlist`, `wallet-exposure` vẫn được giữ. Xem [phạm vi và giới hạn migration](migration-audit.md).
 
 ## Chọn workflow
 

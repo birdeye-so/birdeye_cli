@@ -1,6 +1,6 @@
 # Workflows from Birdeye Data Skills
 
-Implemented from [TheNang2710/birdeye-data-skills](https://github.com/TheNang2710/birdeye-data-skills), commit `5dd7833a161e76ef2a3da74233af548a2eccb4d5`. The local reference is `../../birdeye-data-skills` from this directory. Eleven analysis skills are present in source; the README's count of twelve is inaccurate. [Research and API mapping](../research/birdeye-data-skills.md) records source conflicts and adaptations.
+Implemented from [TheNang2710/birdeye-data-skills](https://github.com/TheNang2710/birdeye-data-skills), commit `5dd7833a161e76ef2a3da74233af548a2eccb4d5`. Eleven analysis skills are present in source; the README's count of twelve is inaccurate. [Migration audit](migration-audit.md) records public scope and adaptation limits.
 
 These recipes use `case skill-<name>` so the earlier GMGN-inspired commands retain their behavior. UI names match the source and are grouped into Discover, Token and Wallet. Earlier workflows remain in their own group. All execution is Solana-only and goes through the same validated API wrappers, retry accounting and CU budgets. No upstream Python process or third-party RugCheck service is required.
 

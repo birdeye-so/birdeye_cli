@@ -9,3 +9,21 @@ usage.sqlite*
 test-results/
 .test-dist/
 .impeccable/review/
+
+# Local editor and credential artifacts
+.DS_Store
+*.swp
+*.swo
+.env.*
+!.env.example
+
+# Private working documents: keep local, never distribute
+/internaldocs/
+/docs/plans/
+/docs/research/
+/docs/ui/
+/docs/PUBLIC_READINESS.md
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
+/knowledge/birdeye/cli/docs/research/

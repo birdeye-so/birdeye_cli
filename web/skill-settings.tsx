@@ -1,6 +1,5 @@
-import {AddressText} from "./address-text";
 import React from "react";
-import {TokenDdScore} from "./token-dd-score";
+export {SkillDashboard as SkillFindings} from "./skill-visuals";
 type Data = Record<string, any>;
 export function SkillSettings({kind, value, change, limit, setLimit, scanLimit, setScanLimit, interval, setInterval, duration, setDuration}: {
   kind:string;value:Data;change:(value:Data)=>void;limit:number;setLimit:(v:number)=>void;scanLimit:number;setScanLimit:(v:number)=>void;interval:string;setInterval:(v:string)=>void;duration:string;setDuration:(v:string)=>void;
@@ -12,13 +11,13 @@ export function SkillSettings({kind, value, change, limit, setLimit, scanLimit, 
   return <div className="skill-settings">
     <div className="form-grid workflow-options">
       {kind==="skill-token-dd-score"&&<>
-        {select("ddMode","Evidence depth",["advanced","standard"],"advanced")}
+        <fieldset className="dd-mode-picker"><legend>Evidence depth</legend><div>{[["standard","Standard","Overview & security","2 calls · ~51 CU"],["advanced","Advanced","Holders, flows & liquidity","7 calls · ~181 CU"]].map(([mode,title,description,cost])=><label key={mode} className={(value.ddMode??"advanced")===mode?"selected":""}><input type="radio" name="dd-evidence-depth" value={mode} checked={(value.ddMode??"advanced")===mode} onChange={()=>patch("ddMode",mode)}/><span><strong>{title}</strong><small>{description}</small></span><em>{cost}</em></label>)}</div></fieldset>
         {(value.ddMode??"advanced")==="advanced"&&<>
           <label>Top holder rows<input type="number" min="10" max="50" value={value.topN??50} onChange={e=>patch("topN",Number(e.target.value))}/></label>
           {select("liqResolution","Liquidity candle resolution",["1m","5m","15m","30m","1h","4h","1D"],"15m")}
           <label>Liquidity candles<input type="number" min="1" max="100" value={value.liqCandles??96} onChange={e=>patch("liqCandles",Number(e.target.value))}/></label>
         </>}
-        <p className="field-hint">Default weights · Solana. Standard and advanced scores have different coverage. Review provisional OHLC CU below.</p>
+        <p className="field-hint">Solana · Advanced CU includes a provisional OHLC estimate. Scores across modes have different coverage.</p>
       </>}
       {kind==="skill-trending-list"&&<>
         {select("listSource","Discovery source",["v3-list","trending"],"v3-list")}
@@ -46,22 +45,4 @@ export function SkillSettings({kind, value, change, limit, setLimit, scanLimit, 
       {kind==="skill-wallet-score"&&check("skipPositions","Skip positions (alpha score unavailable)")}
     </div>
   </div>;
-}
-
-export function SkillFindings({analysis,onRescore}:{analysis:Data;onRescore?:(changes:Data)=>Promise<void>}) {
-  const names:Record<string,string>={kline:"Candlestick pattern","wallet-alpha":"Wallet alpha","wallet-style":"Wallet style","wallet-leaderboard":"Wallet comparison","wallet-discovery":"Wallet shortlist","security-evidence":"Security evidence","liquidity-change":"Liquidity history"};
-  return <section className="skill-findings" aria-label="Skill findings">
-    <h3>Skill findings</h3>
-    {analysis.findings.map((f:Data,i:number)=>f.kind==="token-dd-score"?<TokenDdScore report={f} onRescore={onRescore} key={i}/>:<div className="skill-finding" key={i}>
-      <h4>{names[f.kind]??f.kind}</h4>
-      {f.kind==="wallet-discovery"&&<><p>{f.wallets.length} shortlisted · {f.observedWallets} unique wallets observed</p><div className="table-wrap"><table><thead><tr><th>Wallet</th><th>Tokens observed</th></tr></thead><tbody>{f.wallets.map((w:Data)=><tr key={w.wallet}><td title={w.wallet}><AddressText text={w.wallet} compact kind="wallet" chain={w.chain} /></td><td>{w.tokens.length}</td></tr>)}</tbody></table></div></>}
-      {f.kind==="security-evidence"&&<dl className="finding-components">{[["Freezeable",f.freezeable],["Mintable",f.mintable],["Top 10 account share",f.top10AccountShare==null?null:`${Number(f.top10AccountShare)*100}%`]].map(([label,value])=><div key={String(label)}><dt>{label}</dt><dd>{value==null?"Unknown":typeof value==="boolean"?(value?"Yes":"No"):value}</dd></div>)}</dl>}
-      <p>{f.pattern?.replaceAll("_"," ")??f.style??(f.kind==="security-evidence"?"Evidence checklist; no safety verdict":null)}{f.score!=null?` · ${f.score}/100`:""}{f.kind==="wallet-alpha"?(f.alphaScore!=null?`${f.alphaScore}/100` : "Score unavailable"):""}{f.liquidityChangePct!=null?`${f.liquidityChangePct}% across ${f.snapshots} snapshots`:""}</p>
-      {f.components&&<dl className="finding-components">{Object.entries(f.components).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{String(v)}</dd></div>)}</dl>}
-      {f.rows&&<div className="table-wrap"><table><thead><tr><th>Rank</th><th>Wallet</th><th>Comparison score</th><th>30d realized · USD</th><th>30d wins · %</th></tr></thead><tbody>{f.rows.map((r:Data)=><tr key={r.wallet}><td>{r.rank??"Unranked"}</td><td title={r.wallet}><AddressText text={r.wallet} compact kind="wallet" chain={r.chain} /></td><td>{r.rankingScore??"Unavailable"}</td><td>{r.pnl30??"Unavailable"}</td><td>{r.wr30==null?"Unavailable":(r.wr30*100).toFixed(1)}</td></tr>)}</tbody></table></div>}
-      {f.missing?.length>0&&<ul className="field-hint">{f.missing.map((m:string)=><li key={m}>{m}</li>)}</ul>}
-
-      <details className="source"><summary>Details</summary><p>{f.basis}</p><pre><AddressText text={JSON.stringify(f,null,2)} /></pre></details>
-    </div>)}
-  </section>;
 }
