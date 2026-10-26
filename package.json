@@ -49,7 +49,10 @@
     "pretest": "npm run build",
     "check:public": "node scripts/check-public-files.mjs",
     "knowledge:sync:cli": "node scripts/sync-cli-knowledge.mjs",
-    "landing:demo": "npm run landing:sync && node scripts/build-landing-demo.mjs"
+    "landing:demo": "npm run landing:sync && node scripts/build-landing-demo.mjs",
+    "skills-api:build": "npm --prefix apps/skills-api run build",
+    "skills-api:start": "npm --prefix apps/skills-api start",
+    "test:skills-api": "node --test tests/skills-api.test.mjs"
   },
   "dependencies": {
     "bignumber.js": "9.3.1",
