@@ -6,7 +6,7 @@ import s from './demo-player.module.css';
 const time = (ms: number) => `${Math.floor(ms / 60000)}:${Math.floor(ms / 1000 % 60).toString().padStart(2, '0')}`;
 const CHAPTER_MS = 8000;
 
-export function DemoPlayer({scripts, standalone = false}: {scripts: DemoScript[]; standalone?: boolean}) {
+export function DemoPlayer({scripts, standalone = false, htmlUrl = '/demo.html'}: {scripts: DemoScript[]; standalone?: boolean; htmlUrl?: string}) {
   const [selected, setSelected] = useState(scripts[0]?.id || '');
   const script = scripts.find(item => item.id === selected) || scripts[0];
   const [elapsed, setElapsed] = useState(0);
@@ -114,6 +114,6 @@ export function DemoPlayer({scripts, standalone = false}: {scripts: DemoScript[]
       <div className={s.caption} aria-live="polite" aria-atomic="true"><strong>{chapter + 1} / {script.chapters.length}</strong><span>{section.caption}</span></div>
       <div className={s.controls}><button className={s.play} onClick={play} aria-label={playing ? 'Pause demo' : elapsed >= duration ? 'Replay demo' : 'Play demo'}>{playing ? <Pause size={17}/> : <Play size={17}/>}</button><button onClick={() => {setElapsed(0); setPlaying(false);}} aria-label="Restart demo"><RotateCcw size={16}/></button><span className={s.time}>{time(elapsed)} / {time(duration)}</span><input type="range" min={0} max={duration} step={100} value={Math.round(elapsed)} onChange={event => {setElapsed(Number(event.target.value)); setPlaying(false);}} aria-label="Demo timeline" aria-valuetext={`${time(elapsed)} — ${section.title}`}/><label className={s.speed}><span className={s.srOnly}>Playback speed</span><select value={speed} onChange={event => setSpeed(Number(event.target.value))}><option value={1}>1×</option><option value={1.5}>1.5×</option><option value={2}>2×</option></select></label></div>
     </div>
-    <div className={s.bottom}><p>Guided playback using real captured results. Selected highlights are shown; full evidence is available to download.</p><div><button onClick={downloadData}><FileJson size={15}/> Download full JSON</button>{!standalone && <a href="/demo.html" download><Download size={15}/> Download HTML</a>}</div></div>
+    <div className={s.bottom}><p>Guided playback using real captured results. Selected highlights are shown; full evidence is available to download.</p><div><button onClick={downloadData}><FileJson size={15}/> Download full JSON</button>{!standalone && <a href={htmlUrl} download><Download size={15}/> Download HTML</a>}</div></div>
   </section>;
 }

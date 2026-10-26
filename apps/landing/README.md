@@ -160,3 +160,42 @@ Embed only the walkthrough:
 ```
 
 Or copy the component folder and render `<DemoPlayer scripts={buildDemoScripts(catalog.workflows)} />` within the same scoped theme root used by `BirdeyeDocs`. Pass `standalone` to hide the HTML-download link when hosting the player without `/demo.html`.
+
+## Hosting under a path, such as `/landing`
+
+Set `NEXT_PUBLIC_BASE_PATH` before starting development or building production:
+
+```bash
+# Development (still binds only to 127.0.0.1:3001)
+NEXT_PUBLIC_BASE_PATH=/landing npm run landing:dev
+
+# Production
+NEXT_PUBLIC_BASE_PATH=/landing npm run landing:build
+NEXT_PUBLIC_BASE_PATH=/landing npm run landing:start
+```
+
+Open `/landing` on your public host. Next.js CSS/JS, catalog polling, `/landing/embed`, and `/landing/demo.html` use this prefix. Leave the variable unset to serve at `/`. Use a leading slash and no trailing slash; nested paths such as `/tools/landing` are supported. This is a build-time setting: changing it for production requires rebuilding, not just restarting.
+
+For Nginx, preserve the prefix when forwarding to the localhost server:
+
+```nginx
+location /landing {
+    # No trailing slash here: forward /landing/... unchanged.
+    proxy_pass http://127.0.0.1:3001;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+```
+
+Remove any upstream rewrite that strips `/landing`. A prefix-stripping proxy and a Next.js build configured for `/landing` do not match. No Birdeye API key is needed on the landing host.
+
+Regression check after building with the desired prefix:
+
+```bash
+NEXT_PUBLIC_BASE_PATH=/landing node tests/landing-base-path-browser.mjs
+```

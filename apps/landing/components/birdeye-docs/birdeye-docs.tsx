@@ -9,7 +9,7 @@ import { DemoPlayer } from './demo-player';
 import { buildDemoScripts } from './demo-script';
 import s from './birdeye-docs.module.css';
 
-type Props = {initialCatalog?: Catalog; catalogUrl?: string | null; refreshInterval?: number; embedded?: boolean};
+type Props = {basePath?: string; initialCatalog?: Catalog; catalogUrl?: string | null; refreshInterval?: number; embedded?: boolean};
 const icons = {discover: Waves, token: ShieldCheck, wallet: Wallet, guides: BookOpen};
 function CopyButton({value, label = 'Copy command'}: {value: string; label?: string}) {
   const [state, setState] = useState<'idle' | 'copied' | 'error'>('idle');
@@ -27,7 +27,7 @@ function Brand() {return <span className={s.brand}><span className={s.brandMark}
 function goTo(id: string) {window.location.hash = id;}
 function CategoryIcon({category, size = 20}: {category: string; size?: number}) {const Icon = icons[category as keyof typeof icons] || Layers; return <Icon size={size} aria-hidden="true"/>;}
 
-export function BirdeyeDocs({initialCatalog, catalogUrl = '/api/catalog', refreshInterval = 5000, embedded = false}: Props) {
+export function BirdeyeDocs({initialCatalog, basePath = '', catalogUrl = `${basePath}/api/catalog`, refreshInterval = 5000, embedded = false}: Props) {
   const {catalog, status, refresh} = useCatalog(initialCatalog, catalogUrl ?? undefined, refreshInterval);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
@@ -79,7 +79,7 @@ export function BirdeyeDocs({initialCatalog, catalogUrl = '/api/catalog', refres
         </section>
         <div className={s.proofStrip}><span><Code2 size={18}/> Structured JSON output</span><span><Layers size={18}/> Composable workflows</span><span><ShieldCheck size={18}/> Estimate CU before you run</span><a href="#library">Read the docs <ArrowDown size={16}/></a></div>
       </>}
-      {!embedded && <DemoPlayer scripts={buildDemoScripts(catalog.workflows)}/>}
+      {!embedded && <DemoPlayer htmlUrl={`${basePath}/demo.html`} scripts={buildDemoScripts(catalog.workflows)}/>}
       <section id="library" className={s.library} aria-labelledby="library-title">
         <div className={s.libraryHeading}><div><h2 id="library-title">The research toolkit.</h2><p>Find a starting point. Understand every step.</p></div><div className={s.syncStatus} role="status"><span className={status === 'error' ? s.errorDot : s.dot}/>{status === 'error' ? 'Showing saved content · reconnecting' : catalogUrl ? 'Auto-updating docs' : 'Documentation snapshot'}{status === 'error' && <button onClick={() => void refresh()}>Retry</button>}</div></div>
         <div className={s.libraryLayout}>
