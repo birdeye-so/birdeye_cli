@@ -8,7 +8,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('SKILL_
 await readCatalog();
 openSkillStats().close();
 const server = createSkillServer();
-server.listen(port, host, () => console.log(`Skills API listening on http://${host}:${port}`));
+server.listen(port, host, () => console.log(`Skills API listening on http://${host}:${port}/agent`));
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, () => {
   server.close(() => process.exit(0));
   setTimeout(() => {server.closeAllConnections(); process.exit(1);}, 10000).unref();

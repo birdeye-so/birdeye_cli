@@ -18,26 +18,28 @@ For deployment, copy this directory, run `npm ci`, `npm run build`, then `npm st
 | `SKILL_CATALOG_PATH` | Bundled `catalog.json` | Absolute path to an alternative catalog |
 | `SKILL_STATS_DB_PATH` | `.birdeye/skill-stats.sqlite` | Persistent database path, relative to process working directory by default |
 
-The service validates catalog and storage before listening. `GET /healthz` is a liveness check. SIGINT/SIGTERM gracefully close the server. POST bodies are limited to 8 KiB. CORS supports OPTIONS preflight without cookies; CORS is not authentication and does not restrict server-to-server callers.
+The service validates catalog and storage before listening. `GET /agent/health` is a liveness check. SIGINT/SIGTERM gracefully close the server. POST bodies are limited to 8 KiB. CORS supports OPTIONS preflight without cookies; CORS is not authentication and does not restrict server-to-server callers.
 
 The bundled `catalog.json` is generated from the current CLI workflows using the same metadata as the landing catalog. From the repository root, run `npm run skills-api:sync` after workflow changes; `npm run skills-api:build` also synchronizes it. Commit the generated catalog when updating workflows. The service remains standalone at runtime and does not load the landing app. It reads the catalog on every request, so syncing also updates a running service. Standalone deployments use the bundled snapshot; copy the updated catalog when deploying.
+
+All routes use the `/agent` prefix. Reverse proxies must forward this prefix unchanged. The previous `/api/skills` and `/healthz` paths are no longer served.
 
 ## Endpoints
 
 | Method | Path | Input |
 | --- | --- | --- |
-| GET | `/api/skills` | Optional `?category=token` (catalog category ID) |
-| POST | `/api/skills/view` | `{"skill_id":"token-due-diligence"}` |
-| POST | `/api/skills/download` | `{"skill_id":"token-due-diligence"}` |
-| POST | `/api/skills/stat` | `{"skill_id":"token-due-diligence","action":"view"}` or action `download` |
+| GET | `/agent/api/skills` | Optional `?category=token` (catalog category ID) |
+| POST | `/agent/api/skills/view` | `{"skill_id":"token-due-diligence"}` |
+| POST | `/agent/api/skills/download` | `{"skill_id":"token-due-diligence"}` |
+| POST | `/agent/api/skills/stat` | `{"skill_id":"token-due-diligence","action":"view"}` or action `download` |
 
 POST requires `Content-Type: application/json`. IDs are the current workflow slugs (for example `token-due-diligence`), exposed under `catalog.skills`. The four agent instruction packages are not separate entries in this API. Use the returned `skill_id` for view/download events. Existing counters are preserved by ID; new workflow IDs start at zero. GET returns skill metadata (`id`, `title`, `category`, `description`, `source`), `skill_id`, `view_count`, and `download_count` in `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. New skills have zero counts. POST returns `{"code":0,"reason":"","message":"success","data":null}` only after committing the increment. The download endpoint records an event; it does not transfer a file. GET never increments counters.
 
 ```bash
-curl 'http://localhost:3002/api/skills?category=token'
-curl 'http://localhost:3002/api/skills/view' \
+curl 'http://localhost:3002/agent/api/skills?category=token'
+curl 'http://localhost:3002/agent/api/skills/view' \
   -H 'Content-Type: application/json' --data '{"skill_id":"token-due-diligence"}'
-curl 'http://localhost:3002/api/skills/download' \
+curl 'http://localhost:3002/agent/api/skills/download' \
   -H 'Content-Type: application/json' --data '{"skill_id":"token-due-diligence"}'
 ```
 

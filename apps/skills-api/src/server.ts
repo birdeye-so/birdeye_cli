@@ -26,8 +26,8 @@ export function createSkillServer(options: {corsOrigins?: string[]} = {}) {
       }
       const url = new URL(req.url || '/', 'http://localhost');
       const path = url.pathname;
-      const method = path === '/api/skills' || path === '/healthz' ? 'GET'
-        : ['/api/skills/view', '/api/skills/download', '/api/skills/stat'].includes(path) ? 'POST' : null;
+      const method = path === '/agent/api/skills' || path === '/agent/health' ? 'GET'
+        : ['/agent/api/skills/view', '/agent/api/skills/download', '/agent/api/skills/stat'].includes(path) ? 'POST' : null;
       if (!method) {await send(error(404, 'NOT_FOUND', 'Route not found.')); return;}
       if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Methods', `${method}, OPTIONS`);
@@ -38,7 +38,7 @@ export function createSkillServer(options: {corsOrigins?: string[]} = {}) {
         res.setHeader('Allow', `${method}, OPTIONS`);
         await send(error(405, 'METHOD_NOT_ALLOWED', 'Method not allowed.')); return;
       }
-      if (path === '/healthz') {await send(Response.json({status: 'ok'})); return;}
+      if (path === '/agent/health') {await send(Response.json({status: 'ok'})); return;}
       if (method === 'GET') {await send(await listSkills(new Request(url))); return;}
       const chunks: Buffer[] = [];
       let size = 0;

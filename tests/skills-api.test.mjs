@@ -31,8 +31,8 @@ test('skill API filters catalog, persists independent counters, and rejects inva
     const view = {POST: request => recordSkillAction(request, 'view')};
     const download = {POST: request => recordSkillAction(request, 'download')};
     const stat = {POST: request => recordSkillAction(request)};
-    const get = (query = '') => GET(new Request(`http://localhost/api/skills${query}`));
-    const post = (route, body) => route.POST(new Request('http://localhost/api/skills/stat', {
+    const get = (query = '') => GET(new Request(`http://localhost/agent/api/skills${query}`));
+    const post = (route, body) => route.POST(new Request('http://localhost/agent/api/skills/stat', {
       method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(body),
     }));
     const first = await get();
@@ -113,26 +113,30 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     server = createSkillServer({corsOrigins: ['https://consumer.example']});
     await new Promise((done, fail) => {server.once('error', fail); server.listen(0, '127.0.0.1', done);});
     const base = `http://127.0.0.1:${server.address().port}`;
-    const health = await fetch(`${base}/healthz`);
+    const health = await fetch(`${base}/agent/health`);
+    assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), {status: 'ok'});
-    const preflight = await fetch(`${base}/api/skills/view`, {method: 'OPTIONS', headers: {Origin: 'https://consumer.example', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}});
+    for (const path of ['/api/skills', '/healthz', '/agent/healthz']) {
+      assert.equal((await fetch(`${base}${path}`)).status, 404);
+    }
+    const preflight = await fetch(`${base}/agent/api/skills/view`, {method: 'OPTIONS', headers: {Origin: 'https://consumer.example', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}});
     assert.equal(preflight.status, 204);
     assert.equal(preflight.headers.get('access-control-allow-origin'), 'https://consumer.example');
     assert.match(preflight.headers.get('access-control-allow-methods'), /POST/);
     assert.equal(preflight.headers.get('access-control-allow-headers'), 'Content-Type');
-    assert.equal((await fetch(`${base}/api/skills`, {headers: {Origin: 'https://blocked.example'}})).status, 403);
+    assert.equal((await fetch(`${base}/agent/api/skills`, {headers: {Origin: 'https://blocked.example'}})).status, 403);
     assert.equal((await fetch(`${base}/unknown`)).status, 404);
-    const wrongMethod = await fetch(`${base}/api/skills/view`);
+    const wrongMethod = await fetch(`${base}/agent/api/skills/view`);
     assert.equal(wrongMethod.status, 405);
     assert.equal(wrongMethod.headers.get('allow'), 'POST, OPTIONS');
     const post = (path, body) => fetch(`${base}${path}`, {method: 'POST', headers: {'Content-Type': 'application/json', Origin: 'https://consumer.example'}, body: JSON.stringify(body)});
-    for (const path of ['/api/skills/view', '/api/skills/download', '/api/skills/stat']) {
+    for (const path of ['/agent/api/skills/view', '/agent/api/skills/download', '/agent/api/skills/stat']) {
       const response = await post(path, {skill_id: 'token-due-diligence', ...(path.endsWith('/stat') ? {action: 'view'} : {})});
       assert.equal(response.status, 200);
       assert.equal(response.headers.get('access-control-allow-origin'), 'https://consumer.example');
     }
-    assert.equal((await post('/api/skills/view', {skill_id: 'x'.repeat(9000)})).status, 413);
-    const response = await fetch(`${base}/api/skills?category=token`);
+    assert.equal((await post('/agent/api/skills/view', {skill_id: 'x'.repeat(9000)})).status, 413);
+    const response = await fetch(`${base}/agent/api/skills?category=token`);
     const skill = (await response.json()).data.list.find(item => item.skill_id === 'token-due-diligence');
     assert.equal(skill.view_count, 2);
     assert.equal(skill.download_count, 1);
