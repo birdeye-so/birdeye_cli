@@ -9,14 +9,13 @@ import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-tex
 import {ChatPanel} from "./chat-panel";
 import {MarkdownText} from "./markdown-text";
 import {createApiClient} from "./api";
-import {WorkflowImportsPanel} from "./workflow-imports";
 import {CustomerDemos} from "./customer-demos";
 import "./style.css";
 
 import {metricAddressKind, operationSubject} from "./birdeye-address";
 
 type Data = Record<string, any>;
-type View = "research" | "usage" | "settings" | "imports" | "demos";
+type View = "research" | "usage" | "settings" | "demos";
 const api = createApiClient();
 function Icon({ name, size = 19 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
@@ -545,7 +544,7 @@ function App() {
     <div className={`app-shell console-app ${theme}`}>
       <header className="console-header">
         <Brand />
-        <nav aria-label="Workspace">{(["research", "demos", "imports", "usage", "settings"] as View[]).map(v => <button key={v} aria-current={view === v ? "page" : undefined} className={view === v ? "nav-item selected" : "nav-item"} onClick={() => {setView(v); setError("");}}>{v === "research" ? "Research" : v === "demos" ? "Demos" : v === "imports" ? "Imports" : v === "usage" ? "Usage & credits" : "Settings"}</button>)}</nav>
+        <nav aria-label="Workspace">{(["research", "demos", "usage", "settings"] as View[]).map(v => <button key={v} aria-current={view === v ? "page" : undefined} className={view === v ? "nav-item selected" : "nav-item"} onClick={() => {setView(v); setError("");}}>{v === "research" ? "Research" : v === "demos" ? "Demos" : v === "usage" ? "Usage & credits" : "Settings"}</button>)}</nav>
         <span className="network">Solana</span>
         <button className="quiet" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button>
       </header>
@@ -559,7 +558,7 @@ function App() {
       <div className="main-shell">
         <main className="content">
           {notice}
-          {view === "demos" ? <CustomerDemos key={demoViewVersion} api={api} busy={busy} budget={budget} setBudget={setBudget} run={run} progress={progress} start={async(demo)=>{const value=await api("/runs",{mode:"demo",demo,maxCu:budget,short});await watch(value.id);await refresh();}} /> : view === "imports" ? <WorkflowImportsPanel api={api} busy={busy} budget={budget} setBudget={setBudget} run={async(importId,importParams)=>{const value=await api("/runs",{mode:"imported",importId,importParams,maxCu:budget,short});await watch(value.id);await refresh();}} /> : view === "settings" ? (
+          {view === "demos" ? <CustomerDemos key={demoViewVersion} api={api} busy={busy} budget={budget} setBudget={setBudget} run={run} progress={progress} start={async(demo)=>{const value=await api("/runs",{mode:"demo",demo,maxCu:budget,short});await watch(value.id);await refresh();}} /> : view === "settings" ? (
             <>
               <div className="page-heading">
                 <h1>Connections</h1>
@@ -763,7 +762,6 @@ function App() {
                   {mode === "case" ? (
                     <>
                       <div className="selected-skill-heading"><SkillIcon kind={kind} size={24}/><h1>{selectedCase?.title || titleFor[kind]}</h1></div>
-                      <details className="source"><summary>About this skill</summary><p>{selectedCase?.purpose}</p><p>{selectedCase?.produces}</p></details>
                       {!noAddress && <>
                         <label htmlFor="address">{walletCase ? "Wallet address" : "Token address"}{optionalAddress ? " (optional)" : ""}</label>
                         <input id="address" className="address-input" value={address} onChange={e => setAddress(e.target.value)} placeholder={optionalAddress ? "Leave blank to discover candidates" : "Paste a Solana address"} required={!optionalAddress} spellCheck={false} />
@@ -933,7 +931,7 @@ function App() {
                   )}
                   {result && (
                     <>
-                      {result.data?.missing?.length > 0 && <details className="source"><summary>Missing checks · {result.data.missing.length}</summary><ul>{result.data.missing.map((m: Data, i: number) => <li key={i}>{m.operation || m.step}: {m.message || m.reason}{m.subject ? <> · <AddressText text={String(m.subject)} /></> : ""}</li>)}</ul></details>}
+                      {result.data?.missing?.length > 0 && <details className="source"><summary>Missing checks · {result.data.missing.length}</summary><ul>{result.data.missing.map((m: Data, i: number) => <li key={i}>{m.operation || m.step}: {m.message || m.reason}{m.subject ? <> · <AddressText text={String(m.subject)} kind={operationSubject(m.operation)} chain={result.meta.chain} /></> : ""}</li>)}</ul></details>}
                       {result.data?.outcomes?.length > 0 && <details className="source"><summary>Screening outcomes · {result.data.outcomes.length}</summary><ul>{result.data.outcomes.map((o: Data, i: number) => <li key={i}><AddressText text={o.address} kind="token" chain={result.meta.chain} /> · {o.status}: {o.reasons.join("; ")}</li>)}</ul></details>}
                       {result.data?.scopeNotes?.length > 0 && <details className="source"><summary>Scope and calculation notes</summary><p className="footnote"><AddressText text={result.data.scopeNotes.join(" ")} /></p></details>}
                       {result.data?.selections?.length > 0 && <details className="source"><summary>Candidate selection and coverage</summary><pre><AddressText text={JSON.stringify(result.data.selections, null, 2)} /></pre></details>}

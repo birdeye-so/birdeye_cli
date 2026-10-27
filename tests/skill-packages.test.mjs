@@ -24,8 +24,8 @@ test('each skill installs in isolation with current references and no sibling pa
 test('each public skill has matching installable instructions and no second resource type', async () => {
   const catalog = await createResourceCatalog();
   const packages = await skillPackages();
-  assert.equal(catalog.skills.length, 23);
-  assert.equal(packages.filter(item => !item.legacy).length, 23);
+  assert.equal(catalog.skills.length, 12);
+  assert.equal(packages.filter(item => !item.legacy).length, 12);
   assert.equal(packages.filter(item => item.legacy).length, 4);
   assert.ok(!('workflows' in catalog));
   for (const skill of catalog.skills) {
@@ -36,5 +36,20 @@ test('each public skill has matching installable instructions and no second reso
     assert.ok(instructions.includes(skill.usage.run_command));
     assert.ok(instructions.includes(skill.description));
     assert.ok(!('steps' in skill) && !('workflow_ids' in skill));
+  }
+});
+
+test('retired workflows stay archived and cannot be discovered as installable skills', async () => {
+  const {loadSkillRuntime} = await import('../scripts/lib/skill-runtime.mjs');
+  const {access} = await import('node:fs/promises');
+  const {workflowCatalog} = await loadSkillRuntime();
+  const retired = workflowCatalog().filter(item => item.family === 'legacy');
+  const catalog = await createResourceCatalog();
+  assert.equal(retired.length, 11);
+  for (const {kind} of retired) {
+    assert.ok(!catalog.skills.some(skill => skill.id === kind));
+    await assert.rejects(access(resolve('skills', kind)));
+    await assert.rejects(access(resolve('archive/skills', kind, 'SKILL.md')));
+    assert.match(await readFile(resolve('archive/skills', kind, 'ARCHIVED.md'), 'utf8'), /Outdated/);
   }
 });

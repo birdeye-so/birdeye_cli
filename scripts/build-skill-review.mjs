@@ -10,7 +10,7 @@ const variants = [
   ['Standard DD', {ddMode: 'standard'}], ['Standard discovery', {skillDepth: 'standard'}], ['Deep', {skillDepth: 'deep'}],
   ['Đủ include', {include: ['list', 'advanced_security', 'risk_history']}],
 ];
-const rows = workflowCatalog().map(item => {
+const rows = workflowCatalog().filter(item => item.family !== "legacy").map(item => {
   const base = {kind: item.kind, ...(['token', 'wallet'].includes(item.subject) ? {address} : item.subject === 'wallets' ? {wallets: [address]} : {})};
   const plans = [];
   for (const [label, extra] of variants) {

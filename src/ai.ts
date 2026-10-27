@@ -211,7 +211,7 @@ export async function runChat(
     list_workflows: {
       schema: z.object({query: z.string().max(500).default("")}).strict(),
       description: "Discover existing research workflows by name or task. Returns workflow kinds, purposes and required subject types. Free; use estimate_workflow before executing a different flow.",
-      execute: args => workflowCatalog().map(({kind, title, subject, description}) => ({kind, title, subject, description})).filter(item => `${item.kind} ${item.title} ${item.description}`.toLowerCase().includes(args.query.toLowerCase())),
+      execute: args => workflowCatalog().filter(item => item.family !== "legacy").map(({kind, title, subject, description}) => ({kind, title, subject, description})).filter(item => `${item.kind} ${item.title} ${item.description}`.toLowerCase().includes(args.query.toLowerCase())),
     },
     read_saved_data: {schema:z.object({sourceId:z.string().optional()}).strict(),description:"Read retained datasets and host-computed metrics from the selected saved run. No Birdeye requests. Dates and original source CU belong to that snapshot.",execute:args=>{
       const selected=(context.savedSources||[]).filter(s=>!args.sourceId||s.meta.requestId===args.sourceId);

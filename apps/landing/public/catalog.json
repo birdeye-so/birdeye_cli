@@ -25,182 +25,6 @@
   ],
   "skills": [
     {
-      "id": "token-research",
-      "title": "Token Research",
-      "category": "token",
-      "description": "Understand a token before deciding whether to investigate further. Check its market activity, security observations and holder concentration together.",
-      "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case token-research --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case token-research --address <SOLANA_ADDRESS> --short",
-        "result": "Price, liquidity, activity and holder evidence; full depth adds pools and labeled holder groups.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill token-research --global"
-      },
-      "source": "skills/token-research/SKILL.md",
-      "featured": true
-    },
-    {
-      "id": "token-due-diligence",
-      "title": "Token Due Diligence",
-      "category": "token",
-      "description": "Check a token's identity and the security fields that could rule it out of your research shortlist.",
-      "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case token-due-diligence --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case token-due-diligence --address <SOLANA_ADDRESS> --short",
-        "result": "An identity and security checklist with missing checks made explicit. This is not a safety verdict.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill token-due-diligence --global"
-      },
-      "source": "skills/token-due-diligence/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "project-deep-report",
-      "title": "Project Deep Report",
-      "category": "token",
-      "description": "Build an on-chain evidence report about a token's market, ownership and price behavior.",
-      "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case project-deep-report --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case project-deep-report --address <SOLANA_ADDRESS> --short",
-        "result": "Token and pool snapshots, holder groups, price candles and trading activity. Team, funding and social claims are outside this report.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill project-deep-report --global"
-      },
-      "source": "skills/project-deep-report/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "wallet-analysis",
-      "title": "Wallet Analysis",
-      "category": "wallet",
-      "description": "Understand what a wallet holds, how its positions performed and what it traded in the chosen period.",
-      "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case wallet-analysis --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case wallet-analysis --address <SOLANA_ADDRESS> --short",
-        "result": "Observed holdings, PnL and a page of trades. Full depth adds per-token PnL and token screening.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill wallet-analysis --global"
-      },
-      "source": "skills/wallet-analysis/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "smart-money-profile",
-      "title": "Smart Money Profile",
-      "category": "wallet",
-      "description": "Research a supplied wallet or discover traders by realized PnL, then compare performance across time windows.",
-      "usage": {
-        "input": "Optionally supply a Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case smart-money-profile --short --estimate-cu",
-        "run_command": "birdeye-cli case smart-money-profile --short",
-        "result": "Holdings, two PnL snapshots and recent trades per wallet. Provider performance is not a copy-trading return estimate.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill smart-money-profile --global"
-      },
-      "source": "skills/smart-money-profile/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "risk-warning",
-      "title": "Risk Warning",
-      "category": "token",
-      "description": "Review security and ownership observations that need attention before continuing token research.",
-      "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case risk-warning --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case risk-warning --address <SOLANA_ADDRESS> --short",
-        "result": "A point-in-time risk checklist; full depth adds labeled positions and trading timelines. This is not a continuous alert service.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill risk-warning --global"
-      },
-      "source": "skills/risk-warning/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "early-project-screening",
-      "title": "Early Project Screening",
-      "category": "discover",
-      "description": "Find tokens at a chosen launch stage and screen a bounded shortlist for liquidity, security and holder-group evidence.",
-      "usage": {
-        "input": "No address is required. Choose filters appropriate to the research question.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case early-project-screening --short --estimate-cu",
-        "run_command": "birdeye-cli case early-project-screening --short",
-        "result": "Launch candidates, selection reasons and per-token checks. Newly listed and newly created describe different events.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill early-project-screening --global"
-      },
-      "source": "skills/early-project-screening/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "daily-brief",
-      "title": "Daily Brief",
-      "category": "discover",
-      "description": "Prepare a market briefing from short and daily trending windows, then inspect a few selected tokens.",
-      "usage": {
-        "input": "Optionally supply a Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case daily-brief --short --estimate-cu",
-        "run_command": "birdeye-cli case daily-brief --short",
-        "result": "Trending samples and token checks; full depth adds chain activity, smart-money tokens and launches. An optional wallet adds holdings.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill daily-brief --global"
-      },
-      "source": "skills/daily-brief/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "market-opportunities",
-      "title": "Market Opportunities",
-      "category": "discover",
-      "description": "Scan trending tokens and prioritize a small research shortlist by observed 24h USD volume.",
-      "usage": {
-        "input": "No address is required. Choose filters appropriate to the research question.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case market-opportunities --short --estimate-cu",
-        "run_command": "birdeye-cli case market-opportunities --short",
-        "result": "Deduplicated candidates with liquidity and security checks; full depth adds labeled money flow and holder groups. No trades are executed.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill market-opportunities --global"
-      },
-      "source": "skills/market-opportunities/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "market-shortlist",
-      "title": "Market Shortlist",
-      "category": "discover",
-      "description": "Quickly inspect the first few tokens in the provider's trending order.",
-      "usage": {
-        "input": "No address is required. Choose filters appropriate to the research question.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case market-shortlist --short --estimate-cu",
-        "run_command": "birdeye-cli case market-shortlist --short",
-        "result": "A small trending list enriched with security and market snapshots. This recipe keeps provider order.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill market-shortlist --global"
-      },
-      "source": "skills/market-shortlist/SKILL.md",
-      "featured": false
-    },
-    {
-      "id": "wallet-exposure",
-      "title": "Wallet Exposure",
-      "category": "wallet",
-      "description": "See how a wallet's observed asset value is distributed across the holdings page you fetch.",
-      "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case wallet-exposure --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case wallet-exposure --address <SOLANA_ADDRESS> --short",
-        "result": "Asset values and relative weights for that page. Balances do not measure investment returns.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill wallet-exposure --global"
-      },
-      "source": "skills/wallet-exposure/SKILL.md",
-      "featured": false
-    },
-    {
       "id": "skill-token-dd-score",
       "title": "Token DD Score · Advanced",
       "category": "token",
@@ -262,7 +86,7 @@
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-dd --global"
       },
       "source": "skills/skill-token-dd/SKILL.md",
-      "featured": false
+      "featured": true
     },
     {
       "id": "skill-contract-dd",
@@ -394,17 +218,6 @@
     }
   ],
   "documents": {
-    "skills/token-research/SKILL.md": "<!-- Generated from src/workflows/token-research/definition.ts; run npm run skills:sync. -->\n\n# Token Research\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nUnderstand a token before deciding whether to investigate further. Check its market activity, security observations and holder concentration together.\n\n## Input\n\nA Solana token address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case token-research --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case token-research --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case token-research --help` for optional flags. Run from any directory.\n\n## Result\n\nPrice, liquidity, activity and holder evidence; full depth adds pools and labeled holder groups.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/token-due-diligence/SKILL.md": "<!-- Generated from src/workflows/token-due-diligence/definition.ts; run npm run skills:sync. -->\n\n# Token Due Diligence\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nCheck a token's identity and the security fields that could rule it out of your research shortlist.\n\n## Input\n\nA Solana token address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case token-due-diligence --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case token-due-diligence --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case token-due-diligence --help` for optional flags. Run from any directory.\n\n## Result\n\nAn identity and security checklist with missing checks made explicit. This is not a safety verdict.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/project-deep-report/SKILL.md": "<!-- Generated from src/workflows/project-deep-report/definition.ts; run npm run skills:sync. -->\n\n# Project Deep Report\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nBuild an on-chain evidence report about a token's market, ownership and price behavior.\n\n## Input\n\nA Solana token address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case project-deep-report --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case project-deep-report --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case project-deep-report --help` for optional flags. Run from any directory.\n\n## Result\n\nToken and pool snapshots, holder groups, price candles and trading activity. Team, funding and social claims are outside this report.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/wallet-analysis/SKILL.md": "<!-- Generated from src/workflows/wallet-analysis/definition.ts; run npm run skills:sync. -->\n\n# Wallet Analysis\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nUnderstand what a wallet holds, how its positions performed and what it traded in the chosen period.\n\n## Input\n\nA Solana wallet address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case wallet-analysis --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case wallet-analysis --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case wallet-analysis --help` for optional flags. Run from any directory.\n\n## Result\n\nObserved holdings, PnL and a page of trades. Full depth adds per-token PnL and token screening.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/smart-money-profile/SKILL.md": "<!-- Generated from src/workflows/smart-money-profile/definition.ts; run npm run skills:sync. -->\n\n# Smart Money Profile\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nResearch a supplied wallet or discover traders by realized PnL, then compare performance across time windows.\n\n## Input\n\nOptionally supply a Solana wallet address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case smart-money-profile --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case smart-money-profile --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case smart-money-profile --help` for optional flags. Run from any directory.\n\n## Result\n\nHoldings, two PnL snapshots and recent trades per wallet. Provider performance is not a copy-trading return estimate.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/risk-warning/SKILL.md": "<!-- Generated from src/workflows/risk-warning/definition.ts; run npm run skills:sync. -->\n\n# Risk Warning\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nReview security and ownership observations that need attention before continuing token research.\n\n## Input\n\nA Solana token address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case risk-warning --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case risk-warning --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case risk-warning --help` for optional flags. Run from any directory.\n\n## Result\n\nA point-in-time risk checklist; full depth adds labeled positions and trading timelines. This is not a continuous alert service.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/early-project-screening/SKILL.md": "<!-- Generated from src/workflows/early-project-screening/definition.ts; run npm run skills:sync. -->\n\n# Early Project Screening\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nFind tokens at a chosen launch stage and screen a bounded shortlist for liquidity, security and holder-group evidence.\n\n## Input\n\nNo address is required. Choose filters appropriate to the research question.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case early-project-screening --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case early-project-screening --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case early-project-screening --help` for optional flags. Run from any directory.\n\n## Result\n\nLaunch candidates, selection reasons and per-token checks. Newly listed and newly created describe different events.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/daily-brief/SKILL.md": "<!-- Generated from src/workflows/daily-brief/definition.ts; run npm run skills:sync. -->\n\n# Daily Brief\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nPrepare a market briefing from short and daily trending windows, then inspect a few selected tokens.\n\n## Input\n\nOptionally supply a Solana wallet address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case daily-brief --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case daily-brief --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case daily-brief --help` for optional flags. Run from any directory.\n\n## Result\n\nTrending samples and token checks; full depth adds chain activity, smart-money tokens and launches. An optional wallet adds holdings.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/market-opportunities/SKILL.md": "<!-- Generated from src/workflows/market-opportunities/definition.ts; run npm run skills:sync. -->\n\n# Market Opportunities\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nScan trending tokens and prioritize a small research shortlist by observed 24h USD volume.\n\n## Input\n\nNo address is required. Choose filters appropriate to the research question.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case market-opportunities --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case market-opportunities --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case market-opportunities --help` for optional flags. Run from any directory.\n\n## Result\n\nDeduplicated candidates with liquidity and security checks; full depth adds labeled money flow and holder groups. No trades are executed.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/market-shortlist/SKILL.md": "<!-- Generated from src/workflows/market-shortlist/definition.ts; run npm run skills:sync. -->\n\n# Market Shortlist\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nQuickly inspect the first few tokens in the provider's trending order.\n\n## Input\n\nNo address is required. Choose filters appropriate to the research question.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case market-shortlist --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case market-shortlist --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case market-shortlist --help` for optional flags. Run from any directory.\n\n## Result\n\nA small trending list enriched with security and market snapshots. This recipe keeps provider order.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
-    "skills/wallet-exposure/SKILL.md": "<!-- Generated from src/workflows/wallet-exposure/definition.ts; run npm run skills:sync. -->\n\n# Wallet Exposure\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nSee how a wallet's observed asset value is distributed across the holdings page you fetch.\n\n## Input\n\nA Solana wallet address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case wallet-exposure --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case wallet-exposure --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case wallet-exposure --help` for optional flags. Run from any directory.\n\n## Result\n\nAsset values and relative weights for that page. Balances do not measure investment returns.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
     "skills/skill-token-dd-score/SKILL.md": "<!-- Generated from src/workflows/skill-token-dd-score/definition.ts; run npm run skills:sync. -->\n\n# Token DD Score · Advanced\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nExplain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.\n\n## Input\n\nA Solana token address.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case skill-token-dd-score --help` for optional flags. Run from any directory.\n\n## Result\n\nFive scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.\n\nRead [the detailed reference](references/details.md) when interpreting formulas, selecting evidence modes, or re-scoring saved evidence.",
     "skills/skill-trending-list/SKILL.md": "<!-- Generated from src/workflows/skill-trending-list/definition.ts; run npm run skills:sync. -->\n\n# Trending List\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nDiscover tokens by activity, liquidity or market size, optionally within a launch platform.\n\n## Input\n\nNo address is required. Choose filters appropriate to the research question.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case skill-trending-list --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case skill-trending-list --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case skill-trending-list --help` for optional flags. Run from any directory.\n\n## Result\n\nA ranked token page. Choose V3 token list or native trending; sorting options follow the selected API.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
     "skills/skill-smart-wallets/SKILL.md": "<!-- Generated from src/workflows/skill-smart-wallets/definition.ts; run npm run skills:sync. -->\n\n# Smart Wallets\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\nDiscover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.\n\n## Input\n\nNo address is required. Choose filters appropriate to the research question.\n\n## Use\n\nInstall birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\nPreview without API calls:\n\n```bash\nbirdeye-cli case skill-smart-wallets --short --estimate-cu\n```\n\nRun after confirming the input and budget:\n\n```bash\nbirdeye-cli case skill-smart-wallets --short --max-cu <CU_BUDGET>\n```\n\nUse `birdeye-cli case skill-smart-wallets --help` for optional flags. Run from any directory.\n\n## Result\n\nToken → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed.\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.",
@@ -425,6 +238,6 @@
     "headline": "On-chain research.\nFrom your terminal.",
     "description": "Turn Birdeye data into research. Choose a skill, follow its usage guide, and explore tokens, wallets and market activity."
   },
-  "revision": "d9ecac254351c9a6",
-  "updatedAt": "2026-10-27T08:48:56.183Z"
+  "revision": "82ec512203287631",
+  "updatedAt": "2026-10-27T09:11:47.041Z"
 }

@@ -60,15 +60,16 @@ try {
   });
   await page.goto(app.url);
   await page.getByRole("heading", { name: "Trending List", exact: true }).waitFor();
+  assert.equal(await page.getByRole("navigation", {name:"Workspace"}).getByRole("button", {name:"Imports",exact:true}).count(),0);
   assert.equal(await page.getByLabel("Connection code").count(), 0, "Loopback must auto-connect");
   const choose = async (group, title) => {
     await page.getByRole("button", {name: group, exact: true}).click();
     if (!await page.locator(".skill-rail").evaluate(el => el.open)) await page.locator(".skill-rail > summary").click();
     await page.getByRole("navigation", {name: "Skills"}).getByRole("button", {name: title, exact: true}).click();
   };
-  await page.getByRole("heading", {name: "Workflow overview", exact: true}).waitFor();
+  await page.getByRole("region", {name: "Skill parameters", exact: true}).waitFor();
   await choose("Earlier workflows", "Token Research");
-  await page.getByText("Enter the workflow address above to run.", {exact: false}).waitFor();
+  assert.equal(await page.getByText("Enter the workflow address above to run.", {exact: false}).count(), 0);
   assert.equal(await page.getByRole("button", {name: "Run research", exact: true}).isDisabled(), true);
   await mkdir(".impeccable/review", { recursive: true });
 
@@ -211,25 +212,7 @@ try {
   await page.locator(".history-empty").waitFor({state:"attached"});
   assert.equal(await page.locator(".history-item").count(),0);
   assert.equal(ledger.summary().estimated,170,"Deleting reports preserves CU accounting");
-  await page.getByRole("button",{name:"Imports",exact:true}).click();
-  await page.getByLabel("Source",{exact:true}).selectOption("text");
-  await page.getByLabel("Source filename",{exact:true}).fill("evidence.workflow.json");
-  await page.getByLabel("Markdown or Birdeye workflow JSON",{exact:true}).fill(JSON.stringify({version:1,title:"Imported token evidence",purpose:"Inspect the fixture token",steps:[{id:"overview",operation:"token.overview",params:{address:"{{address}}"}}]}));
-  await page.getByRole("button",{name:"Import source",exact:true}).click();
-  await page.getByRole("heading",{name:"Imported token evidence",exact:true}).waitFor();
-  assert.equal(ledger.summary().estimated,170,"Import and preview must not call Birdeye");
-  await page.getByLabel("Token / wallet address",{exact:true}).fill(address);
-  await page.getByRole("button",{name:"Preview mapping & CU",exact:true}).click();
-  await page.getByRole("button",{name:"Run imported workflow",exact:true}).waitFor();
-  await page.setViewportSize({width:1440,height:1000});
-  await page.screenshot({path:".impeccable/review/imports-desktop.png",fullPage:true});
-  await page.setViewportSize({width:390,height:844});
-  await page.screenshot({path:".impeccable/review/imports-mobile.png",fullPage:true});
-  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  await page.getByRole("button",{name:"Run imported workflow",exact:true}).click();
-  await page.getByRole("heading",{name:"Imported token evidence",exact:true}).waitFor();
-  await page.getByText(/^Saved ·/).waitFor();
-  assert.equal(ledger.summary().estimated,185);
+  assert.equal(await page.getByRole("button",{name:"Imports",exact:true}).count(),0);
   await page.getByRole("button",{name:"Demos",exact:true}).click();
   await page.getByRole("navigation",{name:"Product use case"}).getByRole("button",{name:"Security signals",exact:true}).click();
   await page.getByLabel("Token address",{exact:true}).fill(address);
@@ -237,7 +220,7 @@ try {
   await page.getByLabel("CU limit per run",{exact:true}).fill("1");
   await page.getByRole("button",{name:"Create draft",exact:true}).click();
   await page.getByRole("alert").filter({hasText:"Draft needs 70 estimated CU"}).waitFor();
-  assert.equal(ledger.summary().estimated,185,"Insufficient draft budget must not spend CU");
+  assert.equal(ledger.summary().estimated,170,"Insufficient draft budget must not spend CU");
   await page.getByLabel("CU limit per run",{exact:true}).fill("1000");
   await page.locator(".demo-query-settings > summary").click();
   await page.getByLabel("Minimum liquidity · USD",{exact:true}).fill("200000");
@@ -245,7 +228,7 @@ try {
   await page.getByRole("button",{name:"Create draft",exact:true}).click();
   await page.getByRole("heading",{name:"Configured rule checks",exact:true}).waitFor();
   await page.locator(".demo-coverage-note").filter({hasText:"Partial evidence"}).waitFor();
-  assert.equal(ledger.summary().estimated,255);
+  assert.equal(ledger.summary().estimated,240);
   await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:".impeccable/review/demos-desktop.png",fullPage:true});
   await page.setViewportSize({width:390,height:844});
@@ -255,7 +238,7 @@ try {
   if(!await page.locator(".history-rail").evaluate(el=>el.open))await page.locator(".history-rail > summary").click();
   await page.locator(".history-item").filter({hasText:"Security signals"}).click();
   await page.getByRole("heading",{name:"Configured rule checks",exact:true}).waitFor();
-  assert.equal(ledger.summary().estimated,255,"Reopening a demo must reuse evidence");
+  assert.equal(ledger.summary().estimated,240,"Reopening a demo must reuse evidence");
   // Delayed draft preparation must not execute after opening another saved run.
   let releasePreview,previewStarted;
   const pendingPreview=new Promise(resolve=>{previewStarted=resolve;});
@@ -270,7 +253,7 @@ try {
   releasePreview();await staleResponse;
   assert.equal(await page.getByRole("navigation",{name:"Product use case"}).getByRole("button",{name:"Security signals",exact:true}).getAttribute("aria-pressed"),"true");
   assert.equal(await page.getByRole("button",{name:"Create draft",exact:true}).isDisabled(),false);
-  assert.equal(ledger.summary().estimated,255);
+  assert.equal(ledger.summary().estimated,240);
   await page.unroute("**/api/demos/plan");
   await page.getByRole("navigation",{name:"Product use case"}).getByRole("button",{name:"Wallet intelligence",exact:true}).click();
   await page.getByText("Create a draft to view results.",{exact:true}).waitFor();

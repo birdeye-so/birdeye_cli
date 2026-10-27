@@ -7,7 +7,7 @@
   },
   "skills": {
     "overrides": {
-      "token-research": {
+      "skill-token-dd": {
         "featured": true
       },
       "skill-trending-list": {

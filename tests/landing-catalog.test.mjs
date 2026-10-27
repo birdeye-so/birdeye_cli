@@ -6,7 +6,7 @@ import { createCatalog, destination } from '../scripts/sync-landing-catalog.mjs'
 test('landing exposes one skill list with descriptions and usage instructions', async () => {
   const catalog = await createCatalog();
   assert.equal(catalog.schemaVersion, 3);
-  assert.equal(catalog.skills.length, 23);
+  assert.equal(catalog.skills.length, 12);
   assert.ok(!('workflows' in catalog));
   for (const skill of catalog.skills) {
     assert.ok(catalog.categories.some(item => item.id === skill.category));
@@ -15,7 +15,7 @@ test('landing exposes one skill list with descriptions and usage instructions', 
     assert.match(skill.usage.preview_command, /--estimate-cu$/);
     assert.ok(!('steps' in skill));
   }
-  assert.match(catalog.skills.find(item => item.id === 'token-research').usage.run_command, /--address <SOLANA_ADDRESS>/);
+  assert.match(catalog.skills.find(item => item.id === 'skill-token-dd').usage.run_command, /--address <SOLANA_ADDRESS>/);
   assert.match(catalog.skills.find(item => item.id === 'skill-smart-money-leaderboard').usage.run_command, /--wallets/);
   assert.match(catalog.documents['docs/INSTALLATION.md'], /npm install --global/);
 });
@@ -58,9 +58,9 @@ test('source watcher regenerates JSON and preserves the last valid snapshot on i
     await until(async () => JSON.parse(await readFile(output, 'utf8')).revision);
     // Allow the watcher to establish its initial fingerprint before editing.
     await delay(300);
-    const source = resolve(fixture, 'src/workflows/token-research/definition.ts');
-    await writeFile(source, (await readFile(source, 'utf8')).replace('Token Research', 'Token Research updated'));
-    await until(async () => JSON.parse(await readFile(output, 'utf8')).skills.find(item => item.id === 'token-research').title === 'Token Research updated');
+    const source = resolve(fixture, 'src/workflows/skill-token-dd/definition.ts');
+    await writeFile(source, (await readFile(source, 'utf8')).replace('title: "', 'title: "Updated '));
+    await until(async () => JSON.parse(await readFile(output, 'utf8')).skills.find(item => item.id === 'skill-token-dd').title.startsWith('Updated '));
     const before = await readFile(output, 'utf8');
     await writeFile(resolve(fixture, 'apps/landing/catalog.config.json'), '{broken');
     await until(async () => log.includes('keeping the last valid catalog'));

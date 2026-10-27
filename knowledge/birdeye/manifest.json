@@ -3191,48 +3191,6 @@
       "sourceSha256": "110df08e4924e43f79f6757d2562f6dda0c4846c52721ba54ce9831fa5b10533"
     },
     {
-      "id": "cli/skills/daily-brief/SKILL.md",
-      "title": "Daily Brief",
-      "source": "cli:skills/daily-brief/SKILL.md",
-      "sha256": "37730aad20ba23985a4a46933371cf5f417d873396e2907ce506a7390a84dad3",
-      "sourceSha256": "37730aad20ba23985a4a46933371cf5f417d873396e2907ce506a7390a84dad3"
-    },
-    {
-      "id": "cli/skills/early-project-screening/SKILL.md",
-      "title": "Early Project Screening",
-      "source": "cli:skills/early-project-screening/SKILL.md",
-      "sha256": "5606744d4e74781715ef6713753d0a77dbc1f70cd56b3848e6bc71a64c27a1f2",
-      "sourceSha256": "5606744d4e74781715ef6713753d0a77dbc1f70cd56b3848e6bc71a64c27a1f2"
-    },
-    {
-      "id": "cli/skills/market-opportunities/SKILL.md",
-      "title": "Market Opportunities",
-      "source": "cli:skills/market-opportunities/SKILL.md",
-      "sha256": "2c3b4a9caafae150e6ab7699d7c8b7f081f8c94b8b07a8d2ea258ed30447cb53",
-      "sourceSha256": "2c3b4a9caafae150e6ab7699d7c8b7f081f8c94b8b07a8d2ea258ed30447cb53"
-    },
-    {
-      "id": "cli/skills/market-shortlist/SKILL.md",
-      "title": "Market Shortlist",
-      "source": "cli:skills/market-shortlist/SKILL.md",
-      "sha256": "e10fd038736d635dcf8c1601f6aa8f9dddf67d7fa5418f906aeec1d31763e83d",
-      "sourceSha256": "e10fd038736d635dcf8c1601f6aa8f9dddf67d7fa5418f906aeec1d31763e83d"
-    },
-    {
-      "id": "cli/skills/project-deep-report/SKILL.md",
-      "title": "Project Deep Report",
-      "source": "cli:skills/project-deep-report/SKILL.md",
-      "sha256": "23c888038aa8838ff254066a62c3d3984c584f78fdfe541623bee32667835c6a",
-      "sourceSha256": "23c888038aa8838ff254066a62c3d3984c584f78fdfe541623bee32667835c6a"
-    },
-    {
-      "id": "cli/skills/risk-warning/SKILL.md",
-      "title": "Risk Warning",
-      "source": "cli:skills/risk-warning/SKILL.md",
-      "sha256": "bdf3bb1a42ce1445668e1bcf2310d3dd0c6985d8eaa4be409c1bd6fa5c8fa830",
-      "sourceSha256": "bdf3bb1a42ce1445668e1bcf2310d3dd0c6985d8eaa4be409c1bd6fa5c8fa830"
-    },
-    {
       "id": "cli/skills/skill-contract-dd/SKILL.md",
       "title": "Contract DD",
       "source": "cli:skills/skill-contract-dd/SKILL.md",
@@ -3324,20 +3282,6 @@
       "sourceSha256": "ab47d092c622acd3be6efb379d8b5bbc72aabf9bca09ec9db3b7649d18be71c3"
     },
     {
-      "id": "cli/skills/smart-money-profile/SKILL.md",
-      "title": "Smart Money Profile",
-      "source": "cli:skills/smart-money-profile/SKILL.md",
-      "sha256": "f4bf9fa26d07376baa764c5e6d6ce7cd20821c3733f434ad9583becf86c6408a",
-      "sourceSha256": "f4bf9fa26d07376baa764c5e6d6ce7cd20821c3733f434ad9583becf86c6408a"
-    },
-    {
-      "id": "cli/skills/token-due-diligence/SKILL.md",
-      "title": "Token Due Diligence",
-      "source": "cli:skills/token-due-diligence/SKILL.md",
-      "sha256": "39282fbdb3a74d275d32cb05eedb8687e28fceec3e61a60795fab94fbbbba298",
-      "sourceSha256": "39282fbdb3a74d275d32cb05eedb8687e28fceec3e61a60795fab94fbbbba298"
-    },
-    {
       "id": "cli/skills/token-duediligence/doc.md",
       "title": "Token DD Score",
       "source": "cli:skills/token-duediligence/doc.md",
@@ -3357,27 +3301,6 @@
       "source": "cli:skills/token-duediligence/SKILL.md",
       "sha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24",
       "sourceSha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24"
-    },
-    {
-      "id": "cli/skills/token-research/SKILL.md",
-      "title": "Token Research",
-      "source": "cli:skills/token-research/SKILL.md",
-      "sha256": "dcb54dd9f65abf422ebba42151f66da445c8f32b6fd94849e52750147986568f",
-      "sourceSha256": "dcb54dd9f65abf422ebba42151f66da445c8f32b6fd94849e52750147986568f"
-    },
-    {
-      "id": "cli/skills/wallet-analysis/SKILL.md",
-      "title": "Wallet Analysis",
-      "source": "cli:skills/wallet-analysis/SKILL.md",
-      "sha256": "d2d8bc13e74d4cf2f273587601eaba3cd60b6b2fce698a4b7c503b74688275c4",
-      "sourceSha256": "d2d8bc13e74d4cf2f273587601eaba3cd60b6b2fce698a4b7c503b74688275c4"
-    },
-    {
-      "id": "cli/skills/wallet-exposure/SKILL.md",
-      "title": "Wallet Exposure",
-      "source": "cli:skills/wallet-exposure/SKILL.md",
-      "sha256": "8066d7e95e5b053d5fec5208f2a38dc1f99b9b1e28f582e3bd8a0ed8ec2b1472",
-      "sourceSha256": "8066d7e95e5b053d5fec5208f2a38dc1f99b9b1e28f582e3bd8a0ed8ec2b1472"
     }
   ]
 }

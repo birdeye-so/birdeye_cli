@@ -15,7 +15,7 @@ test('bundled API catalog exposes the current skills and usage only', async () =
   assert.deepEqual(bundled.categories, current.categories);
   assert.equal(bundled.schemaVersion, 3);
   assert.deepEqual(bundled.skills, current.skills.map(({source, ...skill}) => skill));
-  assert.equal(bundled.skills.length, 23);
+  assert.equal(bundled.skills.length, 12);
   assert.ok(!('workflows' in bundled));
   assert.ok(bundled.skills.every(skill => skill.usage.run_command && !('steps' in skill) && !('related_skill_ids' in skill)));
 });
@@ -136,19 +136,19 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     assert.equal(wrongMethod.headers.get('allow'), 'POST, OPTIONS');
     const post = (path, body) => fetch(`${base}${path}`, {method: 'POST', headers: {'Content-Type': 'application/json', Origin: 'https://consumer.example'}, body: JSON.stringify(body)});
     for (const path of ['/agent/api/skills/view', '/agent/api/skills/download', '/agent/api/skills/stat']) {
-      const response = await post(path, {skill_id: 'token-due-diligence', ...(path.endsWith('/stat') ? {action: 'view'} : {})});
+      const response = await post(path, {skill_id: 'skill-token-dd', ...(path.endsWith('/stat') ? {action: 'view'} : {})});
       assert.equal(response.status, 200);
       assert.equal(response.headers.get('access-control-allow-origin'), 'https://consumer.example');
     }
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'x'.repeat(9000)})).status, 413);
     const response = await fetch(`${base}/agent/api/skills?category=token`);
-    const skill = (await response.json()).data.list.find(item => item.skill_id === 'token-due-diligence');
+    const skill = (await response.json()).data.list.find(item => item.skill_id === 'skill-token-dd');
     assert.equal(skill.view_count, 2);
     assert.equal(skill.download_count, 1);
     assert.equal((await post('/agent/api/skills/view', {workflow_id: 'skill-token-dd-score'})).status, 400);
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'birdeye-token'})).status, 404);
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'skill-token-dd-score'})).status, 200);
-    assert.match(skill.usage.install_command, /--skill token-due-diligence /);
+    assert.match(skill.usage.install_command, /--skill skill-token-dd /);
   } finally {
     if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
     if (previousCatalog === undefined) delete process.env.SKILL_CATALOG_PATH; else process.env.SKILL_CATALOG_PATH = previousCatalog;

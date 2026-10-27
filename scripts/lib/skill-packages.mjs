@@ -34,7 +34,7 @@ export async function skillPackages() {
 }
 export async function syncSkillPackages({check = false} = {}) {
   const {workflowCatalog} = await loadSkillRuntime();
-  for (const definition of workflowCatalog()) {
+  for (const definition of workflowCatalog().filter(item => item.family !== "legacy")) {
     const skill = publicSkill(definition);
     const directory = resolve(root, 'skills', skill.id);
     const references = definition.source.startsWith('skills/') ? {'references/details.md': definition.source} : {};

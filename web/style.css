@@ -98,12 +98,6 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .history-row .history-item { min-width: 0; }
 .history-delete { color: var(--danger); }
 .history-delete.icon-button { width: 32px; height: 32px; min-width: 32px; align-items: center; justify-content: center; color: var(--danger); }
-.workflow-imports { display: grid; gap: 20px; min-width: 0; }
-.import-source, .import-review { display: grid; gap: 12px; min-width: 0; }
-.import-review { border-top: 1px solid var(--line); padding-top: 20px; }
-.import-mapping { padding-block: 12px; border-bottom: 1px solid var(--line); }
-.workflow-imports code, .workflow-imports .source p { overflow-wrap: anywhere; }
-.workflow-imports a { color: var(--accent); text-underline-offset: 3px; }
 .history-confirm { margin-block: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; overflow-wrap: anywhere; }
 .history-confirm .field-hint { margin-block: 8px; }
 .research-composer { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -761,17 +755,17 @@ tbody tr:hover { background: var(--surface); }
 .sv-discovery-path strong { font-size: 28px; font-weight: 600; }
 .sv-discovery-path span { font-size: 12px; color: var(--muted); }
 .sv-wallet-picker { display: flex; flex-wrap: wrap; gap: 10px; }
-.sv-wallet-picker button { display: flex; align-items: center; gap: 12px; padding: 12px; flex: 1 1 200px; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: transparent; }
-.sv-wallet-picker button[aria-pressed="true"], .sv-wallet-picker button:hover { border-color: var(--accent); background: var(--soft); }
+.sv-wallet-option > button { display: flex; align-items: center; gap: 12px; padding: 12px; flex: 1 1 200px; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: transparent; }
+.sv-wallet-option > button[aria-pressed="true"], .sv-wallet-option > button:hover { border-color: var(--accent); background: var(--soft); }
 .sv-wallet-picker svg { color: var(--accent); }
 .sv-wallet-picker small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
 .sv-wallet-picker strong { margin-left: auto; }
 .sv-selected-wallet { display: grid; gap: 18px; }
 .sv-token-links { display: flex; flex-wrap: wrap; gap: 12px; }
 .sv-toolbar { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; }
-.sv-watchlist button { width: 100%; display: grid; grid-template-columns: 24px 32px minmax(70px,1fr) minmax(100px,1fr) 95px; gap: 14px; align-items: center; padding: 14px 10px; text-align: left; border: 1px solid transparent; border-bottom-color: var(--line); border-radius: 6px; background: transparent; }
-.sv-watchlist button:hover, .sv-watchlist button[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); }
-.sv-watchlist button > span:last-child { text-align: right; }
+.sv-watchlist-select { width: 100%; display: grid; grid-template-columns: 24px 32px minmax(70px,1fr) minmax(100px,1fr) 95px; gap: 14px; align-items: center; padding: 14px 10px; text-align: left; border: 1px solid transparent; border-bottom-color: var(--line); border-radius: 6px; background: transparent; }
+.sv-watchlist-select:hover, .sv-watchlist-select[aria-pressed="true"] { background: var(--soft); border-color: var(--accent); }
+.sv-watchlist-select > span:last-child { text-align: right; }
 .sv-token-avatar { width: 32px; height: 32px; display: grid; place-items: center; background: var(--surface-raised); color: var(--accent); border-radius: 50%; font-size: 11px; font-weight: 700; }
 .sv-token-name { min-width: 0; overflow-wrap: anywhere; }
 .sv-watchlist-bar { min-width: 0; }
@@ -792,7 +786,7 @@ tbody tr:hover { background: var(--surface); }
 .sv-flow-track > span:first-child { background: var(--green); }
 .sv-flow-track > span:last-child { background: var(--danger); }
 @media (max-width: 1100px) {
-  .sv-watchlist button { grid-template-columns: 20px 28px minmax(70px,1fr) 90px; gap: 10px; }
+  .sv-watchlist-select { grid-template-columns: 20px 28px minmax(70px,1fr) 90px; gap: 10px; }
   .sv-watchlist-bar { grid-column: 3 / -1; grid-row: 2; }
   .sv-control-grid > div { grid-template-columns: 1fr; padding: 14px; }
 }
@@ -818,3 +812,11 @@ tbody tr:hover { background: var(--surface); }
   .sv-chart-scrubber input[type="range"] { flex-basis: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { .skill-visuals * { transition: none; } }
+
+.sv-wallet-option { flex: 1 1 200px; min-width: 0; }
+.sv-wallet-option > button { width: 100%; }
+.sv-wallet-option > .address-actions { display: inline-flex; align-items: center; margin: 6px 12px; }
+.sv-watchlist-row { border-bottom: 1px solid var(--line); }
+.sv-watchlist-row .sv-watchlist-select { border-bottom-color: transparent; }
+.sv-row-address { padding: 0 10px 12px 94px; }
+@media (max-width: 650px) { .sv-row-address { padding-left: 78px; } }

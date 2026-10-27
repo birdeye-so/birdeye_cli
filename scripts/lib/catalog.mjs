@@ -18,7 +18,7 @@ export async function createResourceCatalog() {
   await syncSkillPackages({check: true});
   const packages = new Map((await skillPackages()).map(item => [item.id, item]));
   const {workflowCatalog} = await loadSkillRuntime();
-  const skills = workflowCatalog().map(definition => {
+  const skills = workflowCatalog().filter(item => item.family !== "legacy").map(definition => {
     const skill = publicSkill(definition);
     const packaged = packages.get(skill.id);
     if (!packaged || packaged.legacy) throw new Error(`Missing skill package: ${skill.id}`);

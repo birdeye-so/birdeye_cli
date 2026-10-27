@@ -13,7 +13,7 @@ export function metricAddressKind(field: string, operation?: string): AddressKin
   if (field === "wallet") return "wallet";
   if (field === "token" || field === "tokenFilter") return "token";
   if (field !== "address") return;
-  if (["portfolio.holdings", "market.token-list", "market.smart-money"].includes(operation ?? "")) return "token";
+  if (["portfolio.holdings", "market.token-list", "market.trending", "market.smart-money"].includes(operation ?? "")) return "token";
   return operationSubject(operation);
 }
 

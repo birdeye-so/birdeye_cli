@@ -125,12 +125,8 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
     });
   }
   const customized = Object.keys(drafts).length > 0;
-  return <section className="workflow-overview" aria-labelledby="workflow-overview-title">
-    <div className="section-title">
-      <h3 id="workflow-overview-title">Workflow overview</h3>
-      {customized && <button type="button" className="quiet" onClick={() => reset()}>Reset all steps</button>}
-    </div>
-    {plan?.needsAddress && <p className="overview-help">Enter the workflow address above to run.</p>}
+  return <section className="workflow-overview" aria-label="Skill parameters">
+    {customized && <div className="section-title"><button type="button" className="quiet" onClick={() => reset()}>Reset all steps</button></div>}
     {error && <p role="alert" className="notice error">{error} Fix the parameter or reset the edited step.</p>}
     {!plan && checking && <p role="status" className="overview-help">Loading workflow steps…</p>}
     <CliPreview args={plan && !checking && !error && !plan.needsAddress && (budget === null || (Number.isSafeInteger(budget) && budget >= 0)) ? caseCliArgs(plan.input, budget) : null}

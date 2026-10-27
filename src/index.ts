@@ -327,7 +327,7 @@ program.command("demo <id>").description("Run a customer demo snapshot; see demo
     const result=await runDemo(runner,currentRun,plan.demoInput,undefined,undefined,result=>checkpoint(result));
     checkpoint(result,true);print(result,opts);if(result.meta.coverage==="partial")process.exitCode=5;
   });
-program.command("cases").description("List available workflow recipes").action((_: unknown, c: Command) => print(workflowCatalog(), options(c)));
+program.command("cases").description("List available workflow recipes").action((_: unknown, c: Command) => print(workflowCatalog().filter(item => item.family !== "legacy"), options(c)));
 program
   .command("case <kind>")
   .description("Run a bounded research workflow; see cases for available recipes")

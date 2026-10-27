@@ -15,18 +15,25 @@ await mkdir('.impeccable/review',{recursive:true});await writeFile('.impeccable/
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:1100}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/*',route=>route.fulfill({contentType:'text/html',body:html}));await page.goto('http://skills.test');
+ await page.route('**/*',route=>route.fulfill({contentType:'text/html',body:html}));await page.addInitScript(()=>{window.copiedAddresses=[];Object.defineProperty(navigator,'clipboard',{value:{writeText:async value=>window.copiedAddresses.push(value)},configurable:true});});await page.goto('http://skills.test');
  const choose=kind=>page.getByLabel('Skill',{exact:true}).selectOption(kind);
  await page.getByRole('slider',{name:'Inspect Closing price observation'}).focus();await page.keyboard.press('Home');
  assert.match(await page.getByRole('slider').getAttribute('aria-valuetext'),/\$100/);
  await page.keyboard.press('ArrowRight');assert.equal(await page.getByRole('slider').inputValue(),'1');
  await choose('skill-trending-list');await page.getByLabel('Sort tokens').selectOption('liquidity');
- assert.match(await page.locator('.sv-watchlist > button').first().innerText(),/SAMPLE-B/);
- await page.locator('.sv-watchlist > button').filter({hasText:'SAMPLE-A'}).click();assert.match(await page.getByRole('region',{name:'Selected token'}).innerText(),/SAMPLE-A/);
+ assert.match(await page.locator('.sv-watchlist-select').first().innerText(),/SAMPLE-B/);
+ await page.locator('.sv-watchlist-select').filter({hasText:'SAMPLE-A'}).click();assert.match(await page.getByRole('region',{name:'Selected token'}).innerText(),/SAMPLE-A/);
+ const row=page.locator('.sv-watchlist-row').first();
+ const copy=row.locator('.copy-address'),address=await copy.getAttribute('data-address');
+ await copy.click();assert.equal(await page.evaluate(()=>window.copiedAddresses.at(-1)),address);
+ assert.equal(await row.locator('a').getAttribute('href'),`https://birdeye.so/solana/token/${address}`);
+ assert.match(await page.getByRole('region',{name:'Selected token'}).innerText(),/SAMPLE-A/,'Copying another row must preserve selection');
+ assert.equal(await page.locator('button button, button a').count(),0);
  await page.getByLabel('Filter tokens').fill('no-result');await page.getByText('No tokens match this filter.').waitFor();
  await choose('skill-wallet-analysis');await page.getByRole('button',{name:'Inspect 7d PnL'}).click();assert.match(await page.getByRole('button',{name:'Inspect 7d PnL'}).getAttribute('aria-describedby'), /-0$/);assert.match(await page.locator('.sv-facts').first().innerText(),/−\$250.00/);
  await page.getByRole('button',{name:'Unrealized',exact:true}).click();assert.match(await page.getByRole('button',{name:'Inspect 7d PnL'}).innerText(),/\$0.00/);
  await choose('skill-smart-wallets');await page.getByRole('button',{name:/Wallet 2/}).click();assert.match(await page.getByRole('region',{name:'Selected discovered wallet'}).innerText(),/11113/);
+ assert.equal(await page.locator('.sv-wallet-option a[href*="/wallet-analyzer/"]').count(),await page.locator('.sv-wallet-option').count());
  await choose('skill-smart-money-leaderboard');await page.getByLabel('Sort wallets').selectOption('pnl30');
  for(const kind of Object.keys(reports)){
   await choose(kind);
