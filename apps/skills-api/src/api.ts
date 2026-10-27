@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {skillIconUrl, skillIconSvg} from './icons.js';
+import {skillIconUrl} from './icons.js';
 import { readCatalog } from './catalog.js';
 import { openSkillStats, type SkillAction } from './store.js';
 
@@ -67,17 +67,5 @@ export async function listCategories() {
       ...category, skill_count: catalog.skills.filter(skill => skill.category === category.id).length,
     })).filter(category => category.skill_count > 0);
     return response(200, '', 'success', {list});
-  } catch { return unavailable(); }
-}
-
-export async function getSkillIcon(id: string) {
-  try {
-    const catalog = await readCatalog();
-    if (!catalog.skills.some(skill => skill.id === id)) return response(404, 'SKILL_NOT_FOUND', 'Unknown skill_id.');
-    return new Response(skillIconSvg(id), {headers: {
-      'Content-Type': 'image/svg+xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-      'Content-Security-Policy': "default-src 'none'; style-src 'none'; sandbox",
-    }});
   } catch { return unavailable(); }
 }

@@ -30,7 +30,6 @@ Reverse proxies must preserve `/agent`.
 | GET | `/agent/health` | None |
 | GET | `/agent/api/skills` | Optional `?category=token` |
 | GET | `/agent/api/categories` | Nonempty skill categories with `skill_count` |
-| GET | `/agent/api/skills/:id/icon.svg` | SVG icon for a public skill |
 | POST | `/agent/api/skills/view` | `{"skill_id":"skill-token-dd-score"}` |
 | POST | `/agent/api/skills/download` | `{"skill_id":"skill-token-dd-score"}` |
 | POST | `/agent/api/skills/stat` | `{"skill_id":"skill-token-dd-score","action":"view"}` or `download` |
@@ -42,17 +41,17 @@ GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. 
 - `usage.preview_command`, `usage.run_command`, `usage.install_command`;
 - `view_count`, `download_count`.
 
-`icon_url` is a root-relative URL served by this API, e.g. `/agent/api/skills/skill-trending-list/icon.svg`. For a frontend on another origin, resolve it against the API origin:
+`icon_url` is an absolute public SVG URL from [Lucide](https://lucide.dev/icons/) via the [Iconify SVG API](https://iconify.design/docs/api/svg.html), e.g. `https://api.iconify.design/lucide/flame.svg?color=%232563eb`. Frontends can use it directly in an image element.
 
 ```js
 const apiOrigin = 'https://support-api.owland.xyz';
-const iconSrc = new URL(skill.icon_url, apiOrigin).href;
+const iconSrc = skill.icon_url;
 const {data} = await fetch(apiOrigin + '/agent/api/categories').then(r => r.json());
 // data.list: [{id: "token", title: "Token research", description: "...", skill_count: 4}, ...]
 // Filter with GET /agent/api/skills?category=<id>; omit category for All.
 ```
 
-Category counts reflect the current catalog; categories with no public skills are omitted. Category reads and icon requests do not open the stats database or increment counters. Icons are original SVG pictograms served locally, with distinct designs for the current skills and a document fallback for future custom IDs. SVG responses cache for one hour; JSON stays uncached.
+Category counts reflect the current catalog; categories with no public skills are omitted. Category reads do not open the stats database or increment counters. Each current skill maps to a distinct Lucide icon; custom IDs fall back to `file-text`. Icons load directly from Iconify, so frontend image CSP must permit `https://api.iconify.design`. JSON stays uncached.
 
 The public response omits internal steps and relationships. Each skill has a matching `skills/<id>/SKILL.md` package. The four older broad instruction packages remain usable for compatibility but are not additional catalog items.
 

@@ -136,21 +136,14 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       assert.equal(category.skill_count, filtered.length);
       assert.ok(category.title && category.description && category.skill_count > 0);
     }
-    const svgBodies = new Set();
     for (const skill of allSkills) {
-      assert.equal(skill.icon_url, `/agent/api/skills/${skill.id}/icon.svg`);
-      const icon = await fetch(new URL(skill.icon_url, base), {headers: {Origin: 'https://consumer.example'}});
-      assert.equal(icon.status, 200);
-      assert.match(icon.headers.get('content-type'), /image\/svg\+xml/);
-      assert.equal(icon.headers.get('access-control-allow-origin'), 'https://consumer.example');
-      const svg = await icon.text();
-      assert.match(svg, /<svg /);
-      assert.doesNotMatch(svg, /<script|onload=|href=/);
-      svgBodies.add(svg);
+      const icon = new URL(skill.icon_url);
+      assert.equal(icon.origin, 'https://api.iconify.design');
+      assert.match(icon.pathname, /^\/lucide\/[a-z0-9-]+\.svg$/);
+      assert.equal(icon.searchParams.get('color'), '#2563eb');
     }
-    assert.equal(svgBodies.size, allSkills.length, 'Every current skill has a distinct icon');
-    assert.equal((await fetch(`${base}/agent/api/skills/unknown/icon.svg`)).status, 404);
-    for (const path of ['/agent/api/categories', allSkills[0].icon_url]) {
+    assert.equal(new Set(allSkills.map(s => s.icon_url)).size, allSkills.length, 'Every current skill has a distinct icon');
+    for (const path of ['/agent/api/categories']) {
       assert.equal((await fetch(base + path, {method: 'OPTIONS'})).status, 204);
       assert.equal((await fetch(base + path, {method: 'POST'})).status, 405);
     }
