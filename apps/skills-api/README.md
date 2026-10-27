@@ -1,6 +1,6 @@
 # Skills API
 
-Standalone Node.js service exposing one skill catalog: 23 skills with descriptions and usage instructions, plus persistent view/download counters. No separate workflow collection or landing-app dependency. Requires Node >=22.16.
+Standalone Node.js service exposing one skill catalog: skills with descriptions and usage instructions, plus persistent view/download counters. No separate workflow collection or landing-app dependency. Requires Node >=22.16.
 
 ```bash
 # From the repository root
@@ -29,16 +29,30 @@ Reverse proxies must preserve `/agent`.
 | --- | --- | --- |
 | GET | `/agent/health` | None |
 | GET | `/agent/api/skills` | Optional `?category=token` |
+| GET | `/agent/api/categories` | Nonempty skill categories with `skill_count` |
+| GET | `/agent/api/skills/:id/icon.svg` | SVG icon for a public skill |
 | POST | `/agent/api/skills/view` | `{"skill_id":"skill-token-dd-score"}` |
 | POST | `/agent/api/skills/download` | `{"skill_id":"skill-token-dd-score"}` |
 | POST | `/agent/api/skills/stat` | `{"skill_id":"skill-token-dd-score","action":"view"}` or `download` |
 
 GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. Each item has:
 
-- `id`, `skill_id`, `title`, `category`, `description`;
+- `id`, `skill_id`, `title`, `category`, `description`, `icon_url`;
 - `usage.input`, `usage.instructions`, `usage.result`;
 - `usage.preview_command`, `usage.run_command`, `usage.install_command`;
 - `view_count`, `download_count`.
+
+`icon_url` is a root-relative URL served by this API, e.g. `/agent/api/skills/skill-trending-list/icon.svg`. For a frontend on another origin, resolve it against the API origin:
+
+```js
+const apiOrigin = 'https://support-api.owland.xyz';
+const iconSrc = new URL(skill.icon_url, apiOrigin).href;
+const {data} = await fetch(apiOrigin + '/agent/api/categories').then(r => r.json());
+// data.list: [{id: "token", title: "Token research", description: "...", skill_count: 4}, ...]
+// Filter with GET /agent/api/skills?category=<id>; omit category for All.
+```
+
+Category counts reflect the current catalog; categories with no public skills are omitted. Category reads and icon requests do not open the stats database or increment counters. Icons are original SVG pictograms served locally, with distinct designs for the current skills and a document fallback for future custom IDs. SVG responses cache for one hour; JSON stays uncached.
 
 The public response omits internal steps and relationships. Each skill has a matching `skills/<id>/SKILL.md` package. The four older broad instruction packages remain usable for compatibility but are not additional catalog items.
 
@@ -52,7 +66,7 @@ curl 'http://localhost:3002/agent/api/skills/download' \
   -H 'Content-Type: application/json' --data '{"skill_id":"skill-token-dd-score"}'
 ```
 
-Invalid categories/payloads return 400, unknown skill IDs 404, unsupported content types 415, unavailable catalog/storage 503. Responses are not cached. CORS permits OPTIONS without cookies; it is not authentication.
+Invalid categories/payloads return 400, unknown skill IDs 404, unsupported content types 415, unavailable catalog/storage 503. JSON responses are not cached. CORS permits OPTIONS without cookies; it is not authentication.
 
 ## Catalog updates and review
 
@@ -66,7 +80,7 @@ Keep the same `SKILL_STATS_DB_PATH` when upgrading. The deployed `skill_stats` t
 
 If an intermediate local build used `resource_stats`, startup consolidates its rows by ID once into `skill_stats`. Those totals replace the pre-migration values, avoiding double counting. The old table remains for audit. Stop other writers and take a SQLite-consistent backup before that upgrade; old typed writers must not continue after consolidation.
 
-Only `/agent/api/skills` is served. The intermediate `/agent/api/workflows`, its `workflow_id` payload, and unprefixed paths are unsupported.
+The public catalog uses `/agent/api/skills` and `/agent/api/categories`. The intermediate `/agent/api/workflows`, its `workflow_id` payload, and unprefixed paths are unsupported.
 
 ## Storage and tests
 

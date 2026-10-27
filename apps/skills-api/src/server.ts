@@ -1,5 +1,5 @@
 import { createServer } from 'node:http';
-import { listSkills, recordSkillAction } from './api.js';
+import { listSkills, recordSkillAction, listCategories, getSkillIcon } from './api.js';
 
 function error(status: number, reason: string, message: string) {
   return Response.json({code: status, reason, message, data: null}, {status});
@@ -26,7 +26,8 @@ export function createSkillServer(options: {corsOrigins?: string[]} = {}) {
       }
       const url = new URL(req.url || '/', 'http://localhost');
       const path = url.pathname;
-      const method = path === '/agent/api/skills' || path === '/agent/health' ? 'GET'
+      const icon = /^\/agent\/api\/skills\/([a-z0-9][a-z0-9-]*)\/icon\.svg$/.exec(path);
+      const method = icon || path === '/agent/api/categories' || path === '/agent/api/skills' || path === '/agent/health' ? 'GET'
         : ['/agent/api/skills/view', '/agent/api/skills/download', '/agent/api/skills/stat'].includes(path) ? 'POST' : null;
       if (!method) {await send(error(404, 'NOT_FOUND', 'Route not found.')); return;}
       if (req.method === 'OPTIONS') {
@@ -39,6 +40,8 @@ export function createSkillServer(options: {corsOrigins?: string[]} = {}) {
         await send(error(405, 'METHOD_NOT_ALLOWED', 'Method not allowed.')); return;
       }
       if (path === '/agent/health') {await send(Response.json({status: 'ok'})); return;}
+      if (icon) {await send(await getSkillIcon(icon[1])); return;}
+      if (path === '/agent/api/categories') {await send(await listCategories()); return;}
       if (method === 'GET') {await send(await listSkills(new Request(url))); return;}
       const chunks: Buffer[] = [];
       let size = 0;

@@ -124,6 +124,36 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     for (const path of ['/api/skills', '/healthz', '/agent/healthz', '/agent/api/workflows']) {
       assert.equal((await fetch(`${base}${path}`)).status, 404);
     }
+    const categoriesResponse = await fetch(`${base}/agent/api/categories`, {headers: {Origin: 'https://consumer.example'}});
+    assert.equal(categoriesResponse.status, 200);
+    assert.equal(categoriesResponse.headers.get('access-control-allow-origin'), 'https://consumer.example');
+    const categories = (await categoriesResponse.json()).data.list;
+    const allSkills = (await (await fetch(`${base}/agent/api/skills`)).json()).data.list;
+    assert.ok(categories.length > 0);
+    assert.deepEqual(categories.map(c => c.id).sort(), [...new Set(allSkills.map(s => s.category))].sort());
+    for (const category of categories) {
+      const filtered = (await (await fetch(`${base}/agent/api/skills?category=${category.id}`)).json()).data.list;
+      assert.equal(category.skill_count, filtered.length);
+      assert.ok(category.title && category.description && category.skill_count > 0);
+    }
+    const svgBodies = new Set();
+    for (const skill of allSkills) {
+      assert.equal(skill.icon_url, `/agent/api/skills/${skill.id}/icon.svg`);
+      const icon = await fetch(new URL(skill.icon_url, base), {headers: {Origin: 'https://consumer.example'}});
+      assert.equal(icon.status, 200);
+      assert.match(icon.headers.get('content-type'), /image\/svg\+xml/);
+      assert.equal(icon.headers.get('access-control-allow-origin'), 'https://consumer.example');
+      const svg = await icon.text();
+      assert.match(svg, /<svg /);
+      assert.doesNotMatch(svg, /<script|onload=|href=/);
+      svgBodies.add(svg);
+    }
+    assert.equal(svgBodies.size, allSkills.length, 'Every current skill has a distinct icon');
+    assert.equal((await fetch(`${base}/agent/api/skills/unknown/icon.svg`)).status, 404);
+    for (const path of ['/agent/api/categories', allSkills[0].icon_url]) {
+      assert.equal((await fetch(base + path, {method: 'OPTIONS'})).status, 204);
+      assert.equal((await fetch(base + path, {method: 'POST'})).status, 405);
+    }
     const preflight = await fetch(`${base}/agent/api/skills/view`, {method: 'OPTIONS', headers: {Origin: 'https://consumer.example', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}});
     assert.equal(preflight.status, 204);
     assert.equal(preflight.headers.get('access-control-allow-origin'), 'https://consumer.example');
