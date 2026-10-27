@@ -1,11 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
+import { createCatalog } from '../scripts/sync-landing-catalog.mjs';
+
+test('bundled API catalog matches all current workflows', async () => {
+  const current = await createCatalog();
+  const bundled = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
+  assert.deepEqual(bundled.categories, current.categories);
+  assert.deepEqual(bundled.skills, current.workflows.map(({id, title, category, description, source}) => ({id, title, category, description, source})));
+});
 
 async function bundle(entry, outfile) {
   await build({entryPoints: [entry], outfile, bundle: true, platform: 'node', format: 'esm', logLevel: 'silent'});
@@ -119,13 +127,13 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     assert.equal(wrongMethod.headers.get('allow'), 'POST, OPTIONS');
     const post = (path, body) => fetch(`${base}${path}`, {method: 'POST', headers: {'Content-Type': 'application/json', Origin: 'https://consumer.example'}, body: JSON.stringify(body)});
     for (const path of ['/api/skills/view', '/api/skills/download', '/api/skills/stat']) {
-      const response = await post(path, {skill_id: 'birdeye-token', ...(path.endsWith('/stat') ? {action: 'view'} : {})});
+      const response = await post(path, {skill_id: 'token-due-diligence', ...(path.endsWith('/stat') ? {action: 'view'} : {})});
       assert.equal(response.status, 200);
       assert.equal(response.headers.get('access-control-allow-origin'), 'https://consumer.example');
     }
     assert.equal((await post('/api/skills/view', {skill_id: 'x'.repeat(9000)})).status, 413);
     const response = await fetch(`${base}/api/skills?category=token`);
-    const skill = (await response.json()).data.list.find(item => item.skill_id === 'birdeye-token');
+    const skill = (await response.json()).data.list.find(item => item.skill_id === 'token-due-diligence');
     assert.equal(skill.view_count, 2);
     assert.equal(skill.download_count, 1);
   } finally {

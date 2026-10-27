@@ -23,32 +23,165 @@
   ],
   "skills": [
     {
-      "id": "birdeye-token",
-      "title": "birdeye-token",
+      "id": "token-research",
+      "title": "Token Research",
       "category": "token",
-      "description": "Research Solana tokens with Birdeye CLI due diligence, deep reports, holder cohorts, money flow and risk review. Use for token identity, security, ownership and market evidence with CU accounting.",
-      "source": "skills/birdeye-token/SKILL.md"
+      "description": "Overview, security and top holders",
+      "source": "docs/workflows/workflow-token-research.md"
     },
     {
-      "id": "birdeye-market",
-      "title": "birdeye-market",
-      "category": "discover",
-      "description": "Discover and compare Solana tokens using Birdeye CLI market opportunities, launch screening, daily briefs, smart-money flows and OHLCV. Use for bounded market research and watchlists with explicit CU budgets.",
-      "source": "skills/birdeye-market/SKILL.md"
+      "id": "token-due-diligence",
+      "title": "Token Due Diligence",
+      "category": "token",
+      "description": "Quick identity and security checklist",
+      "source": "docs/workflows/workflow-token-due-diligence.md"
     },
     {
-      "id": "birdeye-portfolio",
-      "title": "birdeye-portfolio",
+      "id": "project-deep-report",
+      "title": "Project Deep Report",
+      "category": "token",
+      "description": "On-chain report with pools, cohorts and candles",
+      "source": "docs/workflows/workflow-project-deep-report.md"
+    },
+    {
+      "id": "wallet-analysis",
+      "title": "Wallet Analysis",
       "category": "wallet",
-      "description": "Analyze Solana wallet holdings, PnL, recent trades and performance profiles with Birdeye CLI. Use for portfolio exposure, wallet research and smart-money candidate profiling with explicit scope and CU accounting.",
-      "source": "skills/birdeye-portfolio/SKILL.md"
+      "description": "Holdings, PnL and recent trades",
+      "source": "docs/workflows/workflow-wallet-analysis.md"
     },
     {
-      "id": "token-duediligence",
-      "title": "token-duediligence",
+      "id": "smart-money-profile",
+      "title": "Smart Money Profile",
+      "category": "wallet",
+      "description": "7d/30d wallet performance and activity",
+      "source": "docs/workflows/workflow-smart-money-profile.md"
+    },
+    {
+      "id": "risk-warning",
+      "title": "Risk Warning",
       "category": "token",
-      "description": "Calculate or explain Birdeye Token DD Score for a Solana token, including advanced liquidity and holder evidence, or re-score a saved run locally at zero CU.",
-      "source": "skills/token-duediligence/SKILL.md"
+      "description": "Security and ownership review",
+      "source": "docs/workflows/workflow-risk-warning.md"
+    },
+    {
+      "id": "early-project-screening",
+      "title": "Early Project Screening",
+      "category": "discover",
+      "description": "Launchpad discovery and candidate screening",
+      "source": "docs/workflows/workflow-early-project-screening.md"
+    },
+    {
+      "id": "daily-brief",
+      "title": "Daily Brief",
+      "category": "discover",
+      "description": "Rolling market summary and watchlist",
+      "source": "docs/workflows/workflow-daily-brief.md"
+    },
+    {
+      "id": "market-opportunities",
+      "title": "Market Opportunities",
+      "category": "discover",
+      "description": "Scan up to 50 tokens, then enrich a shortlist",
+      "source": "docs/workflows/workflow-market-opportunities.md"
+    },
+    {
+      "id": "market-shortlist",
+      "title": "Market Shortlist",
+      "category": "discover",
+      "description": "Enrich the first few trending tokens",
+      "source": "docs/workflows/README.md"
+    },
+    {
+      "id": "wallet-exposure",
+      "title": "Wallet Exposure",
+      "category": "wallet",
+      "description": "Portfolio weights within the fetched page",
+      "source": "docs/workflows/README.md"
+    },
+    {
+      "id": "skill-token-dd-score",
+      "title": "Token DD Score · Advanced",
+      "category": "token",
+      "description": "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.",
+      "source": "skills/token-duediligence/doc.md"
+    },
+    {
+      "id": "skill-trending-list",
+      "title": "Trending List",
+      "category": "discover",
+      "description": "Discover tokens by activity, liquidity or market size, optionally within a launch platform.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-smart-wallets",
+      "title": "Smart Wallets",
+      "category": "discover",
+      "description": "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-token-dd",
+      "title": "Token DD",
+      "category": "token",
+      "description": "Check market activity, security and smart-money context before taking a token further in research.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-contract-dd",
+      "title": "Contract DD",
+      "category": "token",
+      "description": "Review contract controls, ownership concentration and price behavior together.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-rugcheck-audit",
+      "title": "RugCheck Audit",
+      "category": "token",
+      "description": "Review contract, holder and actual liquidity-history evidence for potential risk.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-kline-pattern",
+      "title": "Kline Pattern",
+      "category": "token",
+      "description": "Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-wallet-score",
+      "title": "Wallet Score",
+      "category": "wallet",
+      "description": "Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-wallet-style",
+      "title": "Wallet Style",
+      "category": "wallet",
+      "description": "Describe how often a wallet trades and how profitable those trades were over a fixed period.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-wallet-analysis",
+      "title": "Wallet Analysis",
+      "category": "wallet",
+      "description": "Compare wallet PnL across several periods and inspect holdings, positions and recent activity.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-smart-money-profile",
+      "title": "Smart Money Profile",
+      "category": "wallet",
+      "description": "Combine short and monthly performance with position, trade and net-worth history for one wallet.",
+      "source": "docs/workflows/birdeye-data-skills.md"
+    },
+    {
+      "id": "skill-smart-money-leaderboard",
+      "title": "Smart Money Leaderboard",
+      "category": "wallet",
+      "description": "Compare an explicit list of wallets using consistent PnL windows and accounting.",
+      "source": "docs/workflows/birdeye-data-skills.md"
     }
   ]
 }
