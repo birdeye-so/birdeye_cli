@@ -16,6 +16,10 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Workflows now own metadata, validation and planning in individual modules registered once; CLI IDs, commands, request scopes and CU accounting remain compatible.
+- Agent skill packages carry their own reference documents, synchronized from canonical sources with isolated-package link checks. The `token-dd-score` executable moves into the CLI's `bin/` directory; its installed command stays unchanged.
+- Public API and landing now expose one catalog of 23 skills with descriptions and usage instructions. Each skill has a generated, independently installable `SKILL.md`; four older broad packages remain available only for compatibility. Existing skill IDs, event routes and counters are preserved. Complex step plans and overlapping capabilities are recorded separately in `docs/SKILL_REVIEW.md` for maintainer review.
+
 - Internal source documents, planning/research notes and their knowledge copies are excluded from public source and package distributions; private files remain available locally.
 - Public-file checks reject tracked/internal package paths and provide a full-history check before public release.
 

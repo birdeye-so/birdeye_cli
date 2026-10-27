@@ -6,13 +6,18 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
-import { createCatalog } from '../scripts/sync-landing-catalog.mjs';
+import { createResourceCatalog } from '../scripts/lib/catalog.mjs';
+import { DatabaseSync } from 'node:sqlite';
 
-test('bundled API catalog matches all current workflows', async () => {
-  const current = await createCatalog();
+test('bundled API catalog exposes the current skills and usage only', async () => {
+  const current = await createResourceCatalog();
   const bundled = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
   assert.deepEqual(bundled.categories, current.categories);
-  assert.deepEqual(bundled.skills, current.workflows.map(({id, title, category, description, source}) => ({id, title, category, description, source})));
+  assert.equal(bundled.schemaVersion, 3);
+  assert.deepEqual(bundled.skills, current.skills.map(({source, ...skill}) => skill));
+  assert.equal(bundled.skills.length, 23);
+  assert.ok(!('workflows' in bundled));
+  assert.ok(bundled.skills.every(skill => skill.usage.run_command && !('steps' in skill) && !('related_skill_ids' in skill)));
 });
 
 async function bundle(entry, outfile) {
@@ -116,7 +121,7 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     const health = await fetch(`${base}/agent/health`);
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), {status: 'ok'});
-    for (const path of ['/api/skills', '/healthz', '/agent/healthz']) {
+    for (const path of ['/api/skills', '/healthz', '/agent/healthz', '/agent/api/workflows']) {
       assert.equal((await fetch(`${base}${path}`)).status, 404);
     }
     const preflight = await fetch(`${base}/agent/api/skills/view`, {method: 'OPTIONS', headers: {Origin: 'https://consumer.example', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}});
@@ -140,10 +145,39 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     const skill = (await response.json()).data.list.find(item => item.skill_id === 'token-due-diligence');
     assert.equal(skill.view_count, 2);
     assert.equal(skill.download_count, 1);
+    assert.equal((await post('/agent/api/skills/view', {workflow_id: 'skill-token-dd-score'})).status, 400);
+    assert.equal((await post('/agent/api/skills/view', {skill_id: 'birdeye-token'})).status, 404);
+    assert.equal((await post('/agent/api/skills/view', {skill_id: 'skill-token-dd-score'})).status, 200);
+    assert.match(skill.usage.install_command, /--skill token-due-diligence /);
   } finally {
     if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
     if (previousCatalog === undefined) delete process.env.SKILL_CATALOG_PATH; else process.env.SKILL_CATALOG_PATH = previousCatalog;
     if (previousDb === undefined) delete process.env.SKILL_STATS_DB_PATH; else process.env.SKILL_STATS_DB_PATH = previousDb;
     await rm(directory, {recursive: true, force: true});
   }
+});
+
+
+test('deployed counters remain intact and a local typed-counter migration is applied once', async () => {
+  const directory = await mkdtemp(resolve(tmpdir(), 'skills-upgrade-'));
+  try {
+    const {openSkillStats} = await bundle('apps/skills-api/src/store.ts', resolve(directory, 'store.mjs'));
+    for (const typed of [false, true]) {
+      const path = resolve(directory, `${typed}.sqlite`);
+      const db = new DatabaseSync(path);
+      db.exec(`CREATE TABLE skill_stats (skill_id TEXT PRIMARY KEY, view_count INTEGER NOT NULL, download_count INTEGER NOT NULL) STRICT;
+        INSERT INTO skill_stats VALUES ('skill-token-dd-score', 1, 1), ('retired-id', 7, 3);`);
+      if (typed) db.exec(`CREATE TABLE resource_stats (resource_type TEXT, resource_id TEXT, view_count INTEGER, download_count INTEGER);
+        INSERT INTO resource_stats VALUES ('workflow', 'skill-token-dd-score', 4, 2), ('skill', 'skill-token-dd-score', 1, 1);`);
+      db.close();
+      for (let i = 0; i < 3; i++) {
+        const store = openSkillStats(path);
+        try {
+          assert.deepEqual({...store.list().find(row => row.skill_id === 'skill-token-dd-score')}, {skill_id: 'skill-token-dd-score', view_count: (typed ? 5 : 1) + i, download_count: typed ? 3 : 1});
+          assert.equal(store.list().find(row => row.skill_id === 'retired-id').view_count, 7);
+          store.increment('skill-token-dd-score', 'view');
+        } finally {store.close();}
+      }
+    }
+  } finally {await rm(directory, {recursive: true, force: true});}
 });

@@ -2,6 +2,8 @@
 
 Use [GitHub Issues](https://github.com/birdeye-so/birdeye_cli/issues) for reproducible bugs and focused feature proposals. For vulnerabilities, follow [SECURITY.md](SECURITY.md).
 
+See [Skills and execution](docs/ARCHITECTURE.md) before adding a skill or catalog consumer.
+
 ## Local checks
 
 ```bash

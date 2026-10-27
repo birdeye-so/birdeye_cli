@@ -43,11 +43,11 @@ The app is independently runnable: copy `apps/landing`, then run `npm ci && npm 
 
 ## Content and updates
 
-- **Edit metadata:** [`catalog.config.json`](catalog.config.json) lists categories, skill source files, site copy and workflow presentation overrides. Add a skill with a unique ID, category and Markdown file path.
+- **Edit presentation:** [`catalog.config.json`](catalog.config.json) owns site copy and featured skill overrides. Shared categories/documents live in `catalog/resources.json`; installable packages are discovered from `skills/*/SKILL.md` plus `skill.json`; each skill owns metadata in `src/workflows/<id>/definition.ts`.
 - **Installation documentation:** the `documents` list includes `docs/INSTALLATION.md` and `docs/USAGE.md`. Edit those source guides to update the website. “Install with npm” opens the installation guide from the landing or embedded sidebar; the quickstart section includes global npm installation, configuration and running `birdeye-cli`. npm registry distribution is not available yet, so the supported install command uses the provided `.tgz`.
-- **Edit content:** `skills/**/SKILL.md`, `docs/workflows/**/*.md`, `src/workflows.ts`, `src/skill-recipes.ts`, `src/workflow-guides.ts` and the CLI catalog remain the source of truth. Adding a registered workflow automatically adds it to the website.
-- **Generated delivery format:** [`public/catalog.json`](public/catalog.json) contains categories, skills, workflows, commands, planner estimates, steps and Markdown documents. It is self-contained for copying/deploying elsewhere. Do not hand-edit this generated file when using the source watcher.
-- Run `npm run landing:sync` after source edits and commit the resulting JSON. `npm run landing:dev` watches sources every second; a valid update usually appears in open pages within six seconds. This is polling, not WebSocket push.
+- **Edit content:** `skills/**/SKILL.md`, `docs/workflows/**/*.md`, `src/workflows/*/definition.ts`, `src/workflow-guides.ts` and the CLI catalog remain the source of truth. Registering a skill generates its installable instructions and adds it to the website.
+- **Generated delivery format:** [`public/catalog.json`](public/catalog.json) contains categories, skills, descriptions, usage instructions and Markdown documents. It is self-contained for copying/deploying elsewhere. Do not hand-edit this generated file when using the source watcher.
+- Run `npm run catalog:sync` after skill edits to refresh both API and landing snapshots, or `npm run landing:sync` for landing-only edits and commit the resulting JSON. `npm run landing:dev` watches sources every second; a valid update usually appears in open pages within six seconds. This is polling, not WebSocket push.
 - The client polls `/api/catalog` every five seconds and on focus, with ETags. Hidden tabs pause polling. Failed/invalid updates preserve the last valid client snapshot, display a reconnecting message and retry. Direct links, filters and the selected document stay intact.
 - Configuration errors stop generation; the last valid JSON remains in place. Builds run sync first and fail rather than publish invalid metadata.
 
@@ -107,7 +107,7 @@ export default function Docs() {
 
 Copy `app/api/catalog/route.ts` plus `lib/catalog.ts` and adjust relative imports, or supply your own endpoint with the same JSON format. With a cross-origin client endpoint, allow CORS including `If-None-Match`, and compute/change `revision` when content changes. With `catalogUrl={null}`, the component renders a fixed `initialCatalog` snapshot and does not fetch.
 
-The component uses URL hashes (`#workflow/<id>`, `#skill/<id>`, `#document/<encoded-path>`). Use the iframe integration if the host already owns hash routing. Use a single component instance per page. The original guide Markdown is rendered safely without executing HTML/MDX; bundled relative links open within the docs. Unbundled source links display as references rather than broken website routes.
+The component uses URL hashes (`#skill/<id>` (old `#workflow/<id>` links still resolve), `#document/<encoded-path>`). Use the iframe integration if the host already owns hash routing. Use a single component instance per page. The original guide Markdown is rendered safely without executing HTML/MDX; bundled relative links open within the docs. Unbundled source links display as references rather than broken website routes.
 
 ## Checks
 
@@ -124,7 +124,7 @@ Next.js behavior references: [route handlers](https://nextjs.org/docs/app/api-re
 
 ## Interactive HTML demo
 
-Visitors do not need a Birdeye API key, account, or a running CLI on port 8787. Real responses are saved in `public/demo-snapshots.json` and bundled into the player at build time. The workflow buttons and progress animation only replay this data locally. Deploy the generated assets without Birdeye credentials; only the separate, explicit capture script uses a key to refresh the snapshot. The standalone HTML works offline, including evidence downloads.
+Visitors do not need a Birdeye API key, account, or a running CLI on port 8787. Real responses are saved in `public/demo-snapshots.json` and bundled into the player at build time. The skill buttons and progress animation only replay this data locally. Deploy the generated assets without Birdeye credentials; only the separate, explicit capture script uses a key to refresh the snapshot. The standalone HTML works offline, including evidence downloads.
 
 The landing includes a chapter-based walkthrough at `/#demo` for the real PUMP token and the supplied wallet. Each 48-second story follows six steps: choose a workflow, preview the budget, replay evidence collection, read key results, inspect selected evidence, and revisit the result. It provides Play/Pause, restart, chapter navigation, a seekable timeline, playback speed and UI preview / CLI transcript views. It pauses when hidden or offscreen; it never autoplays. Playback types the address, advances through recorded requests, and reveals selected metrics and rows. Pause, seek and chapter navigation are available. Reduced-motion preferences disable decorative animation.
 

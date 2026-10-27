@@ -5,7 +5,7 @@ import { build } from 'esbuild';
 const bundle = await build({entryPoints: ['apps/landing/components/birdeye-docs/demo-script.ts'], bundle: true, write: false, platform: 'node', format: 'esm'});
 const {buildDemoScripts} = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 const snapshot = JSON.parse(await readFile('apps/landing/public/demo-snapshots.json', 'utf8'));
-const scripts = buildDemoScripts([]);
+const scripts = buildDemoScripts();
 test('guided stories retain a real run and its matching budget', () => {
   assert.equal(scripts.length, 2);
   for (const [index, script] of scripts.entries()) {

@@ -5,7 +5,7 @@
   "type": "module",
   "bin": {
     "birdeye-cli": "dist/index.js",
-    "token-dd-score": "skills/token-duediligence/token-dd-score.mjs"
+    "token-dd-score": "bin/token-dd-score.mjs"
   },
   "files": [
     "dist",
@@ -21,13 +21,14 @@
     "CONTRIBUTING.md",
     "docs/INSTALLATION.md",
     "docs/USAGE.md",
-    "docs/RELEASING.md"
+    "docs/RELEASING.md",
+    "bin"
   ],
   "engines": {
     "node": ">=22.16.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/build-web.mjs",
+    "build": "npm run skills:sync && tsc -p tsconfig.json && node scripts/build-web.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.web.json",
     "dev": "npm run build && node dist/index.js",
     "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js tests/*.test.mjs",
@@ -53,7 +54,11 @@
     "skills-api:sync": "node scripts/sync-skills-api-catalog.mjs",
     "skills-api:build": "npm run skills-api:sync && npm --prefix apps/skills-api run build",
     "skills-api:start": "npm --prefix apps/skills-api start",
-    "test:skills-api": "node --test tests/skills-api.test.mjs"
+    "test:skills-api": "node --test tests/skills-api.test.mjs",
+    "skills:sync": "node scripts/sync-skill-packages.mjs",
+    "skills:check": "node scripts/sync-skill-packages.mjs --check",
+    "catalog:sync": "npm run skills:sync && npm run landing:sync && npm run skills-api:sync && npm run skills:review",
+    "skills:review": "node scripts/build-skill-review.mjs"
   },
   "dependencies": {
     "bignumber.js": "9.3.1",

@@ -29,7 +29,7 @@ test("authenticated HTTP re-score and Node entrypoint reuse SQLite evidence afte
     const {id}=await response.json();const saved=new RunStore(ledger).get(id);assert.equal(saved.cu.attempts,0);assert.equal(saved.cu.estimated,0);assert.equal(calls,2);
     assert.equal(saved.result!.data.skillAnalysis.findings[0].pillars.smart_money.score,null);
     assert.equal((await request("/api/rescore",{runId:start.id,liqResolution:"1D"})).status,400);
-    const entry=resolve("skills/token-duediligence/token-dd-score.mjs");
+    const entry=resolve("bin/token-dd-score.mjs");
     const cli=spawnSync(process.execPath,[entry,"--rescore",id,"--config-dir",dir,"--mode","standard","--format","raw-json"],{encoding:"utf8",env:{...process.env,BIRDEYE_API_KEY:""}});
     assert.equal(cli.status,0,cli.stderr);const result=JSON.parse(cli.stdout);assert.equal(result.meta.cu.attempts,0);assert.equal(result.data.skillAnalysis.findings[0].meta.cu_estimated_total,0);
     const file=join(dir,"evidence.json");writeFileSync(file,cli.stdout);
@@ -40,7 +40,7 @@ test("authenticated HTTP re-score and Node entrypoint reuse SQLite evidence afte
 });
 
 test("Node entrypoint preflights offline, rejects unavailable presets and pace",()=>{
-  const entry=resolve("skills/token-duediligence/token-dd-score.mjs");
+  const entry=resolve("bin/token-dd-score.mjs");
   const estimate=spawnSync(process.execPath,[entry,address,"--estimate-cu","--format","json"],{encoding:"utf8",env:{...process.env,BIRDEYE_API_KEY:""}});
   assert.equal(estimate.status,0,estimate.stderr);assert.equal(JSON.parse(estimate.stdout).estimatedCu,181);
   for(const flag of [["--pace"],["--weights-preset","strict-liquidity"]])assert.notEqual(spawnSync(process.execPath,[entry,address,...flag],{encoding:"utf8"}).status,0);

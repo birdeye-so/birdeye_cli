@@ -72,10 +72,10 @@ export function DemoPlayer({scripts, standalone = false, htmlUrl = '/demo.html'}
             </div> : <div key={`${script.id}-${chapter}`} className={s.scene}>
               {chapter === 0 && <>
                 <p className={s.description}>{script.description}</p>
-                <div className={s.setup}><label>Workflow<span>{script.title}<Check size={16}/></span></label><label>Network<span>Solana</span></label></div>
+                <div className={s.setup}><label>Skill<span>{script.title}<Check size={16}/></span></label><label>Network<span>Solana</span></label></div>
                 <div className={s.addressInput}><span>{script.id === 'token-research' ? 'Token address' : 'Wallet address'}</span><code>{elapsed > 0 ? script.address.slice(0, Math.min(script.address.length, Math.floor(progress * script.address.length * 2.2))) : script.address}<span className={s.cursor} aria-hidden="true"/></code></div>
                 <button className={s.nextAction} onClick={next}><span>Preview budget</span><ArrowRight size={16}/></button>
-                <p className={s.hint}>Start with one address. Choose the workflow for your research question.</p>
+                <p className={s.hint}>Start with one address. Choose the skill for your research question.</p>
               </>}
               {chapter === 1 && <>
                 <p className={s.description}>Review the plan before spending API credits.</p>

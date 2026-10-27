@@ -25,7 +25,7 @@ try {
   const [archive] = JSON.parse(run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', work], root));
   const files = new Set(archive.files.map(file => file.path));
   for (const required of ['dist/index.js', 'dist/web/main.js', 'dist/web/index.html',
-    'skills/token-duediligence/token-dd-score.mjs', 'knowledge/birdeye/manifest.json',
+    'bin/token-dd-score.mjs', 'knowledge/birdeye/manifest.json',
     'README.md', 'README.vi.md', 'CHANGELOG.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md',
     'docs/INSTALLATION.md', 'docs/USAGE.md']) {
     assert.ok(files.has(required), `Missing package asset: ${required}`);

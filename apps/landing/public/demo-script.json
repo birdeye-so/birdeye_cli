@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "illustrative": false,
-  "catalogRevision": "a1e46dde355d9cc9",
+  "catalogRevision": "d9ecac254351c9a6",
   "scripts": [
     {
       "id": "token-research",
@@ -3797,7 +3797,7 @@
       ],
       "chapters": [
         {
-          "title": "Choose a workflow",
+          "title": "Choose a skill",
           "caption": "Choose Token Research and paste the PUMP token address on Solana."
         },
         {
@@ -18188,7 +18188,7 @@
       ],
       "chapters": [
         {
-          "title": "Choose a workflow",
+          "title": "Choose a skill",
           "caption": "Choose Wallet Analysis and paste the wallet address on Solana."
         },
         {

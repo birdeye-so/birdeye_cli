@@ -25,7 +25,7 @@ const cli = new Command().name("token-dd-score")
   .option("--public-url <url>","interface browser URL")
   .parse();
 const o=cli.opts();
-const script=fileURLToPath(new URL("../../dist/index.js",import.meta.url));
+const script=fileURLToPath(new URL("../dist/index.js",import.meta.url));
 if(!existsSync(script))cli.error("Build first with npm run build (Node >=22.16).");
 const args=[script,"case","skill-token-dd-score"];
 if(cli.args[0])args.push("--address",cli.args[0]);

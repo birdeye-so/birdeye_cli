@@ -1,0 +1,9 @@
+{
+  "category": "token",
+  "resources": {
+    "references/birdeye-data-skills.md": "docs/workflows/birdeye-data-skills.md",
+    "references/migration-audit.md": "docs/workflows/migration-audit.md",
+    "references/scoring.md": "skills/token-duediligence/references/scoring.md"
+  },
+  "legacy": true
+}

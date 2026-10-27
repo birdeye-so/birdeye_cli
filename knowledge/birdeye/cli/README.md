@@ -1,6 +1,6 @@
 # Birdeye CLI
 
-Query Solana token, market and wallet data from your terminal, or use a local web interface to run research workflows and explore saved results with optional AI chat.
+Query Solana token, market and wallet data from your terminal, or use a local web interface to use research skills and explore saved results with optional AI chat.
 
 [Installation](docs/INSTALLATION.md) · [中文安装指南](docs/INSTALLATION.md#中文安装指南) · [Usage](docs/USAGE.md) · [Tiếng Việt / full command reference](README.vi.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
@@ -17,7 +17,7 @@ The CLI currently supports **Solana only**, even though the bundled provider doc
 - Node.js **22.16.0 or newer** and npm. Node's built-in SQLite stores configuration and history; no database server is needed.
 - macOS or Linux with Bash/Zsh. On Windows, use WSL; native Windows is not currently validated.
 - A [Birdeye API key](https://data.birdeye.so/) with access to the endpoints you use. Help, cost estimates and saved data do not need a key.
-- An AI provider is optional. Data commands and workflows work without AI credentials.
+- An AI provider is optional. Data commands and skills work without AI credentials.
 
 ## Install Birdeye skills in your AI agent
 
@@ -26,11 +26,10 @@ Copy this prompt into an agent that can run terminal commands:
 ```text
 Set up Birdeye skills from https://github.com/birdeye-so/birdeye_cli.
 Read docs/INSTALLATION.md, section "Install agent skills". Install the
-birdeye-market, birdeye-token, birdeye-portfolio and token-duediligence
+skill-trending-list, token-research, skill-wallet-analysis and skill-token-dd-score
 skills for my agent. Install the CLI separately from source or a built
 .tgz if it is missing. If GitHub access fails, use my existing checkout
-or explain which repository access is needed. Keep the source checkout
-for referenced documentation. Verify with --estimate-cu only. For live
+or explain which repository access is needed. Each skill includes its referenced documentation. Verify with --estimate-cu only. For live
 queries, guide me to enter my Birdeye API key locally via config init;
 do not ask me to paste the key into chat. Show the plan and CU estimate
 before fetching data.
@@ -43,10 +42,10 @@ before fetching data.
 ```text
 请从 https://github.com/birdeye-so/birdeye_cli 为我配置 Birdeye skills。
 先阅读 docs/INSTALLATION.md 中的“中文安装指南”，为我使用的 AI 助手安装
-birdeye-market、birdeye-token、birdeye-portfolio 和 token-duediligence。
+skill-trending-list、token-research、skill-wallet-analysis 和 skill-token-dd-score。
 如果尚未安装 CLI，请从源码或已构建的 .tgz 包单独安装。
 如果 GitHub 访问失败，请使用我已有的本地仓库，或说明需要什么仓库访问权限。
-保留完整源码，以便读取 skill 引用的文档。先使用 --estimate-cu 验证，
+每个 skill 已包含引用的文档。先使用 --estimate-cu 验证，
 不要调用实时数据接口。需要实时查询时，引导我在本地通过 birdeye-cli config init
 输入 API key，不要让我把密钥发到聊天中。获取数据前先展示执行计划和 CU 估算。
 ```
@@ -58,20 +57,20 @@ birdeye-market、birdeye-token、birdeye-portfolio 和 token-duediligence。
 Already have this repository checked out? Run from its root:
 
 ```bash
-# Inspect the four available skills; this does not install them.
+# Inspect available skills; this does not install them.
 npx skills add ./skills --list
 
-# Install all four in your user scope for the agent you select.
-npx skills add ./skills --skill birdeye-market birdeye-token birdeye-portfolio token-duediligence --global
+# Install these example skills in your user scope for the agent you select.
+npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
 ```
 
 For direct GitHub installation when your Git credentials can access the repository:
 
 ```bash
-npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill birdeye-market --global
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-trending-list --global
 ```
 
-Change `birdeye-market` to another skill name to install it individually. The third-party `skills` installer registers agent instructions; it does **not** install `birdeye-cli` or configure a Birdeye key. Continue with [CLI installation below](#install-from-source), then follow [skill verification and example prompts](docs/INSTALLATION.md#install-agent-skills). No public demo key is bundled.
+Change `skill-trending-list` to another skill name to install it individually. The third-party `skills` installer registers agent instructions; it does **not** install `birdeye-cli` or configure a Birdeye key. Continue with [CLI installation below](#install-from-source), then follow [skill verification and example prompts](docs/INSTALLATION.md#install-agent-skills). No public demo key is bundled.
 
 ## Install from source
 

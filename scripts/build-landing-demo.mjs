@@ -6,7 +6,7 @@ const app = resolve(root, 'apps/landing');
 const catalog = JSON.parse(await readFile(resolve(app, 'public/catalog.json'), 'utf8'));
 const module = await build({entryPoints: [resolve(app, 'components/birdeye-docs/demo-script.ts')], bundle: true, write: false, platform: 'node', format: 'esm', logLevel: 'silent'});
 const { buildDemoScripts } = await import(`data:text/javascript;base64,${Buffer.from(module.outputFiles[0].text).toString('base64')}`);
-const data = {schemaVersion: 2, illustrative: false, catalogRevision: catalog.revision, scripts: buildDemoScripts(catalog.workflows)};
+const data = {schemaVersion: 2, illustrative: false, catalogRevision: catalog.revision, scripts: buildDemoScripts()};
 await writeFile(resolve(app, 'public/demo-script.json'), JSON.stringify(data, null, 2) + '\n');
 const bundle = await build({entryPoints: [resolve(app, 'demo/standalone.tsx')], bundle: true, write: false, outfile: resolve(app, 'demo/export.js'), platform: 'browser', format: 'iife', jsx: 'automatic', minify: true, define: {'process.env.NODE_ENV': '"production"'}, logLevel: 'silent'});
 const javascript = bundle.outputFiles.find(file => file.path.endsWith('.js')).text.replace(/<\/script/gi, '<\\/script');

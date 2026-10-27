@@ -1,30 +1,24 @@
 {
   "schemaVersion": 1,
-  "documents": ["docs/INSTALLATION.md", "docs/USAGE.md"],
   "site": {
     "name": "Birdeye CLI",
     "headline": "On-chain research.\nFrom your terminal.",
-    "description": "Turn Birdeye data into repeatable research. Explore tokens, follow wallet activity, and build evidence-backed workflows with compute costs in view."
+    "description": "Turn Birdeye data into research. Choose a skill, follow its usage guide, and explore tokens, wallets and market activity."
   },
-  "categories": [
-    {"id": "discover", "title": "Market discovery", "description": "Find tokens and activity worth a closer look."},
-    {"id": "token", "title": "Token research", "description": "Understand security, ownership and liquidity."},
-    {"id": "wallet", "title": "Wallet intelligence", "description": "Explore holdings, performance and trading behavior."},
-    {"id": "guides", "title": "Agent skills", "description": "Give your agent the context to use Birdeye CLI."}
-  ],
-  "skills": [
-    {"id": "birdeye-token", "category": "token", "file": "skills/birdeye-token/SKILL.md"},
-    {"id": "birdeye-market", "category": "discover", "file": "skills/birdeye-market/SKILL.md"},
-    {"id": "birdeye-portfolio", "category": "wallet", "file": "skills/birdeye-portfolio/SKILL.md"},
-    {"id": "token-duediligence", "category": "token", "file": "skills/token-duediligence/SKILL.md"}
-  ],
-  "workflows": {
-    "source": "src/workflows.ts",
+  "skills": {
     "overrides": {
-      "token-research": {"featured": true},
-      "skill-trending-list": {"featured": true},
-      "skill-wallet-analysis": {"featured": true},
-      "skill-token-dd-score": {"featured": true, "source": "skills/token-duediligence/doc.md"}
+      "token-research": {
+        "featured": true
+      },
+      "skill-trending-list": {
+        "featured": true
+      },
+      "skill-wallet-analysis": {
+        "featured": true
+      },
+      "skill-token-dd-score": {
+        "featured": true
+      }
     }
   }
 }

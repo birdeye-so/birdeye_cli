@@ -3,31 +3,21 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createCatalog, destination } from '../scripts/sync-landing-catalog.mjs';
 
-test('landing catalog exports real skills, executable plans, and local references', async () => {
+test('landing exposes one skill list with descriptions and usage instructions', async () => {
   const catalog = await createCatalog();
-  assert.equal(catalog.schemaVersion, 1);
+  assert.equal(catalog.schemaVersion, 3);
+  assert.equal(catalog.skills.length, 23);
+  assert.ok(!('workflows' in catalog));
+  for (const skill of catalog.skills) {
+    assert.ok(catalog.categories.some(item => item.id === skill.category));
+    assert.ok(catalog.documents[skill.source]);
+    assert.ok(skill.description && skill.usage.instructions && skill.usage.result);
+    assert.match(skill.usage.preview_command, /--estimate-cu$/);
+    assert.ok(!('steps' in skill));
+  }
+  assert.match(catalog.skills.find(item => item.id === 'token-research').usage.run_command, /--address <SOLANA_ADDRESS>/);
+  assert.match(catalog.skills.find(item => item.id === 'skill-smart-money-leaderboard').usage.run_command, /--wallets/);
   assert.match(catalog.documents['docs/INSTALLATION.md'], /npm install --global/);
-  assert.match(catalog.documents['docs/INSTALLATION.md'], /birdeye-cli --format interface/);
-  assert.ok(catalog.skills.length >= 4);
-  assert.ok(catalog.workflows.length >= 23);
-  for (const resource of [...catalog.skills, ...catalog.workflows]) {
-    assert.ok(catalog.categories.some(item => item.id === resource.category), resource.id);
-    assert.ok(catalog.documents[resource.source], resource.source);
-  }
-  const research = catalog.workflows.find(item => item.id === 'token-research');
-  assert.equal(research.estimatedCu, 78);
-  assert.equal(research.maxRequests, 3);
-  assert.match(research.command, /--address <SOLANA_ADDRESS> --estimate-cu --short$/);
-  const discovery = catalog.workflows.find(item => item.id === 'skill-trending-list');
-  assert.equal(discovery.estimatedCu, 50);
-  assert.doesNotMatch(discovery.command, /--address/);
-  assert.match(catalog.workflows.find(item => item.id === 'skill-smart-money-leaderboard').command, /--wallets/);
-  assert.equal(catalog.workflows.find(item => item.id === 'skill-token-dd-score').source, 'skills/token-duediligence/doc.md');
-  assert.equal(catalog.workflows.find(item => item.id === 'market-shortlist').source, 'docs/workflows/README.md');
-  for (const workflow of catalog.workflows) {
-    assert.ok(workflow.steps.length > 0);
-    assert.ok(workflow.estimatedCu >= workflow.steps.reduce((sum, step) => sum + step.cost, 0));
-  }
 });
 
 test('catalog revision is deterministic and the checked-in snapshot matches source', async () => {
@@ -48,9 +38,10 @@ test('source watcher regenerates JSON and preserves the last valid snapshot on i
   const fixture = await mkdtemp(resolve(tmpdir(), 'landing-watch-'));
   let child;
   try {
-    for (const directory of ['src', 'skills', 'docs']) await cp(directory, resolve(fixture, directory), {recursive: true});
+    for (const directory of ['src', 'skills', 'docs', 'catalog']) await cp(directory, resolve(fixture, directory), {recursive: true});
     await mkdir(resolve(fixture, 'scripts'), {recursive: true});
     await mkdir(resolve(fixture, 'apps/landing'), {recursive: true});
+    await cp('scripts/lib', resolve(fixture, 'scripts/lib'), {recursive: true});
     await cp('scripts/sync-landing-catalog.mjs', resolve(fixture, 'scripts/sync-landing-catalog.mjs'));
     await cp('package.json', resolve(fixture, 'package.json'));
     await cp('apps/landing/catalog.config.json', resolve(fixture, 'apps/landing/catalog.config.json'));
@@ -67,9 +58,9 @@ test('source watcher regenerates JSON and preserves the last valid snapshot on i
     await until(async () => JSON.parse(await readFile(output, 'utf8')).revision);
     // Allow the watcher to establish its initial fingerprint before editing.
     await delay(300);
-    const source = resolve(fixture, 'skills/birdeye-token/SKILL.md');
-    await writeFile(source, await readFile(source, 'utf8') + '\nWatcher integration evidence.\n');
-    await until(async () => JSON.parse(await readFile(output, 'utf8')).documents['skills/birdeye-token/SKILL.md'].includes('Watcher integration evidence.'));
+    const source = resolve(fixture, 'src/workflows/token-research/definition.ts');
+    await writeFile(source, (await readFile(source, 'utf8')).replace('Token Research', 'Token Research updated'));
+    await until(async () => JSON.parse(await readFile(output, 'utf8')).skills.find(item => item.id === 'token-research').title === 'Token Research updated');
     const before = await readFile(output, 'utf8');
     await writeFile(resolve(fixture, 'apps/landing/catalog.config.json'), '{broken');
     await until(async () => log.includes('keeping the last valid catalog'));

@@ -1,57 +1,77 @@
 # Skills API
 
-Standalone Node.js service with its own port, catalog, and SQLite database. It has no dependency on Next.js or the landing app.
+Standalone Node.js service exposing one skill catalog: 23 skills with descriptions and usage instructions, plus persistent view/download counters. No separate workflow collection or landing-app dependency. Requires Node >=22.16.
 
 ```bash
 # From the repository root
+npm --prefix apps/skills-api ci
 npm run skills-api:build
 npm run skills-api:start
 ```
 
-For deployment, copy this directory, run `npm ci`, `npm run build`, then `npm start`. Node >=22.16 is required.
+To deploy this directory independently, run `npm ci`, `npm run build`, then `npm start` inside it. The bundled catalog is ready to use. Regeneration requires the source checkout.
 
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
-| `SKILL_API_HOST` | `127.0.0.1` | Set `0.0.0.0` to listen on all interfaces |
+| `SKILL_API_HOST` | `127.0.0.1` | Bind address; use `0.0.0.0` for all interfaces |
 | `SKILL_API_PORT` | `3002` | HTTP port |
-| `SKILL_API_CORS_ORIGINS` | `*` | Public browser access, or comma-separated allowed origins |
-| `SKILL_CATALOG_PATH` | Bundled `catalog.json` | Absolute path to an alternative catalog |
-| `SKILL_STATS_DB_PATH` | `.birdeye/skill-stats.sqlite` | Persistent database path, relative to process working directory by default |
+| `SKILL_API_CORS_ORIGINS` | `*` | Allowed browser origins, comma-separated |
+| `SKILL_CATALOG_PATH` | Bundled `catalog.json` | Optional absolute path to a schema-v3 catalog |
+| `SKILL_STATS_DB_PATH` | `.birdeye/skill-stats.sqlite` | Persistent SQLite path |
 
-The service validates catalog and storage before listening. `GET /agent/health` is a liveness check. SIGINT/SIGTERM gracefully close the server. POST bodies are limited to 8 KiB. CORS supports OPTIONS preflight without cookies; CORS is not authentication and does not restrict server-to-server callers.
-
-The bundled `catalog.json` is generated from the current CLI workflows using the same metadata as the landing catalog. From the repository root, run `npm run skills-api:sync` after workflow changes; `npm run skills-api:build` also synchronizes it. Commit the generated catalog when updating workflows. The service remains standalone at runtime and does not load the landing app. It reads the catalog on every request, so syncing also updates a running service. Standalone deployments use the bundled snapshot; copy the updated catalog when deploying.
-
-All routes use the `/agent` prefix. Reverse proxies must forward this prefix unchanged. The previous `/api/skills` and `/healthz` paths are no longer served.
+Use an absolute persistent path for SQLite and keep its WAL/SHM files on the same local volume. The directory is created automatically. The service validates catalog/storage before listening and closes gracefully on SIGINT/SIGTERM.
 
 ## Endpoints
 
+Reverse proxies must preserve `/agent`.
+
 | Method | Path | Input |
 | --- | --- | --- |
-| GET | `/agent/api/skills` | Optional `?category=token` (catalog category ID) |
-| POST | `/agent/api/skills/view` | `{"skill_id":"token-due-diligence"}` |
-| POST | `/agent/api/skills/download` | `{"skill_id":"token-due-diligence"}` |
-| POST | `/agent/api/skills/stat` | `{"skill_id":"token-due-diligence","action":"view"}` or action `download` |
+| GET | `/agent/health` | None |
+| GET | `/agent/api/skills` | Optional `?category=token` |
+| POST | `/agent/api/skills/view` | `{"skill_id":"skill-token-dd-score"}` |
+| POST | `/agent/api/skills/download` | `{"skill_id":"skill-token-dd-score"}` |
+| POST | `/agent/api/skills/stat` | `{"skill_id":"skill-token-dd-score","action":"view"}` or `download` |
 
-POST requires `Content-Type: application/json`. IDs are the current workflow slugs (for example `token-due-diligence`), exposed under `catalog.skills`. The four agent instruction packages are not separate entries in this API. Use the returned `skill_id` for view/download events. Existing counters are preserved by ID; new workflow IDs start at zero. GET returns skill metadata (`id`, `title`, `category`, `description`, `source`), `skill_id`, `view_count`, and `download_count` in `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. New skills have zero counts. POST returns `{"code":0,"reason":"","message":"success","data":null}` only after committing the increment. The download endpoint records an event; it does not transfer a file. GET never increments counters.
+GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. Each item has:
+
+- `id`, `skill_id`, `title`, `category`, `description`;
+- `usage.input`, `usage.instructions`, `usage.result`;
+- `usage.preview_command`, `usage.run_command`, `usage.install_command`;
+- `view_count`, `download_count`.
+
+The public response omits internal steps and relationships. Each skill has a matching `skills/<id>/SKILL.md` package. The four older broad instruction packages remain usable for compatibility but are not additional catalog items.
+
+POST requires `Content-Type: application/json`, accepts at most 8 KiB, and returns `{"code":0,"reason":"","message":"success","data":null}` after committing. A download POST records a download click; it does not transfer a file or prove successful installation. GET never changes counters. This service does not run the displayed commands.
 
 ```bash
 curl 'http://localhost:3002/agent/api/skills?category=token'
 curl 'http://localhost:3002/agent/api/skills/view' \
-  -H 'Content-Type: application/json' --data '{"skill_id":"token-due-diligence"}'
+  -H 'Content-Type: application/json' --data '{"skill_id":"skill-token-dd-score"}'
 curl 'http://localhost:3002/agent/api/skills/download' \
-  -H 'Content-Type: application/json' --data '{"skill_id":"token-due-diligence"}'
+  -H 'Content-Type: application/json' --data '{"skill_id":"skill-token-dd-score"}'
 ```
 
-Unknown categories and invalid payloads return HTTP 400; unknown skills return 404; unsupported content types return 415; unavailable catalog/storage returns 503. Errors use the same envelope with a nonzero `code`, a machine-readable `reason`, and `data: null`. Responses are not cached.
+Invalid categories/payloads return 400, unknown skill IDs 404, unsupported content types 415, unavailable catalog/storage 503. Responses are not cached. CORS permits OPTIONS without cookies; it is not authentication.
 
-Storage uses built-in `node:sqlite` (Node >=22.16), defaulting to `.birdeye/skill-stats.sqlite` under the API process working directory. Set `SKILL_STATS_DB_PATH=/absolute/persistent/path/skill-stats.sqlite` for deployment. The directory is created automatically. Keep the database and its WAL/SHM files on persistent local storage outside build output and `public/`.
+## Catalog updates and review
 
-Each write uses a single atomic SQLite UPSERT, WAL journaling, FULL synchronous durability, and a five-second busy timeout. Multiple processes **on one host must use the same database file**. Separate replicas with their own files do not share counters; this deployment model does not support ephemeral serverless storage or SQLite WAL over network filesystems. Storage failures return errors rather than silently losing events.
+Skill definitions own the canonical metadata and execution. Run `npm run catalog:sync` to regenerate instructions, both public snapshots, and [the maintainer review](../../docs/SKILL_REVIEW.md). `npm run skills-api:sync` regenerates this API snapshot only, including the required instruction packages. The root `skills-api:build` command also synchronizes.
 
-Counts represent accepted events, not unique visitors. Every successful POST adds one; retries also add one. There is no authentication, deduplication, or bot filtering. A client that loses the response after commit cannot assume its retry is exactly-once. Consumers call this service directly; the landing app has no skill-statistics API routes.
+The API reads its snapshot per request, so atomic replacement updates a running server. Deploy v3 catalog and matching code together. Custom catalogs must follow the same schema. Step graphs and complex-case questions stay in the maintainer review, outside the response.
 
-## Tests
+## Existing counters
 
-From the repository root, run `npm run test:skills-api`. The suite covers validation, filtering, persistence, HTTP routing/CORS, and 3,600 concurrent increments across six processes.
+Keep the same `SKILL_STATS_DB_PATH` when upgrading. The deployed `skill_stats` table and skill IDs are unchanged, including `skill-token-dd-score`; live test counters remain associated with that ID. Old package IDs and retired IDs retain their database rows even when absent from the public list.
 
+If an intermediate local build used `resource_stats`, startup consolidates its rows by ID once into `skill_stats`. Those totals replace the pre-migration values, avoiding double counting. The old table remains for audit. Stop other writers and take a SQLite-consistent backup before that upgrade; old typed writers must not continue after consolidation.
+
+Only `/agent/api/skills` is served. The intermediate `/agent/api/workflows`, its `workflow_id` payload, and unprefixed paths are unsupported.
+
+## Storage and tests
+
+Writes use atomic UPSERT, WAL, FULL synchronous durability and a five-second busy timeout. Multiple processes on one host must share the same database file; independent replicas/files do not share counts. Ephemeral serverless storage and WAL on network filesystems are unsupported.
+
+Counts represent accepted events, not unique visitors. Each successful POST adds one, including retries; there is no deduplication, authentication or bot filtering. A lost response after commit does not imply that retrying is exactly-once.
+
+`npm run test:skills-api` covers HTTP routes/CORS, filtering, validation, persistence, compatibility migration and 3,600 increments across six processes.

@@ -1,4 +1,3 @@
-import type { Workflow } from './catalog';
 import snapshots from '../../public/demo-snapshots.json';
 
 type Json = null | boolean | number | string | Json[] | {[key: string]: Json};
@@ -19,7 +18,7 @@ const percent = (value: unknown, ratio = false) => {const n = num(value); return
 const count = (value: unknown) => {const n = num(value); return n === null ? 'Unavailable' : n.toLocaleString('en-US');};
 const boolean = (value: unknown) => value === true ? 'Yes' : value === false ? 'No' : 'Unknown';
 
-export function buildDemoScripts(_workflows: Workflow[]): DemoScript[] {
+export function buildDemoScripts(): DemoScript[] {
   return snapshots.captures.map(capture => {
     // One captured workflow per story: displayed budget and results share a run.
     const report = capture.reports[0];
@@ -38,7 +37,7 @@ export function buildDemoScripts(_workflows: Workflow[]): DemoScript[] {
       durationMs: 48000, estimatedCu, commands: {preview: command + ' --estimate-cu', run: command + ` --max-cu ${estimatedCu}`},
       sourceCount: sources.length, reports: [report] as unknown as Json, steps,
       chapters: [
-        {title: 'Choose a workflow', caption: token ? 'Choose Token Research and paste the PUMP token address on Solana.' : 'Choose Wallet Analysis and paste the wallet address on Solana.'},
+        {title: 'Choose a skill', caption: token ? 'Choose Token Research and paste the PUMP token address on Solana.' : 'Choose Wallet Analysis and paste the wallet address on Solana.'},
         {title: 'Preview the budget', caption: `Preview the ${steps.length} planned data requests and the ${estimatedCu} CU catalog estimate before running.`},
         {title: 'Run the research', caption: 'Follow the requests as evidence comes together. This animation replays a recorded CLI run.'},
         {title: 'Read the results', caption: token ? 'Start with price, liquidity, trading volume and holder count from the captured market overview.' : 'Portfolio value is a balance. Realized and unrealized PnL explain different parts of the 30-day result.'},

@@ -3005,8 +3005,8 @@
       "id": "cli/README.md",
       "title": "Birdeye CLI",
       "source": "cli:README.md",
-      "sha256": "3e9be82e94039cf91d111f51020027ae12055d4b27dd60aa74bed872d8af0a02",
-      "sourceSha256": "3e9be82e94039cf91d111f51020027ae12055d4b27dd60aa74bed872d8af0a02"
+      "sha256": "78a0d420bc12bfb8e0910b76bf3e7c0781ccbb93ea67edde09d3b89321dd3526",
+      "sourceSha256": "78a0d420bc12bfb8e0910b76bf3e7c0781ccbb93ea67edde09d3b89321dd3526"
     },
     {
       "id": "cli/README.vi.md",
@@ -3019,8 +3019,8 @@
       "id": "cli/docs/INSTALLATION.md",
       "title": "Install Birdeye CLI and agent skills",
       "source": "cli:docs/INSTALLATION.md",
-      "sha256": "d0774bf26a4c11afac45fab51ee5cf292657092ce57c41bfd1e21184b95a4137",
-      "sourceSha256": "d0774bf26a4c11afac45fab51ee5cf292657092ce57c41bfd1e21184b95a4137"
+      "sha256": "abec280d20b823611ebe03d17ac724d513d010a69a23b6d8e8cfc192930b5946",
+      "sourceSha256": "abec280d20b823611ebe03d17ac724d513d010a69a23b6d8e8cfc192930b5946"
     },
     {
       "id": "cli/docs/USAGE.md",
@@ -3121,39 +3121,263 @@
       "sourceSha256": "f1b09c5193f1db3885765ace7d7b5dba77324c4af783d2c71e56de11c07695a9"
     },
     {
+      "id": "cli/skills/birdeye-market/references/birdeye-data-skills.md",
+      "title": "Workflows from Birdeye Data Skills",
+      "source": "cli:skills/birdeye-market/references/birdeye-data-skills.md",
+      "sha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd",
+      "sourceSha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd"
+    },
+    {
+      "id": "cli/skills/birdeye-market/references/migration-audit.md",
+      "title": "Data Skills migration audit — 0.3.1",
+      "source": "cli:skills/birdeye-market/references/migration-audit.md",
+      "sha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460",
+      "sourceSha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460"
+    },
+    {
       "id": "cli/skills/birdeye-market/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-market/SKILL.md",
-      "sha256": "7ec3f24e34987d2df524a216d15efd1b027866aaf52bb51380ce4653f9fe9217",
-      "sourceSha256": "7ec3f24e34987d2df524a216d15efd1b027866aaf52bb51380ce4653f9fe9217"
+      "sha256": "9e66063f27d231bbfecd6214f24f25caca6fb12d8e87aa4dfb998866acaa9030",
+      "sourceSha256": "9e66063f27d231bbfecd6214f24f25caca6fb12d8e87aa4dfb998866acaa9030"
+    },
+    {
+      "id": "cli/skills/birdeye-portfolio/references/birdeye-data-skills.md",
+      "title": "Workflows from Birdeye Data Skills",
+      "source": "cli:skills/birdeye-portfolio/references/birdeye-data-skills.md",
+      "sha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd",
+      "sourceSha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd"
+    },
+    {
+      "id": "cli/skills/birdeye-portfolio/references/migration-audit.md",
+      "title": "Data Skills migration audit — 0.3.1",
+      "source": "cli:skills/birdeye-portfolio/references/migration-audit.md",
+      "sha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460",
+      "sourceSha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460"
     },
     {
       "id": "cli/skills/birdeye-portfolio/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-portfolio/SKILL.md",
-      "sha256": "3c16358bb13bb8832c184e2435106846d127549a45c94fae47510e4eb75da620",
-      "sourceSha256": "3c16358bb13bb8832c184e2435106846d127549a45c94fae47510e4eb75da620"
+      "sha256": "ae8e32a2a8f189c55a840a066844475dd8dd63bf816019d47a44dcf1b49d7263",
+      "sourceSha256": "ae8e32a2a8f189c55a840a066844475dd8dd63bf816019d47a44dcf1b49d7263"
+    },
+    {
+      "id": "cli/skills/birdeye-token/references/birdeye-data-skills.md",
+      "title": "Workflows from Birdeye Data Skills",
+      "source": "cli:skills/birdeye-token/references/birdeye-data-skills.md",
+      "sha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd",
+      "sourceSha256": "7b5e88e5060d4ee4065af79983c9b09720046042ebc36663e4632f8123b85dcd"
+    },
+    {
+      "id": "cli/skills/birdeye-token/references/migration-audit.md",
+      "title": "Data Skills migration audit — 0.3.1",
+      "source": "cli:skills/birdeye-token/references/migration-audit.md",
+      "sha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460",
+      "sourceSha256": "e59ad3b5ec246d71c3ff8e4b30ef39ff8d923c6ec9750803d7f16153942a1460"
+    },
+    {
+      "id": "cli/skills/birdeye-token/references/scoring.md",
+      "title": "Token DD Score · Node.js reconstruction",
+      "source": "cli:skills/birdeye-token/references/scoring.md",
+      "sha256": "9bebeb5d90e2090c10f6b9f01b1695968f34b0adc885f85ff8cc897368ba9c6e",
+      "sourceSha256": "9bebeb5d90e2090c10f6b9f01b1695968f34b0adc885f85ff8cc897368ba9c6e"
     },
     {
       "id": "cli/skills/birdeye-token/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-token/SKILL.md",
-      "sha256": "b52601491c5d90bd606b6317bc5e7193316ded626e68079aff0bfbc0129abb35",
-      "sourceSha256": "b52601491c5d90bd606b6317bc5e7193316ded626e68079aff0bfbc0129abb35"
+      "sha256": "110df08e4924e43f79f6757d2562f6dda0c4846c52721ba54ce9831fa5b10533",
+      "sourceSha256": "110df08e4924e43f79f6757d2562f6dda0c4846c52721ba54ce9831fa5b10533"
+    },
+    {
+      "id": "cli/skills/daily-brief/SKILL.md",
+      "title": "Daily Brief",
+      "source": "cli:skills/daily-brief/SKILL.md",
+      "sha256": "37730aad20ba23985a4a46933371cf5f417d873396e2907ce506a7390a84dad3",
+      "sourceSha256": "37730aad20ba23985a4a46933371cf5f417d873396e2907ce506a7390a84dad3"
+    },
+    {
+      "id": "cli/skills/early-project-screening/SKILL.md",
+      "title": "Early Project Screening",
+      "source": "cli:skills/early-project-screening/SKILL.md",
+      "sha256": "5606744d4e74781715ef6713753d0a77dbc1f70cd56b3848e6bc71a64c27a1f2",
+      "sourceSha256": "5606744d4e74781715ef6713753d0a77dbc1f70cd56b3848e6bc71a64c27a1f2"
+    },
+    {
+      "id": "cli/skills/market-opportunities/SKILL.md",
+      "title": "Market Opportunities",
+      "source": "cli:skills/market-opportunities/SKILL.md",
+      "sha256": "2c3b4a9caafae150e6ab7699d7c8b7f081f8c94b8b07a8d2ea258ed30447cb53",
+      "sourceSha256": "2c3b4a9caafae150e6ab7699d7c8b7f081f8c94b8b07a8d2ea258ed30447cb53"
+    },
+    {
+      "id": "cli/skills/market-shortlist/SKILL.md",
+      "title": "Market Shortlist",
+      "source": "cli:skills/market-shortlist/SKILL.md",
+      "sha256": "e10fd038736d635dcf8c1601f6aa8f9dddf67d7fa5418f906aeec1d31763e83d",
+      "sourceSha256": "e10fd038736d635dcf8c1601f6aa8f9dddf67d7fa5418f906aeec1d31763e83d"
+    },
+    {
+      "id": "cli/skills/project-deep-report/SKILL.md",
+      "title": "Project Deep Report",
+      "source": "cli:skills/project-deep-report/SKILL.md",
+      "sha256": "23c888038aa8838ff254066a62c3d3984c584f78fdfe541623bee32667835c6a",
+      "sourceSha256": "23c888038aa8838ff254066a62c3d3984c584f78fdfe541623bee32667835c6a"
+    },
+    {
+      "id": "cli/skills/risk-warning/SKILL.md",
+      "title": "Risk Warning",
+      "source": "cli:skills/risk-warning/SKILL.md",
+      "sha256": "bdf3bb1a42ce1445668e1bcf2310d3dd0c6985d8eaa4be409c1bd6fa5c8fa830",
+      "sourceSha256": "bdf3bb1a42ce1445668e1bcf2310d3dd0c6985d8eaa4be409c1bd6fa5c8fa830"
+    },
+    {
+      "id": "cli/skills/skill-contract-dd/SKILL.md",
+      "title": "Contract DD",
+      "source": "cli:skills/skill-contract-dd/SKILL.md",
+      "sha256": "8f280dc2816517ab260f940fca3ba22e287ea9f66a6145e7db5506e3db0e23b5",
+      "sourceSha256": "8f280dc2816517ab260f940fca3ba22e287ea9f66a6145e7db5506e3db0e23b5"
+    },
+    {
+      "id": "cli/skills/skill-kline-pattern/SKILL.md",
+      "title": "Kline Pattern",
+      "source": "cli:skills/skill-kline-pattern/SKILL.md",
+      "sha256": "0e545cfbf0a0863187c17b90bcc2092d37d1d5eca018d7bf2545f344b748e9d5",
+      "sourceSha256": "0e545cfbf0a0863187c17b90bcc2092d37d1d5eca018d7bf2545f344b748e9d5"
+    },
+    {
+      "id": "cli/skills/skill-rugcheck-audit/SKILL.md",
+      "title": "RugCheck Audit",
+      "source": "cli:skills/skill-rugcheck-audit/SKILL.md",
+      "sha256": "e1d5f6914f3400e96a4fc84e69ab7980278823733c882148a0b906707968e144",
+      "sourceSha256": "e1d5f6914f3400e96a4fc84e69ab7980278823733c882148a0b906707968e144"
+    },
+    {
+      "id": "cli/skills/skill-smart-money-leaderboard/SKILL.md",
+      "title": "Smart Money Leaderboard",
+      "source": "cli:skills/skill-smart-money-leaderboard/SKILL.md",
+      "sha256": "54a3fe6a36429dbc637eb236d04b3c6149f75eaa22700f89a923a1c5abbf7213",
+      "sourceSha256": "54a3fe6a36429dbc637eb236d04b3c6149f75eaa22700f89a923a1c5abbf7213"
+    },
+    {
+      "id": "cli/skills/skill-smart-money-profile/SKILL.md",
+      "title": "Smart Money Profile",
+      "source": "cli:skills/skill-smart-money-profile/SKILL.md",
+      "sha256": "e9ef13c3d4bbcbcef5c71cdbd7f4626cd309cf2dd2422587746f3eae858a07cd",
+      "sourceSha256": "e9ef13c3d4bbcbcef5c71cdbd7f4626cd309cf2dd2422587746f3eae858a07cd"
+    },
+    {
+      "id": "cli/skills/skill-smart-wallets/SKILL.md",
+      "title": "Smart Wallets",
+      "source": "cli:skills/skill-smart-wallets/SKILL.md",
+      "sha256": "2d31ac2aa5413db6cc1a29093fbc89e713a7407c025debe31d7ccc568ad32fb6",
+      "sourceSha256": "2d31ac2aa5413db6cc1a29093fbc89e713a7407c025debe31d7ccc568ad32fb6"
+    },
+    {
+      "id": "cli/skills/skill-token-dd/SKILL.md",
+      "title": "Token DD",
+      "source": "cli:skills/skill-token-dd/SKILL.md",
+      "sha256": "7408235936a1831a0ca8752fd286dc9c9871b588577b97ec0d3dfcf39c630e01",
+      "sourceSha256": "7408235936a1831a0ca8752fd286dc9c9871b588577b97ec0d3dfcf39c630e01"
+    },
+    {
+      "id": "cli/skills/skill-token-dd-score/references/details.md",
+      "title": "Token DD Score · Node.js reconstruction",
+      "source": "cli:skills/skill-token-dd-score/references/details.md",
+      "sha256": "9bebeb5d90e2090c10f6b9f01b1695968f34b0adc885f85ff8cc897368ba9c6e",
+      "sourceSha256": "9bebeb5d90e2090c10f6b9f01b1695968f34b0adc885f85ff8cc897368ba9c6e"
+    },
+    {
+      "id": "cli/skills/skill-token-dd-score/SKILL.md",
+      "title": "Token DD Score · Advanced",
+      "source": "cli:skills/skill-token-dd-score/SKILL.md",
+      "sha256": "2bfca6c227aad7db2800372e1f31ec2887adb1d41403db832a870bae39dd4f84",
+      "sourceSha256": "2bfca6c227aad7db2800372e1f31ec2887adb1d41403db832a870bae39dd4f84"
+    },
+    {
+      "id": "cli/skills/skill-trending-list/SKILL.md",
+      "title": "Trending List",
+      "source": "cli:skills/skill-trending-list/SKILL.md",
+      "sha256": "0ba684e137d5fb382f6ef9698788e973ca55d7f8199af5c0a7ba966b2d74b35a",
+      "sourceSha256": "0ba684e137d5fb382f6ef9698788e973ca55d7f8199af5c0a7ba966b2d74b35a"
+    },
+    {
+      "id": "cli/skills/skill-wallet-analysis/SKILL.md",
+      "title": "Wallet Analysis",
+      "source": "cli:skills/skill-wallet-analysis/SKILL.md",
+      "sha256": "b57b2d7ef82dc8c8fdede681c0126c9e2af753b0c9aa80027c5349b476428645",
+      "sourceSha256": "b57b2d7ef82dc8c8fdede681c0126c9e2af753b0c9aa80027c5349b476428645"
+    },
+    {
+      "id": "cli/skills/skill-wallet-score/SKILL.md",
+      "title": "Wallet Score",
+      "source": "cli:skills/skill-wallet-score/SKILL.md",
+      "sha256": "7ad35958e8e9b9fa62251767787ed6fdbb1c60e7545df310a2c02666c0cb1aa3",
+      "sourceSha256": "7ad35958e8e9b9fa62251767787ed6fdbb1c60e7545df310a2c02666c0cb1aa3"
+    },
+    {
+      "id": "cli/skills/skill-wallet-style/SKILL.md",
+      "title": "Wallet Style",
+      "source": "cli:skills/skill-wallet-style/SKILL.md",
+      "sha256": "ab47d092c622acd3be6efb379d8b5bbc72aabf9bca09ec9db3b7649d18be71c3",
+      "sourceSha256": "ab47d092c622acd3be6efb379d8b5bbc72aabf9bca09ec9db3b7649d18be71c3"
+    },
+    {
+      "id": "cli/skills/smart-money-profile/SKILL.md",
+      "title": "Smart Money Profile",
+      "source": "cli:skills/smart-money-profile/SKILL.md",
+      "sha256": "f4bf9fa26d07376baa764c5e6d6ce7cd20821c3733f434ad9583becf86c6408a",
+      "sourceSha256": "f4bf9fa26d07376baa764c5e6d6ce7cd20821c3733f434ad9583becf86c6408a"
+    },
+    {
+      "id": "cli/skills/token-due-diligence/SKILL.md",
+      "title": "Token Due Diligence",
+      "source": "cli:skills/token-due-diligence/SKILL.md",
+      "sha256": "39282fbdb3a74d275d32cb05eedb8687e28fceec3e61a60795fab94fbbbba298",
+      "sourceSha256": "39282fbdb3a74d275d32cb05eedb8687e28fceec3e61a60795fab94fbbbba298"
     },
     {
       "id": "cli/skills/token-duediligence/doc.md",
-      "title": "Token DD Score · Node.js reconstruction",
+      "title": "Token DD Score",
       "source": "cli:skills/token-duediligence/doc.md",
-      "sha256": "370e37b82fe5a71a0b39dfdc85e9fb764c9e672ef95b90b4e58ffe51bc8a98ea",
-      "sourceSha256": "370e37b82fe5a71a0b39dfdc85e9fb764c9e672ef95b90b4e58ffe51bc8a98ea"
+      "sha256": "d27ae97e5e2772278b1df471cda38cb5b9dace25d7b653a121a36208606561b3",
+      "sourceSha256": "d27ae97e5e2772278b1df471cda38cb5b9dace25d7b653a121a36208606561b3"
+    },
+    {
+      "id": "cli/skills/token-duediligence/references/scoring.md",
+      "title": "Token DD Score · Node.js reconstruction",
+      "source": "cli:skills/token-duediligence/references/scoring.md",
+      "sha256": "fc82c3f08b819358e538f2b02022a3c3f67e2fb29bb208989046a9650a083f66",
+      "sourceSha256": "fc82c3f08b819358e538f2b02022a3c3f67e2fb29bb208989046a9650a083f66"
     },
     {
       "id": "cli/skills/token-duediligence/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/token-duediligence/SKILL.md",
-      "sha256": "7cc0a647e6bcbb78dff349f20778b81835eee2d0e195fcd53dbb11d824519176",
-      "sourceSha256": "7cc0a647e6bcbb78dff349f20778b81835eee2d0e195fcd53dbb11d824519176"
+      "sha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24",
+      "sourceSha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24"
+    },
+    {
+      "id": "cli/skills/token-research/SKILL.md",
+      "title": "Token Research",
+      "source": "cli:skills/token-research/SKILL.md",
+      "sha256": "dcb54dd9f65abf422ebba42151f66da445c8f32b6fd94849e52750147986568f",
+      "sourceSha256": "dcb54dd9f65abf422ebba42151f66da445c8f32b6fd94849e52750147986568f"
+    },
+    {
+      "id": "cli/skills/wallet-analysis/SKILL.md",
+      "title": "Wallet Analysis",
+      "source": "cli:skills/wallet-analysis/SKILL.md",
+      "sha256": "d2d8bc13e74d4cf2f273587601eaba3cd60b6b2fce698a4b7c503b74688275c4",
+      "sourceSha256": "d2d8bc13e74d4cf2f273587601eaba3cd60b6b2fce698a4b7c503b74688275c4"
+    },
+    {
+      "id": "cli/skills/wallet-exposure/SKILL.md",
+      "title": "Wallet Exposure",
+      "source": "cli:skills/wallet-exposure/SKILL.md",
+      "sha256": "8066d7e95e5b053d5fec5208f2a38dc1f99b9b1e28f582e3bd8a0ed8ec2b1472",
+      "sourceSha256": "8066d7e95e5b053d5fec5208f2a38dc1f99b9b1e28f582e3bd8a0ed8ec2b1472"
     }
   ]
 }

@@ -95,12 +95,12 @@ Use this flow to give your AI agent Birdeye capabilities: choose a skill, instal
 
 | Skill name | Use it for | Example prompt after setup |
 | --- | --- | --- |
-| `birdeye-market` | Trending tokens, market discovery and smart-money research | Use birdeye-market to plan a Solana trending-token scan. Show the CU estimate without fetching data. |
-| `birdeye-token` | Token overview, holders, security and pool research | Use birdeye-token to research PUMP at `pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn`. Show the plan and CU estimate first. |
-| `birdeye-portfolio` | Wallet holdings, performance and activity | Use birdeye-portfolio to plan analysis of `GNRgBxkRFnyLYUTX8DSs3SM3Wm4jYSHQn6JQQVXapoRc`, keeping 7d and 30d PnL separate. Estimate only. |
-| `token-duediligence` | Token DD Score, evidence coverage and saved-run re-scoring | Use token-duediligence to estimate an advanced PUMP review. Explain the checks and missing evidence. Do not fetch yet. |
+| `skill-trending-list` | Trending tokens, market discovery and smart-money research | Use skill-trending-list to plan a Solana trending-token scan. Show the CU estimate without fetching data. |
+| `token-research` | Token overview, holders, security and pool research | Use token-research to research PUMP at `pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn`. Show the plan and CU estimate first. |
+| `skill-wallet-analysis` | Wallet holdings, performance and activity | Use skill-wallet-analysis to plan analysis of `GNRgBxkRFnyLYUTX8DSs3SM3Wm4jYSHQn6JQQVXapoRc`, keeping 7d and 30d PnL separate. Estimate only. |
+| `skill-token-dd-score` | Token DD Score, evidence coverage and saved-run re-scoring | Use skill-token-dd-score to estimate an advanced PUMP review. Explain the checks and missing evidence. Do not fetch yet. |
 
-These are four agent skills, each covering one or more CLI workflows. Installing one skill does not install a separate skill for every workflow. Birdeye currently supports Solana research, not trading or continuous monitoring.
+These are examples from the 23 skills in the catalog. Each skill has its own instructions and matching CLI command. Birdeye currently supports Solana research, not trading or continuous monitoring.
 
 ### 2. Install the instructions
 
@@ -111,17 +111,17 @@ Requires npm and an agent supported by the third-party [Skills CLI](https://gith
 npx skills add ./skills --list
 
 # Install one skill; select your agent if prompted.
-npx skills add ./skills --skill birdeye-market --global
+npx skills add ./skills --skill skill-trending-list --global
 
-# Or install all four.
-npx skills add ./skills --skill birdeye-market birdeye-token birdeye-portfolio token-duediligence --global
+# Or install these example skills.
+npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
 ```
 
 `--global` installs for your user rather than the current project. Omit it for a project-scoped installation. To choose the target explicitly, append `--agent claude-code` or `--agent codex`, for example:
 
 ```bash
-npx skills add ./skills --skill birdeye-token --global --agent claude-code
-npx skills add ./skills --skill birdeye-token --global --agent codex
+npx skills add ./skills --skill token-research --global --agent claude-code
+npx skills add ./skills --skill token-research --global --agent codex
 ```
 
 These commands install instructions for the chosen agent, not the agent application itself. An installer invoked from inside an agent may auto-select that agent; check its reported destination. Reopen the agent session after installing.
@@ -129,7 +129,7 @@ These commands install instructions for the chosen agent, not the agent applicat
 For direct GitHub installation, use the skills subdirectory to avoid discovering generated documentation copies:
 
 ```bash
-npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill birdeye-market --global
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-trending-list --global
 ```
 
 This requires Git access to the repository. If HTTPS reports authentication failure, use an authorized checkout (for example, clone with `git clone git@github.com:birdeye-so/birdeye_cli.git` if your SSH key has access), then run the local commands above. The command is not evidence that anonymous access is available.
@@ -153,14 +153,14 @@ birdeye-cli doctor --short
 
 Do not paste the key into agent chat or a skill file. Birdeye does not provide a public demo key in this repository. The landing demo uses a saved snapshot and does not validate your live API access. `doctor --live --short` is an optional paid API check; use it when you are ready to make a live request.
 
-Keep the complete source checkout or installed npm package available for supporting files. Some skill links point outside their own folder (for example, `../../docs/workflows/birdeye-data-skills.md` or a sibling skill). A single-skill copy may not include those targets: open the corresponding file in the source checkout, or under `$(npm root -g)/birdeye-cli`, rather than assuming the copied link resolves. Tell the agent that source location when needed. Use the installed `birdeye-cli` or `token-dd-score` executable; do not run a copied `token-dd-score.mjs` from the agent's skill folder, because that wrapper expects the package's `dist/` tree.
+Each skill includes its instructions and any referenced files inside its own directory. Install the CLI separately and use the installed `birdeye-cli` or `token-dd-score` executable from any directory.
 
 ### 4. Verify the agent can use it
 
 In a new agent session, send:
 
 ```text
-Use birdeye-market. Confirm you can read its SKILL.md and find the
+Use skill-trending-list. Confirm you can read its SKILL.md and find the
 birdeye-cli executable. Run:
 birdeye-cli case skill-trending-list --estimate-cu --short
 Summarize the planned requests and estimated CU. Do not fetch live data.
@@ -174,7 +174,7 @@ Re-run the same `npx skills add` command after updating your source checkout to 
 
 ```bash
 # Remove only this global skill; the installer selects the target agent.
-npx skills remove birdeye-market --global
+npx skills remove skill-trending-list --global
 ```
 
 Removing skills leaves CLI configuration and research history intact.
@@ -266,12 +266,12 @@ Open `http://127.0.0.1:8787` and enter the code printed by the server. Keep the 
 
 | Skill 名称 | 用途 |
 | --- | --- |
-| `birdeye-market` | 热门代币、市场发现、聪明钱研究 |
-| `birdeye-token` | 代币概览、持有人、安全检查和流动性池分析 |
-| `birdeye-portfolio` | 钱包持仓、盈亏和交易活动分析 |
-| `token-duediligence` | 代币尽调评分、证据覆盖率及已保存结果的重新评分 |
+| `skill-trending-list` | 热门代币、市场发现、聪明钱研究 |
+| `token-research` | 代币概览、持有人、安全检查和流动性池分析 |
+| `skill-wallet-analysis` | 钱包持仓、盈亏和交易活动分析 |
+| `skill-token-dd-score` | 代币尽调评分、证据覆盖率及已保存结果的重新评分 |
 
-每个 skill 可包含多个 CLI 工作流。安装 skill 只会注册助手指令，**不会自动安装 CLI，也不会配置 API key**。
+上表为 23 个 skill 中的示例。每个 skill 都有对应的使用说明和 CLI 命令。安装 skill 只会注册助手指令，**不会自动安装 CLI，也不会配置 API key**。
 
 ### 2. 安装 skill 指令
 
@@ -282,20 +282,20 @@ Open `http://127.0.0.1:8787` and enter the code printed by the server. Keep the 
 npx skills add ./skills --list
 
 # 安装一个技能
-npx skills add ./skills --skill birdeye-market --global
+npx skills add ./skills --skill skill-trending-list --global
 
 # 或安装全部四个技能
-npx skills add ./skills --skill birdeye-market birdeye-token birdeye-portfolio token-duediligence --global
+npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
 ```
 
 `--global` 表示安装到当前用户范围；省略它则安装到当前项目。按提示选择使用的 AI 助手，也可以明确指定目标：
 
 ```bash
 # Claude Code
-npx skills add ./skills --skill birdeye-token --global --agent claude-code
+npx skills add ./skills --skill token-research --global --agent claude-code
 
 # Codex
-npx skills add ./skills --skill birdeye-token --global --agent codex
+npx skills add ./skills --skill token-research --global --agent codex
 ```
 
 安装器可能自动识别当前助手，请检查输出中的安装位置。完成后重新打开助手会话。这些命令安装的是 skill 指令，不是助手应用本身。
@@ -303,10 +303,10 @@ npx skills add ./skills --skill birdeye-token --global --agent codex
 如果 Git 凭据具有仓库访问权限，也可以直接从 GitHub 安装：
 
 ```bash
-npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill birdeye-market --global
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-trending-list --global
 ```
 
-将 `birdeye-market` 替换为表中的其他名称即可选择对应技能。若 HTTPS 提示认证失败，请使用具有权限的本地仓库；如果 SSH key 已获授权，也可以通过 `git clone git@github.com:birdeye-so/birdeye_cli.git` 获取仓库。不要假设该仓库支持匿名访问。
+将 `skill-trending-list` 替换为表中的其他名称即可选择对应技能。若 HTTPS 提示认证失败，请使用具有权限的本地仓库；如果 SSH key 已获授权，也可以通过 `git clone git@github.com:birdeye-so/birdeye_cli.git` 获取仓库。不要假设该仓库支持匿名访问。
 
 ### 3. 单独安装 CLI
 
@@ -330,7 +330,7 @@ birdeye-cli --help
 
 请使用 `npm pack` 实际输出的文件名，版本号可能不同。如果维护者已经提供构建好的 `.tgz` 文件，只需执行全局安装和验证命令，无需重新构建。当前不支持通过 `npm install -g birdeye-cli` 从 npm registry 安装。
 
-保留完整源码或 npm 安装包，供助手读取引用文档。部分 skill 链接指向其目录外的文件，单独复制 skill 后可能无法解析；此时应在源码或 `$(npm root -g)/birdeye-cli` 中读取对应文件。使用已安装的 `birdeye-cli` 或 `token-dd-score` 命令，不要直接运行助手 skill 目录中复制的 `token-dd-score.mjs`，因为它依赖完整包内的 `dist/` 目录。
+每个 skill 的说明和引用文件都包含在自己的目录中，可以单独安装。CLI 需要另外安装；请在任意目录使用已安装的 `birdeye-cli` 或 `token-dd-score` 命令。
 
 ### 4. 配置 API key 并验证
 
@@ -354,7 +354,7 @@ birdeye-cli doctor --short
 在新的助手会话中发送以下提示词：
 
 ```text
-请使用 birdeye-market，确认你能读取它的 SKILL.md 并找到 birdeye-cli 命令。
+请使用 skill-trending-list，确认你能读取它的 SKILL.md 并找到 birdeye-cli 命令。
 执行 birdeye-cli case skill-trending-list --estimate-cu --short，
 总结计划请求的接口和预计消耗的 CU。不要获取实时数据。
 ```
@@ -366,8 +366,8 @@ birdeye-cli doctor --short
 更新源码后，重新执行相同的 `npx skills add` 命令以更新指令。CLI 需要单独重新构建、打包和安装；更新 skill 不会升级 CLI。更新 CLI 前请参考英文版的 [Update and rollback](#update-and-rollback) 备份配置与历史记录。
 
 ```bash
-# 仅移除当前用户范围内的 birdeye-market 技能
-npx skills remove birdeye-market --global
+# 仅移除当前用户范围内的 skill-trending-list 技能
+npx skills remove skill-trending-list --global
 ```
 
 移除 skill 不会删除 CLI 的配置或研究历史。

@@ -3,10 +3,12 @@ name: birdeye-market
 description: Discover and compare Solana tokens using Birdeye CLI market opportunities, launch screening, daily briefs, smart-money flows and OHLCV. Use for bounded market research and watchlists with explicit CU budgets.
 ---
 
+Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
+
 Choose a workflow by purpose:
 
 - `case skill-trending-list --list-source v3-list --sort-by volume`: reference discovery via token list V3; optional `--platform pump.fun`. Native `--list-source trending` supports volume/liquidity/rank only.
-- `case skill-smart-wallets --skill-depth fast --limit 3`: smart-money tokens → per-token traders → deduplicated wallets. Standard adds wallet PnL; deep adds holdings and positions. Do not sum token-scoped trader PnL into wallet totals. See [reference workflows](../../docs/workflows/birdeye-data-skills.md).
+- `case skill-smart-wallets --skill-depth fast --limit 3`: smart-money tokens → per-token traders → deduplicated wallets. Standard adds wallet PnL; deep adds holdings and positions. Do not sum token-scoped trader PnL into wallet totals. See [reference workflows](references/birdeye-data-skills.md).
 
 - `case market-opportunities --scan-limit 50 --limit 3`: scan one trending page, deduplicate and rank by volume24hUSD, then enrich a few candidates. `--depth full` adds money-flow and holder profile.
 - `case early-project-screening --stage newly-created --source pump_dot_fun --limit 3`: discover by creation time. Other stages: newly-listed, graduated, near-graduation. Near-graduation requires a user-selected `--min-progress`; newly-listed cannot filter a specific venue.

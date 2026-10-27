@@ -3,13 +3,15 @@ name: birdeye-token
 description: Research Solana tokens with Birdeye CLI due diligence, deep reports, holder cohorts, money flow and risk review. Use for token identity, security, ownership and market evidence with CU accounting.
 ---
 
+Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
+
 Require a Solana contract address. `token search <keyword>` returns candidates; confirm the intended contract before research. Read `capabilities --short` for current inputs and `cases --short` for workflow names.
 
 Choose the smallest workflow that answers the request:
 
-- Scored due diligence: `case skill-token-dd-score --address <mint> --dd-mode advanced`. Use [Token DD Score](../token-duediligence/doc.md) for pillar formulas, coverage, provisional CU and zero-call SQLite re-score. This is a separate reconstructed risk heuristic; the existing observation-only Token DD recipe remains available.
+- Scored due diligence: `case skill-token-dd-score --address <mint> --dd-mode advanced`. Use [Token DD Score](references/scoring.md) for pillar formulas, coverage, provisional CU and zero-call SQLite re-score. This is a separate reconstructed risk heuristic; the existing observation-only Token DD recipe remains available.
 
-- Reference collection: `case skill-token-dd`, `case skill-contract-dd`, `case skill-rugcheck-audit`, `case skill-kline-pattern`, each with `--address <address>`. See [reference workflows](../../docs/workflows/birdeye-data-skills.md) for steps, costs and adaptations. Token DD supports `--include list,advanced_security,risk_history`; Contract DD supports `--skip-kline`; candle recipes accept `--resolution` and `--window-days`.
+- Reference collection: `case skill-token-dd`, `case skill-contract-dd`, `case skill-rugcheck-audit`, `case skill-kline-pattern`, each with `--address <address>`. See [reference workflows](references/birdeye-data-skills.md) for steps, costs and adaptations. Token DD supports `--include list,advanced_security,risk_history`; Contract DD supports `--skip-kline`; candle recipes accept `--resolution` and `--window-days`.
 - Kline scores are versioned heuristics using closed candles. Contract/Token DD report observations, not the source's unsafe composite or Safe tier. RugCheck Audit uses Birdeye liquidity history, not RugCheck.org or price-derived liquidity; unresolved checks keep the report partial.
 
 - `case token-due-diligence --address <address>`: identity and security checklist.
