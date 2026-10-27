@@ -27,7 +27,7 @@ export async function listSkills(request: Request) {
     try {
       const counts = new Map(store.list().map(item => [item.skill_id, item]));
       const list = catalog.skills.filter(skill => category === null || skill.category === category).map(skill => ({
-        ...skill, skill_id: skill.id, icon_url: skillIconUrl(skill.id),
+        ...skill, skill_id: skill.id, demo_path: `/${skill.id}`, icon_url: skillIconUrl(skill.id),
         view_count: counts.get(skill.id)?.view_count ?? 0,
         download_count: counts.get(skill.id)?.download_count ?? 0,
       }));

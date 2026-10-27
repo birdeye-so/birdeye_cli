@@ -52,6 +52,7 @@ program
   .option("--estimate-cu", "show the request and cost without calling Birdeye")
   .option("--config-dir <path>", "configuration and ledger directory")
   .option("--bind <address>", "interface host:port (default 127.0.0.1:3000)")
+  .addOption(new Option("--storage <storage>", "interface storage: SQLite or encrypted browser workspace").choices(["sqlite", "browser"]).default("sqlite"))
   .option("--ai-profile <name>", "AI provider profile")
   .option("--require-code", "require a connection code even on loopback")
   .option("--session-max-cu <cu>", "interface session budget", (v) =>
@@ -71,6 +72,8 @@ let serving = false;
 function options(command: Command) {
   const opts = command.optsWithGlobals();
   if (opts.configDir) process.env.BIRDEYE_CONFIG_DIR = opts.configDir;
+  if (opts.storage === "browser" && opts.format !== "interface")
+    throw new AppError("INVALID_INPUT", "--storage browser requires --format interface.");
   if (opts.bind && opts.format !== "interface")
     throw new AppError("INVALID_INPUT", "--bind requires --format interface.");
   return opts;
@@ -99,6 +102,18 @@ async function serve(
 ) {
   if (opts.chain !== "solana")
     throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");
+  if(opts.storage === "browser") {
+    if(initial || initialCase || initialRunId || opts.sessionMaxCu !== undefined || opts.maxCu !== undefined)
+      throw new AppError("INVALID_INPUT", "Browser mode starts an independent workspace. Choose your skill and budget in the browser.");
+    if(opts.requireCode || opts.tlsCert || opts.tlsKey || opts.publicUrl)
+      throw new AppError("INVALID_INPUT", "Browser preview is a loopback static server. Deploy dist/browser to HTTPS hosting for public access.");
+    const {startBrowserInterface}=await import("./interface/browser-server.js");
+    const app=await startBrowserInterface(opts.bind);
+    serving=true;
+    console.log(`Browser-only interface: ${app.url}\nKeys, history and CU stay in the browser. No SQLite workspace is opened.\nFor website hosting, deploy dist/browser over HTTPS.`);
+    for(const signal of ["SIGINT","SIGTERM"] as const)process.once(signal,()=>{void app.close();});
+    return;
+  }
   const { startInterface } = await import("./interface/server.js");
   const app = await startInterface({
     ledger: db(),

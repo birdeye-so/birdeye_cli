@@ -58,8 +58,8 @@ function fixture(url:URL,init?:RequestInit){
   return Response.json({success:true,data});
 }
 
-test("all 12 skill recipes execute planned documented requests with bounded CU",async()=>{
-  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,12);
+test("all current skill recipes execute planned documented requests with bounded CU",async()=>{
+  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,11);
   for(const kind of skillKinds){
     const info=skillInfo[kind];
     const input={kind,...(info.subject==="token"?{address:token}:info.subject==="wallet"?{address:wallet}:info.subject==="wallets"?{wallets:[wallet]}:{}),from:at-86400*7,to:at,resolution:"1H",skillDepth:"deep",include:["list","advanced_security","risk_history"]};

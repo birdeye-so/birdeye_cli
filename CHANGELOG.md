@@ -6,6 +6,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- A browser-only static research demo with password-encrypted IndexedDB keys/history, temporary sessions, direct CORS-enabled provider calls, automatic locking, and `--storage browser` preview without SQLite.
+
 - A scripted landing-page demo with UI/CLI playback, three research scenarios, timeline controls, JSON scripts and a self-contained offline HTML export.
 - An npm installation quickstart and bundled installation/usage guides, available from the landing page and embedded documentation.
 - A standalone Next.js landing and documentation app with an embeddable library, portable React components, searchable skills/workflows, and a generated JSON catalog that refreshes from source edits.

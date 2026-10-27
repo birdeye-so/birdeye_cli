@@ -27,3 +27,6 @@ test-results/
 /DESIGN.md
 /.impeccable/
 /knowledge/birdeye/cli/docs/research/
+
+# Generated browser assets served by Skills API
+/apps/skills-api/public/

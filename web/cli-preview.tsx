@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {shellCommand} from "../src/cli-preview";
 
-export function CliPreview({args, status, note}: {args: string[] | null; status?: string; note?: string}) {
+export function CliPreview({args, status, note, collapsed = false}: {args: string[] | null; status?: string; note?: string; collapsed?: boolean}) {
   const command = args ? shellCommand(args) : "";
   const [copied, setCopied] = useState("");
   const latest = useRef(0);
@@ -11,7 +11,7 @@ export function CliPreview({args, status, note}: {args: string[] | null; status?
     try {await navigator.clipboard.writeText(command);if (request === latest.current) setCopied("Copied");}
     catch {if (request === latest.current) setCopied("Could not copy. Select the command and copy manually.");}
   }
-  return <details className="source cli-preview" open>
+  return <details className="source cli-preview" open={!collapsed}>
     <summary>CLI command</summary>
     {command ? <>
       <pre><code>{command}</code></pre>

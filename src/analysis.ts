@@ -2,7 +2,7 @@ import { BigNumber } from "bignumber.js";
 import { caseSchema, planCase, executePlan, type CaseInput, type Execution } from "./workflows.js";
 import { workflowMetrics } from "./metrics.js";
 import { skillAnalysis } from "./skill-metrics.js";
-import { attachDdCu } from "./token-dd-rescore.js";
+import { attachDdCu } from "./token-dd-runtime.js";
 export { caseSchema, type CaseInput };
 import { Runner, type Result } from "./runner.js";
 import { object, decimal, errorData, now, type Data } from "./shared.js";

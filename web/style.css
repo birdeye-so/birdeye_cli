@@ -101,17 +101,28 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .history-confirm { margin-block: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; overflow-wrap: anywhere; }
 .history-confirm .field-hint { margin-block: 8px; }
 .research-composer { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.composer-tabs { display: flex; gap: 18px; padding: 0 14px; border-bottom: 1px solid var(--line); }
+.composer-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; padding: 0 14px; border-bottom: 1px solid var(--line); }
+.composer-tabs { display: flex; gap: 16px; }
 .composer-tabs button { padding: 12px 0; color: var(--muted); background: none; border: 0; border-bottom: 2px solid transparent; }
 .composer-tabs button.active { border-bottom-color: var(--accent); color: var(--accent); }
 .research-composer form { padding: 14px; }
-.selected-skill-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.selected-skill-heading { display: flex; align-items: center; gap: 8px; min-width: 0; padding-block: 10px; }
+.selected-skill-heading h1 { font-size: 17px; overflow-wrap: anywhere; }
 .form-grid, .step-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(175px, 100%), 1fr)); gap: 12px; }
-.workflow-options { margin: 14px 0; }
+.workflow-options { margin: 10px 0; }
+.workflow-options:empty, .skill-toggles:empty { display: none; }
+.token-dd-settings .workflow-options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.token-dd-settings .workflow-options > .field-hint { grid-column: 1 / -1; margin: 0; }
 .skill-toggles { display: flex; flex-wrap: wrap; gap: 10px 18px; }
 .check { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; cursor: pointer; }
 .check input { margin: 0; }
-.workflow-overview { border-top: 1px solid var(--line); margin-top: 17px; padding-top: 15px; }
+.workflow-overview { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; border-top: 1px solid var(--line); margin-top: 12px; padding-top: 6px; }
+.workflow-overview > :is(.section-title, .notice, .overview-help) { flex-basis: 100%; }
+.workflow-overview > details { min-width: 0; margin: 0; border: 0; padding: 0; }
+.workflow-overview > details[open] { flex-basis: 100%; }
+.workflow-overview > details > summary { padding-block: 6px; font-size: 12px; }
+.workflow-overview .workflow-estimate { flex-basis: 100%; order: -1; margin: 0; gap: 4px 10px; }
+.workflow-overview .cli-preview { margin: 0; border: 0; padding: 0; }
 .section-title, .step-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; }
 .overview-help, .field-hint, .footnote, .muted, .composer-hint { color: var(--muted); font-size: 11px; line-height: 1.6; }
 .overview-help { margin: 7px 0; }
@@ -137,7 +148,7 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .workflow-scope { margin-top: 10px; color: var(--muted); font-size: 11px; }
 .workflow-scope summary { cursor: pointer; }
 .workflow-scope ul { padding-left: 18px; }
-.composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; margin-top: 14px; border-top: 1px solid var(--line); }
+.composer-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--line); }
 .run-options { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
 .budget-label { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .budget-label input { width: 90px; margin: 0; }
@@ -151,7 +162,7 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .icon-button { display: inline-flex; border: 0; border-radius: 5px; padding: 5px; background: none; color: inherit; }
 .notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; margin: 10px 0; border: 1px solid var(--line); border-radius: 7px; }
 .error { background: var(--error-bg); color: var(--danger); }
-.setup-note { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--warning-bg); }
+.setup-note { display: flex; align-items: center; gap: 10px; padding: 6px 10px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--warning-bg); }
 .setup-note p { color: var(--muted); font-size: 12px; }
 .setup-note .secondary { margin-left: auto; }
 .progress-line { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 0; color: var(--accent); }
@@ -641,7 +652,7 @@ tbody tr:hover { background: var(--surface); }
 .dd-mode-picker { grid-column: 1 / -1; min-width: 0; padding: 0; margin: 0; border: 0; }
 .dd-mode-picker legend { color: var(--muted); font-size: 12px; padding: 0; margin-bottom: 8px; }
 .dd-mode-picker > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.dd-mode-picker label { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.dd-mode-picker label { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .dd-mode-picker label:hover { border-color: var(--accent); }
 .dd-mode-picker label.selected { background: var(--soft); border-color: var(--accent); }
 .dd-mode-picker input[type="radio"] { width: 16px; min-height: 16px; margin: 0; accent-color: var(--button); flex-shrink: 0; }
@@ -820,3 +831,29 @@ tbody tr:hover { background: var(--surface); }
 .sv-watchlist-row .sv-watchlist-select { border-bottom-color: transparent; }
 .sv-row-address { padding: 0 10px 12px 94px; }
 @media (max-width: 650px) { .sv-row-address { padding-left: 78px; } }
+
+.browser-storage-bar { display:flex; gap:16px; justify-content:space-between; align-items:center; padding:10px 20px; background:#101723; color:#e2e8f0; font-size:13px; flex-wrap:wrap; }
+.browser-vault { min-height:100vh; padding:48px 20px; }
+.browser-vault > section { max-width:520px; margin:auto; }
+.browser-vault form { display:grid; gap:12px; margin:28px 0 16px; }
+.browser-vault input { width:100%; }
+.browser-vault p { line-height:1.6; }
+.browser-vault button { min-height:40px; }
+
+.browser-storage-bar button { border:1px solid var(--line); border-radius:6px; padding:7px 12px; background:var(--soft); color:var(--ink); }
+.browser-storage-bar button:hover { background:var(--surface-raised); }
+.browser-vault > section > p, .browser-vault > section > button { margin-top:12px; }
+
+/* Compact case-study controls retain readable labels and expandable evidence. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.dd-mode-picker legend.visually-hidden { margin: -1px; }
+@media (max-width: 650px) {
+  .composer-heading { gap: 0 12px; padding-inline: 12px; }
+  .composer-tabs { gap: 12px; }
+  .research-composer form { padding: 12px; }
+  .research-composer .workflow-options { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .workflow-options > .field-hint { grid-column: 1 / -1; }
+  .workflow-estimate .estimate-status { flex-basis: 100%; }
+  .token-dd-settings .dd-mode-picker label { gap: 4px 8px; padding: 8px; }
+  .token-dd-settings .dd-mode-picker small { line-height: 1.4; }
+}

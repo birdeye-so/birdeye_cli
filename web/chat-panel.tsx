@@ -1,3 +1,4 @@
+import {browserStorage} from "./storage-gate";
 import React, {useEffect,useRef} from "react";
 import {AddressText} from "./address-text";
 import {MarkdownText} from "./markdown-text";
@@ -15,7 +16,7 @@ export function ChatPanel({messages,question,change,live,setLive,busy,saved,know
     <div className="chat-context">
       {workflow && <p><strong>{workflow.title}</strong>{workflow.address && <> · <AddressText text={workflow.address} compact /></>}{!workflow.ready&&<span className="badge">Inputs incomplete</span>}</p>}
       <label className="check"><input type="checkbox" checked={live} disabled={busy} onChange={e=>setLive(e.target.checked)} />Allow new Birdeye requests</label>
-      <span className="field-hint">{live?"MCP cost unknown · AI tokens billed separately":"Saved data only · 0 new CU"}</span>
+      <span className="field-hint">{live?(browserStorage?"Birdeye CU and AI tokens billed by your providers":"MCP cost unknown · AI tokens billed separately"):"Saved data only · 0 new CU"}</span>
       <details className="source"><summary>Context{sources.length?` · ${sources.length} datasets`:""}</summary>
         {saved&&<p><AddressText text={saved.title}/></p>}
         {dates.length>0&&<p>{new Date(dates[0]).toLocaleString()}{dates.at(-1)!==dates[0]?` – ${new Date(dates.at(-1)).toLocaleString()}`:""}</p>}

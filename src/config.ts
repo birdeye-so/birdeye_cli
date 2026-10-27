@@ -13,20 +13,8 @@ import { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import { AppError } from "./shared.js";
 
-export const profileSchema = z
-  .object({
-    provider: z.literal("openai-compatible").default("openai-compatible"),
-    // Absent on older profiles, which continue using Chat Completions.
-    apiFormat: z.enum(["responses", "chat-completions"]).optional(),
-    baseUrl: z.string().url(),
-    model: z.string().min(1).max(150),
-    apiKeyEnv: z
-      .string()
-      .regex(/^[A-Z_][A-Z0-9_]*$/)
-      .default("BIRDEYE_AI_API_KEY"),
-    apiKey: z.string().max(4096).optional(),
-  })
-  .strict();
+import {profileSchema, validateProviderUrl} from "./provider.js";
+export {profileSchema, validateProviderUrl} from "./provider.js";
 const configSchema = z
   .object({
     birdeyeApiKey: z.string().max(4096).optional(),
@@ -111,29 +99,6 @@ export function saveConfig(input: unknown, dir = configDir()) {
       .run(JSON.stringify(config), new Date().toISOString());
   });
   return config;
-}
-export function validateProviderUrl(value: string) {
-  const url = new URL(value);
-  if (
-    url.username ||
-    url.password ||
-    url.search ||
-    url.hash ||
-    !["http:", "https:"].includes(url.protocol)
-  )
-    throw new AppError(
-      "INVALID_PROVIDER_URL",
-      "Use a base URL without credentials, query or fragment.",
-    );
-  if (
-    url.protocol === "http:" &&
-    !["127.0.0.1", "localhost", "[::1]"].includes(url.hostname)
-  )
-    throw new AppError(
-      "INVALID_PROVIDER_URL",
-      "Remote AI providers require HTTPS. Local providers may use loopback HTTP.",
-    );
-  return url;
 }
 export function dataKey(config: Config) {
   return process.env.BIRDEYE_API_KEY || config.birdeyeApiKey || "";

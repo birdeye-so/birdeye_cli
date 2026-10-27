@@ -1,3 +1,5 @@
+import {createApiClient} from "./api";
+const api=createApiClient();
 import {AddressText} from "./address-text";
 import {operationSubject} from "./birdeye-address";
 import React, { useEffect, useRef, useState } from "react";
@@ -89,12 +91,7 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
           }
           if (Object.keys(params).length) stepOverrides[id] = params;
         }
-        const response = await fetch("/api/plan", {
-          method: "POST", headers: {"Content-Type": "application/json"}, signal: controller.signal,
-          body: JSON.stringify({...input, ...window.current, stepOverrides}),
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error?.message || "Could not load the workflow. Try Estimate CU again.");
+        const result = await api("/plan", {...input, ...window.current, stepOverrides}, controller.signal);
         if (cancelled) return;
         baseline.current ??= result;
         window.current ??= {from: result.input.from, to: result.input.to};
@@ -129,7 +126,7 @@ export function WorkflowOverview({input, inputKey, budget, onPrepared}: Props) {
     {customized && <div className="section-title"><button type="button" className="quiet" onClick={() => reset()}>Reset all steps</button></div>}
     {error && <p role="alert" className="notice error">{error} Fix the parameter or reset the edited step.</p>}
     {!plan && checking && <p role="status" className="overview-help">Loading workflow steps…</p>}
-    <CliPreview args={plan && !checking && !error && !plan.needsAddress && (budget === null || (Number.isSafeInteger(budget) && budget >= 0)) ? caseCliArgs(plan.input, budget) : null}
+    <CliPreview collapsed args={plan && !checking && !error && !plan.needsAddress && (budget === null || (Number.isSafeInteger(budget) && budget >= 0)) ? caseCliArgs(plan.input, budget) : null}
       status={checking ? "Updating command…" : error ? "Fix the parameters to preview the command." : undefined} />
     {plan && <details className="workflow-details"><summary>API steps · {plan.steps.length}{customized ? " · Customized" : ""}</summary><ol className="workflow-steps">
       {plan.steps.map((step: Data, index: number) => {

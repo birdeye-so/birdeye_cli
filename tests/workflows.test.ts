@@ -233,13 +233,14 @@ test("recipe plans have reviewed costs, bounded candidate counts and no network 
 
 test("all nine recipes and legacy cases execute fixture APIs under their planned CU bounds", async () => {
   for (const depth of ["core", "full"]) for (const kind of legacyCaseKinds) {
-    const needsAddress = ["token-research", "token-due-diligence", "project-deep-report", "wallet-analysis", "risk-warning", "wallet-exposure"].includes(kind);
+    const needsAddress = ["token-research", "token-due-diligence", "project-deep-report", "wallet-analysis", "risk-warning", "wallet-exposure", "skill-token-dd"].includes(kind);
     const input = {kind, depth, ...(needsAddress ? {address: token} : {}), ...(kind === "wallet-analysis" && depth === "full" ? {minLiquidity: 100} : {}), from: at-86400, to: at};
     const plan = planCase(input, at), ledger = new Ledger(":memory:");
     try {
       const runner = new Runner(ledger, "key", {fetch: async (u, init) => fixture(new URL(String(u)), init)});
       const result = await runCase(runner, ledger.createRun(plan.estimatedCu, undefined, 40), input);
-      assert.equal(result.meta.coverage, "complete-for-requested-scope", `${kind}: ${JSON.stringify(result.data.missing)}`);
+      assert.equal(result.meta.coverage, kind === "skill-token-dd" ? "partial" : "complete-for-requested-scope", `${kind}: ${JSON.stringify(result.data.missing)}`);
+      if(kind === "skill-token-dd") assert.ok(result.data.missing.every((item:any)=>item.step==="analysis"));
       assert.ok(result.meta.cu.estimated <= plan.estimatedCu, kind);
       assert.ok(result.data.sources.length > 0, kind);
     } finally {ledger.close();}

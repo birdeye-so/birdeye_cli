@@ -8,16 +8,16 @@ export function SkillSettings({kind, value, change, limit, setLimit, scanLimit, 
   const select=(key:string,label:string,choices:string[],fallback:string)=><label key={key}>{label}<select value={value[key]??fallback} onChange={e=>patch(key,e.target.value)}>{choices.map(v=><option key={v}>{v}</option>)}</select></label>;
   const check=(key:string,label:string)=><label className="check" key={key}><input type="checkbox" checked={value[key]??false} onChange={e=>patch(key,e.target.checked)} />{label}</label>;
   const wallet=kind.includes("wallet")||kind==="skill-smart-money-profile"||kind==="skill-smart-money-leaderboard";
-  return <div className="skill-settings">
+  return <div className={`skill-settings${kind === "skill-token-dd-score" ? " token-dd-settings" : ""}`}>
     <div className="form-grid workflow-options">
       {kind==="skill-token-dd-score"&&<>
-        <fieldset className="dd-mode-picker"><legend>Evidence depth</legend><div>{[["standard","Standard","Overview & security","2 calls · ~51 CU"],["advanced","Advanced","Holders, flows & liquidity","7 calls · ~181 CU"]].map(([mode,title,description,cost])=><label key={mode} className={(value.ddMode??"advanced")===mode?"selected":""}><input type="radio" name="dd-evidence-depth" value={mode} checked={(value.ddMode??"advanced")===mode} onChange={()=>patch("ddMode",mode)}/><span><strong>{title}</strong><small>{description}</small></span><em>{cost}</em></label>)}</div></fieldset>
+        <fieldset className="dd-mode-picker"><legend className="visually-hidden">Evidence depth</legend><div>{[["standard","Standard","Overview & security","2 calls · ~51 CU"],["advanced","Advanced","Holders, flows & liquidity","7 calls · ~181 CU"]].map(([mode,title,description,cost])=><label key={mode} className={(value.ddMode??"advanced")===mode?"selected":""}><input type="radio" name="dd-evidence-depth" value={mode} checked={(value.ddMode??"advanced")===mode} onChange={()=>patch("ddMode",mode)}/><span><strong>{title}</strong><small>{description}</small></span><em>{cost}</em></label>)}</div></fieldset>
         {(value.ddMode??"advanced")==="advanced"&&<>
           <label>Top holder rows<input type="number" min="10" max="50" value={value.topN??50} onChange={e=>patch("topN",Number(e.target.value))}/></label>
           {select("liqResolution","Liquidity candle resolution",["1m","5m","15m","30m","1h","4h","1D"],"15m")}
           <label>Liquidity candles<input type="number" min="1" max="100" value={value.liqCandles??96} onChange={e=>patch("liqCandles",Number(e.target.value))}/></label>
         </>}
-        <p className="field-hint">Solana · Advanced CU includes a provisional OHLC estimate. Scores across modes have different coverage.</p>
+        <p className="field-hint">Advanced CU includes a provisional OHLC estimate. Scores across modes have different coverage.</p>
       </>}
       {kind==="skill-trending-list"&&<>
         {select("listSource","Discovery source",["v3-list","trending"],"v3-list")}

@@ -8,7 +8,8 @@ import { SkillIcon } from "./skill-icon";
 import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-text";
 import {ChatPanel} from "./chat-panel";
 import {MarkdownText} from "./markdown-text";
-import {createApiClient} from "./api";
+import {StorageGate,browserStorage} from "./storage-gate";
+import {createApiClient,createRunEvents} from "./api";
 import {CustomerDemos} from "./customer-demos";
 import "./style.css";
 
@@ -328,7 +329,7 @@ function App() {
       persist: true,
     }),
     [saved, setSaved] = useState("");
-  const stream = useRef<EventSource | null>(null),
+  const stream = useRef<ReturnType<typeof createRunEvents> | null>(null),
     initialized = useRef(false);
   async function refresh() {
     try {
@@ -357,7 +358,7 @@ function App() {
     stream.current?.close();
     setActiveId(id);
     setBusy(true);
-    const events = new EventSource(`/api/runs/${id}/events`);
+    const events = createRunEvents(id);
     stream.current = events;
     events.onmessage = (event) => {
       const e = JSON.parse(event.data);
@@ -390,6 +391,11 @@ function App() {
         setShort(s.short);
         if (s.activeRunId) {
           await watch(s.activeRunId);
+          return;
+        }
+        const linkedSkill = s.cases.find((item: Data) => item.family === "data-skills" && window.location.pathname === `/${item.kind}`);
+        if (linkedSkill) {
+          chooseWorkflow(linkedSkill.kind);
           return;
         }
         const initial = await api("/initial", {});
@@ -475,8 +481,9 @@ function App() {
           ...(settings.apiKey ? { apiKey: settings.apiKey } : {}),
         };
       await api("/settings", payload);
+      setSettings(old=>({...old,birdeyeApiKey:"",apiKey:""}));
       setSettings((s) => ({ ...s, birdeyeApiKey: "", apiKey: "" }));
-      setSaved(settings.persist ? "Connections saved on this machine. Available after restart." : "Connections applied to this session only.");
+      setSaved(settings.persist && (!browserStorage || status?.configStorage?.persisted) ? "Connections saved. Available after unlocking or restarting." : "Connections applied to this session only.");
       setError("");
       await refresh();
     } catch (e: any) {
@@ -563,7 +570,7 @@ function App() {
               <div className="page-heading">
                 <h1>Connections</h1>
               </div>
-              <details className="source"><summary>Storage details</summary><code>{status.configStorage?.path}</code><p>Environment variables override saved credentials. Blank key fields keep saved keys.</p></details>
+              <details className="source"><summary>Storage details</summary><code>{status.configStorage?.path}</code><p>{browserStorage ? "Saved keys are encrypted with your workspace password. Blank key fields keep current keys. Your AI endpoint must allow CORS from this website." : "Environment variables override saved credentials. Blank key fields keep saved keys."}</p></details>
               <form className="settings-form" onSubmit={save}>
                 <section>
                   <div className="section-title">
@@ -640,7 +647,7 @@ function App() {
                         onChange={(e) =>
                           setSettings({ ...settings, apiKey: e.target.value })
                         }
-                        placeholder="Or use BIRDEYE_AI_API_KEY"
+                        placeholder={browserStorage ? "Enter your AI provider key" : "Or use BIRDEYE_AI_API_KEY"}
                         autoComplete="off"
                       />
                     </div>
@@ -654,9 +661,9 @@ function App() {
                       setSettings({ ...settings, persist: e.target.checked })
                     }
                   />
-                  Save on this machine
+                  {browserStorage ? "Save keys in encrypted browser workspace" : "Save on this machine"}
                 </label>
-                <p className="muted">Unchecked: session only; existing saved settings remain.</p>
+                <p className="muted">{browserStorage ? "Temporary workspace: keys stay in memory regardless of this option. Unchecked: keep these keys only until you lock or reload; existing saved keys remain." : "Unchecked: session only; existing saved settings remain."}</p>
                 <div className="form-actions">
                   <button className="primary" disabled={busy}>
                     Save connections
@@ -738,6 +745,8 @@ function App() {
                 </div>
               )}
               <div className="research-composer">
+                <div className="composer-heading">
+                  <div className="selected-skill-heading"><SkillIcon kind={kind} size={22}/><h1>{selectedCase?.title || titleFor[kind]}</h1></div>
                 <div
                   className="composer-tabs"
                   role="group"
@@ -758,10 +767,10 @@ function App() {
                     Ask AI
                   </button>
                 </div>
+                </div>
                 <form onSubmit={start}>
                   {mode === "case" ? (
                     <>
-                      <div className="selected-skill-heading"><SkillIcon kind={kind} size={24}/><h1>{selectedCase?.title || titleFor[kind]}</h1></div>
                       {!noAddress && <>
                         <label htmlFor="address">{walletCase ? "Wallet address" : "Token address"}{optionalAddress ? " (optional)" : ""}</label>
                         <input id="address" className="address-input" value={address} onChange={e => setAddress(e.target.value)} placeholder={optionalAddress ? "Leave blank to discover candidates" : "Paste a Solana address"} required={!optionalAddress} spellCheck={false} />
@@ -1035,4 +1044,4 @@ function UsageStat({ label, value }: { label: string; value: unknown }) {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(<AddressCopyProvider><App /></AddressCopyProvider>);
+createRoot(document.getElementById("root")!).render(<StorageGate><AddressCopyProvider><App /></AddressCopyProvider></StorageGate>);

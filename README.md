@@ -162,3 +162,7 @@ The automated suite uses fixtures and does not need real API keys. The package s
 Report reproducible bugs through [GitHub Issues](https://github.com/birdeye-so/birdeye_cli/issues), including CLI/Node versions, operating system, a redacted command and expected versus actual results. Do not include API keys or configuration databases.
 
 CLI code is licensed under [MIT](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for bundled documentation and dependencies. Follow the [release checks](docs/RELEASING.md) before distributing a new version.
+
+### Browser-only website demo
+
+Build a static demo with encrypted browser storage: `npm run build:browser`, then host `dist/browser` over HTTPS. For local preview: `node dist/index.js --format interface --storage browser --bind 127.0.0.1:8787`. Users supply their own Birdeye and CORS-enabled AI keys; the demo has no workspace backend. See [browser demo setup and encryption limits](docs/BROWSER_DEMO.md).

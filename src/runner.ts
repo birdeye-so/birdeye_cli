@@ -1,14 +1,14 @@
-import { setTimeout as delay } from "node:timers/promises";
+import {delay} from "./delay.js";
 import { prepare, PRICING_VERSION } from "./catalog.js";
 import { credentialId } from "./config.js";
-import { Ledger } from "./ledger.js";
+import type {LedgerPort} from "./ledger-port.js";
 import { AppError, parseData, now, object, type Data } from "./shared.js";
 import { BirdeyeMcp, BIRDEYE_MCP_URL } from "./mcp.js";
 
 export type Result = { schemaVersion: number; data: any; meta: Data };
 export class Runner {
   constructor(
-    public ledger: Ledger,
+    public ledger: LedgerPort,
     private key: string,
     private options: {
       fetch?: typeof fetch;

@@ -115,7 +115,9 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
   let server;
   try {
     const {createSkillServer} = await bundle('apps/skills-api/src/server.ts', resolve(directory, 'server.mjs'));
-    server = createSkillServer({corsOrigins: ['https://consumer.example']});
+    await writeFile(resolve(directory, 'index.html'), '<!doctype html><div id="root"></div>');
+    await writeFile(resolve(directory, 'main.js'), '/* demo asset */');
+    server = createSkillServer({corsOrigins: ['https://consumer.example'], demoDirectory: directory});
     await new Promise((done, fail) => {server.once('error', fail); server.listen(0, '127.0.0.1', done);});
     const base = `http://127.0.0.1:${server.address().port}`;
     const health = await fetch(`${base}/agent/health`);
@@ -137,6 +139,11 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       assert.ok(category.title && category.description && category.skill_count > 0);
     }
     for (const skill of allSkills) {
+      assert.equal(skill.demo_path, `/${skill.skill_id}`);
+      const demo = await fetch(`${base}${skill.demo_path}`);
+      assert.equal(demo.status, 200);
+      assert.match(demo.headers.get('content-type'), /text\/html/);
+      assert.match(await demo.text(), /id="root"/);
       const icon = new URL(skill.icon_url);
       assert.equal(icon.origin, 'https://api.iconify.design');
       assert.match(icon.pathname, /^\/lucide\/[a-z0-9-]+\.svg$/);
@@ -147,6 +154,17 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       assert.equal((await fetch(base + path, {method: 'OPTIONS'})).status, 204);
       assert.equal((await fetch(base + path, {method: 'POST'})).status, 405);
     }
+    assert.equal((await fetch(`${base}/skill-token-dd`)).status, 404);
+    assert.equal((await fetch(`${base}/daily-brief`)).status, 404);
+    assert.equal((await fetch(`${base}/skill-token-dd-score/extra`)).status, 404);
+    assert.equal((await fetch(`${base}/skill-token-dd-score`, {method: 'POST'})).status, 405);
+    const head = await fetch(`${base}/skill-token-dd-score`, {method: 'HEAD'});
+    assert.equal(head.status, 200);
+    assert.equal(await head.text(), '');
+    const asset = await fetch(`${base}/main.js`);
+    assert.equal(asset.status, 200);
+    assert.match(asset.headers.get('content-type'), /javascript/);
+    assert.equal((await fetch(`${base}/main.css`)).status, 503);
     const preflight = await fetch(`${base}/agent/api/skills/view`, {method: 'OPTIONS', headers: {Origin: 'https://consumer.example', 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type'}});
     assert.equal(preflight.status, 204);
     assert.equal(preflight.headers.get('access-control-allow-origin'), 'https://consumer.example');

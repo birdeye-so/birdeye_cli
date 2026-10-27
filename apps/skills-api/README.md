@@ -23,10 +23,11 @@ Use an absolute persistent path for SQLite and keep its WAL/SHM files on the sam
 
 ## Endpoints
 
-Reverse proxies must preserve `/agent`.
+Reverse proxies must forward `/agent/*`, `/<skill_id>`, `/main.js` and `/main.css` to this service.
 
 | Method | Path | Input |
 | --- | --- | --- |
+| GET / HEAD | `/<skill_id>` | Open the browser demo with that current skill selected |
 | GET | `/agent/health` | None |
 | GET | `/agent/api/skills` | Optional `?category=token` |
 | GET | `/agent/api/categories` | Nonempty skill categories with `skill_count` |
@@ -36,7 +37,7 @@ Reverse proxies must preserve `/agent`.
 
 GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. Each item has:
 
-- `id`, `skill_id`, `title`, `category`, `description`, `icon_url`;
+- `id`, `skill_id`, `title`, `category`, `description`, `icon_url`, `demo_path`;
 - `usage.input`, `usage.instructions`, `usage.result`;
 - `usage.preview_command`, `usage.run_command`, `usage.install_command`;
 - `view_count`, `download_count`.
@@ -46,6 +47,7 @@ GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. 
 ```js
 const apiOrigin = 'https://support-api.owland.xyz';
 const iconSrc = skill.icon_url;
+const demoUrl = apiOrigin + skill.demo_path; // e.g. /skill-token-dd-score
 const {data} = await fetch(apiOrigin + '/agent/api/categories').then(r => r.json());
 // data.list: [{id: "token", title: "Token research", description: "...", skill_count: 4}, ...]
 // Filter with GET /agent/api/skills?category=<id>; omit category for All.
@@ -88,3 +90,11 @@ Writes use atomic UPSERT, WAL, FULL synchronous durability and a five-second bus
 Counts represent accepted events, not unique visitors. Each successful POST adds one, including retries; there is no deduplication, authentication or bot filtering. A lost response after commit does not imply that retrying is exactly-once.
 
 `npm run test:skills-api` covers HTTP routes/CORS, filtering, validation, persistence, compatibility migration and 3,600 increments across six processes.
+
+## Direct demo links
+
+`https://support-api.owland.xyz/skill-token-dd-score` opens Token DD. All current catalog IDs have a route; retired or unknown IDs return 404. Links select the skill after the browser workspace is opened/unlocked. Opening a link never starts research or increments view/download counters.
+
+The repository-root `npm run skills-api:build` bundles the browser demo into `apps/skills-api/public/` as well as compiling the API. Include that directory when deploying the standalone service. `SKILL_DEMO_DIR` can point to an alternate absolute directory containing the browser build (`index.html`, `main.js`, `main.css`). Missing assets return 503. Public hosting must use HTTPS for the browser workspace.
+
+The demo uses the browser runtime and browser-held credentials, rather than exposing a server-side research workspace. Keep the same stats database path when restarting the API.

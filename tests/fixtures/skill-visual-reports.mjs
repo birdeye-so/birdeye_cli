@@ -1,6 +1,6 @@
 import {skillAnalysis} from '../../dist/skill-metrics.js';
-import {planCase} from '../../dist/workflows.js';
-import {skillInfo} from '../../dist/skill-recipes.js';
+import {planCase,workflowCatalog} from '../../dist/workflows.js';
+const skillInfo=Object.fromEntries(workflowCatalog().map(item=>[item.kind,item]));
 export const token='So11111111111111111111111111111111111111112';
 export const wallet='11111111111111111111111111111112', wallet2='11111111111111111111111111111113';
 const at=1791504000;
