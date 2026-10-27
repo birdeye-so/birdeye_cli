@@ -8,7 +8,7 @@ export default defineWorkflow({
   id: "skill-token-dd",
   title: "Token DD",
   category: "token",
-  family: "data-skills",
+  family: "legacy",
   subject: "token",
   purpose: "Check market activity, security and smart-money context before taking a token further in research.",
   produces: "Security observations, activity and labeled money flow. Optional holder list, holder groups and historical liquidity add evidence. No automatic buy recommendation.",

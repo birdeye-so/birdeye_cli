@@ -7,9 +7,6 @@
   },
   "skills": {
     "overrides": {
-      "skill-token-dd": {
-        "featured": true
-      },
       "skill-trending-list": {
         "featured": true
       },

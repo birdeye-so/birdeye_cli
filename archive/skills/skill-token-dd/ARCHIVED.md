@@ -1,3 +1,7 @@
+# Archived workflow — skill-token-dd
+
+Outdated. Use the maintained Token DD package (`skill-token-dd-score`) with Standard or Advanced mode. This recipe is retained for historical reference and explicit CLI compatibility.
+
 ---
 name: skill-token-dd
 description: "Check market activity, security and smart-money context before taking a token further in research."

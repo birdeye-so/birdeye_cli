@@ -7,7 +7,7 @@ export default defineWorkflow({
   ...referencePolicy,
   planNotes: ["Reconstructed from the supplied Token DD Score specification. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."],
   id: "skill-token-dd-score",
-  title: "Token DD Score · Advanced",
+  title: "Token DD",
   category: "token",
   family: "data-skills",
   subject: "token",

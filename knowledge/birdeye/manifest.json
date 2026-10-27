@@ -3233,13 +3233,6 @@
       "sourceSha256": "2d31ac2aa5413db6cc1a29093fbc89e713a7407c025debe31d7ccc568ad32fb6"
     },
     {
-      "id": "cli/skills/skill-token-dd/SKILL.md",
-      "title": "Token DD",
-      "source": "cli:skills/skill-token-dd/SKILL.md",
-      "sha256": "7408235936a1831a0ca8752fd286dc9c9871b588577b97ec0d3dfcf39c630e01",
-      "sourceSha256": "7408235936a1831a0ca8752fd286dc9c9871b588577b97ec0d3dfcf39c630e01"
-    },
-    {
       "id": "cli/skills/skill-token-dd-score/references/details.md",
       "title": "Token DD Score · Node.js reconstruction",
       "source": "cli:skills/skill-token-dd-score/references/details.md",
@@ -3248,10 +3241,10 @@
     },
     {
       "id": "cli/skills/skill-token-dd-score/SKILL.md",
-      "title": "Token DD Score · Advanced",
+      "title": "Token DD",
       "source": "cli:skills/skill-token-dd-score/SKILL.md",
-      "sha256": "2bfca6c227aad7db2800372e1f31ec2887adb1d41403db832a870bae39dd4f84",
-      "sourceSha256": "2bfca6c227aad7db2800372e1f31ec2887adb1d41403db832a870bae39dd4f84"
+      "sha256": "eae5cb2852554fb29b47da0196c9bfdb10a13956030643232e544c13d22aeb0d",
+      "sourceSha256": "eae5cb2852554fb29b47da0196c9bfdb10a13956030643232e544c13d22aeb0d"
     },
     {
       "id": "cli/skills/skill-trending-list/SKILL.md",

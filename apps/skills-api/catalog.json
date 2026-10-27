@@ -25,14 +25,14 @@
   "skills": [
     {
       "id": "skill-token-dd-score",
-      "title": "Token DD Score · Advanced",
+      "title": "Token DD",
       "category": "token",
       "description": "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.",
       "usage": {
         "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --short",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running.",
+        "preview_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short --estimate-cu",
+        "run_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short",
         "result": "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-dd-score --global"
       }
@@ -63,20 +63,6 @@
         "run_command": "birdeye-cli case skill-smart-wallets --short",
         "result": "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-smart-wallets --global"
-      }
-    },
-    {
-      "id": "skill-token-dd",
-      "title": "Token DD",
-      "category": "token",
-      "description": "Check market activity, security and smart-money context before taking a token further in research.",
-      "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
-        "preview_command": "birdeye-cli case skill-token-dd --address <SOLANA_ADDRESS> --short --estimate-cu",
-        "run_command": "birdeye-cli case skill-token-dd --address <SOLANA_ADDRESS> --short",
-        "result": "Security observations, activity and labeled money flow. Optional holder list, holder groups and historical liquidity add evidence. No automatic buy recommendation.",
-        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-dd --global"
       }
     },
     {

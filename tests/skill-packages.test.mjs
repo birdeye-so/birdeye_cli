@@ -24,8 +24,8 @@ test('each skill installs in isolation with current references and no sibling pa
 test('each public skill has matching installable instructions and no second resource type', async () => {
   const catalog = await createResourceCatalog();
   const packages = await skillPackages();
-  assert.equal(catalog.skills.length, 12);
-  assert.equal(packages.filter(item => !item.legacy).length, 12);
+  assert.equal(catalog.skills.length, 11);
+  assert.equal(packages.filter(item => !item.legacy).length, 11);
   assert.equal(packages.filter(item => item.legacy).length, 4);
   assert.ok(!('workflows' in catalog));
   for (const skill of catalog.skills) {
@@ -45,11 +45,26 @@ test('retired workflows stay archived and cannot be discovered as installable sk
   const {workflowCatalog} = await loadSkillRuntime();
   const retired = workflowCatalog().filter(item => item.family === 'legacy');
   const catalog = await createResourceCatalog();
-  assert.equal(retired.length, 11);
+  assert.equal(retired.length, 12);
   for (const {kind} of retired) {
     assert.ok(!catalog.skills.some(skill => skill.id === kind));
     await assert.rejects(access(resolve('skills', kind)));
     await assert.rejects(access(resolve('archive/skills', kind, 'SKILL.md')));
     assert.match(await readFile(resolve('archive/skills', kind, 'ARCHIVED.md'), 'utf8'), /Outdated/);
   }
+});
+
+test('Token DD is one installable skill with Standard and Advanced modes', async () => {
+  const {loadSkillRuntime} = await import('../scripts/lib/skill-runtime.mjs');
+  const {planCase} = await loadSkillRuntime();
+  const catalog = await createResourceCatalog();
+  const entries = catalog.skills.filter(item => item.id.startsWith('skill-token-dd'));
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].id, 'skill-token-dd-score');
+  assert.equal(entries[0].title, 'Token DD');
+  assert.match(entries[0].usage.instructions, /--dd-mode standard/);
+  assert.match(entries[0].usage.run_command, /--dd-mode advanced/);
+  const input = {kind: entries[0].id, address: 'So11111111111111111111111111111111111111112'};
+  assert.equal(planCase({...input, ddMode: 'standard'}, 1800000000).maxRequests, 2);
+  assert.equal(planCase({...input, ddMode: 'advanced'}, 1800000000).maxRequests, 7);
 });

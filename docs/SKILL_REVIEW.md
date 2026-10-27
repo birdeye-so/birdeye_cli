@@ -13,7 +13,6 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 | --- | --- | --- | --- |
 | `skill-token-dd-score` | 7 / 7 / 181 | Standard DD: 2 bước, 2 req, 51 CU | Advanced mặc định có bảy bước; Standard có hai. OHLC 30 CU còn provisional. Cần duyệt chế độ mặc định và bằng chứng tối thiểu trước khi chấm điểm. |
 | `skill-smart-wallets` | 2 / 4 / 110 | Standard discovery: 3 bước, 7 req, 170 CU; Deep: 5 bước, 13 req, 320 CU | Token → traders → wallet → PnL/positions. Cần duyệt dedup, số wallet tối đa, và Fast/Standard/Deep. Không cộng PnL theo token thành PnL toàn ví. |
-| `skill-token-dd` | 3 / 3 / 58 | Đủ include: 6 bước, 6 req, 268 CU | Các include mở thêm holders, profile, liquidity. Có nên gộp với kiểm tra token khác? Không phát điểm an toàn tổng hợp từ dữ liệu thiếu. |
 | `skill-contract-dd` | 4 / 4 / 178 | — | Candles có cần đi cùng kiểm tra contract mặc định? skip-kline giảm một bước; giá không chứng minh contract an toàn. |
 | `skill-rugcheck-audit` | 5 / 5 / 258 | — | Tên có thể bị hiểu là tích hợp RugCheck.org dù chỉ dùng Birdeye. Cần duyệt tên và phạm vi kết luận. |
 | `skill-wallet-score` | 6 / 6 / 150 | — | Score cần 30d/90d và positions tương ứng. Cần duyệt nhu cầu holdings/first-funded mặc định; thiếu dữ liệu phải giữ điểm unavailable. |
@@ -24,7 +23,7 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 
 ## Chi tiết thực thi để review
 
-### Token DD Score · Advanced — `skill-token-dd-score`
+### Token DD — `skill-token-dd-score`
 
 Định nghĩa: [definition.ts](../src/workflows/skill-token-dd-score/definition.ts).
 
@@ -65,25 +64,6 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 3. `pnl` → `portfolio.pnl-summary` (20 CU/request; lấy tối đa 3 wallet từ `traders`, giữ thứ tự provider).
 4. `holdings` → `portfolio.holdings` (20 CU/request; lấy tối đa 3 wallet từ `traders`, giữ thứ tự provider).
 5. `pnl-details` → `portfolio.pnl-details` (30 CU/request; lấy tối đa 3 wallet từ `traders`, giữ thứ tự provider).
-
-### Token DD — `skill-token-dd`
-
-Định nghĩa: [definition.ts](../src/workflows/skill-token-dd/definition.ts).
-
-**Mặc định: 3 bước / tối đa 3 request / 58 CU trước retry.**
-
-1. `overview` → `token.overview` (18 CU/request).
-2. `security` → `token.security` (30 CU/request).
-3. `flow` → `token.money-flow` (10 CU/request).
-
-**Đủ include: 6 bước / tối đa 6 request / 268 CU trước retry.**
-
-1. `overview` → `token.overview` (18 CU/request).
-2. `security` → `token.security` (30 CU/request).
-3. `flow` → `token.money-flow` (10 CU/request).
-4. `holders` → `token.holders` (30 CU/request).
-5. `profile` → `token.holder-profile` (30 CU/request).
-6. `liquidity` → `token.liquidity-history` (150 CU/request).
 
 ### Contract DD — `skill-contract-dd`
 
