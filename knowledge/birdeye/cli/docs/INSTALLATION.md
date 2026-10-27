@@ -1,6 +1,6 @@
 # Install Birdeye CLI and agent skills
 
-[Back to README](../README.md) · [Usage](USAGE.md)
+[Back to README](../README.md) · [Usage](USAGE.md) · [中文安装指南](#中文安装指南)
 
 Install the built package with npm to use `birdeye-cli` from any directory. Registry installation (`npm install -g birdeye-cli`) is not available yet; use a maintainer-provided `.tgz` or build the package from source as described below.
 
@@ -254,3 +254,128 @@ Open `http://127.0.0.1:8787` and enter the code printed by the server. Keep the 
 | Missing `dist/index.js` | Run `npm ci` and `npm run build` in the source checkout. |
 | UI displays an old build | Stop the old process, check which CLI is on PATH, reinstall the new tarball if needed, restart and refresh. |
 | Port in use | Choose another port with `--bind 127.0.0.1:8788`; use it in the browser and tunnel as well. |
+
+
+## 中文安装指南
+
+本指南介绍如何为 AI 助手安装 Birdeye skills，并配置运行这些技能所需的 CLI。也可以直接复制 [README 中的中文安装提示词](../README.md#中文复制给-ai-助手)交给助手完成。
+
+需要 Node.js **22.16.0 或更新版本**及 npm。支持 macOS、Linux；Windows 用户请使用 WSL。当前仅支持 Solana 数据研究，不执行交易，也不需要钱包私钥。
+
+### 1. 选择需要的 skill
+
+| Skill 名称 | 用途 |
+| --- | --- |
+| `birdeye-market` | 热门代币、市场发现、聪明钱研究 |
+| `birdeye-token` | 代币概览、持有人、安全检查和流动性池分析 |
+| `birdeye-portfolio` | 钱包持仓、盈亏和交易活动分析 |
+| `token-duediligence` | 代币尽调评分、证据覆盖率及已保存结果的重新评分 |
+
+每个 skill 可包含多个 CLI 工作流。安装 skill 只会注册助手指令，**不会自动安装 CLI，也不会配置 API key**。
+
+### 2. 安装 skill 指令
+
+如果已经获取了本仓库，请在仓库根目录运行：
+
+```bash
+# 查看可用技能，不执行安装
+npx skills add ./skills --list
+
+# 安装一个技能
+npx skills add ./skills --skill birdeye-market --global
+
+# 或安装全部四个技能
+npx skills add ./skills --skill birdeye-market birdeye-token birdeye-portfolio token-duediligence --global
+```
+
+`--global` 表示安装到当前用户范围；省略它则安装到当前项目。按提示选择使用的 AI 助手，也可以明确指定目标：
+
+```bash
+# Claude Code
+npx skills add ./skills --skill birdeye-token --global --agent claude-code
+
+# Codex
+npx skills add ./skills --skill birdeye-token --global --agent codex
+```
+
+安装器可能自动识别当前助手，请检查输出中的安装位置。完成后重新打开助手会话。这些命令安装的是 skill 指令，不是助手应用本身。
+
+如果 Git 凭据具有仓库访问权限，也可以直接从 GitHub 安装：
+
+```bash
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill birdeye-market --global
+```
+
+将 `birdeye-market` 替换为表中的其他名称即可选择对应技能。若 HTTPS 提示认证失败，请使用具有权限的本地仓库；如果 SSH key 已获授权，也可以通过 `git clone git@github.com:birdeye-so/birdeye_cli.git` 获取仓库。不要假设该仓库支持匿名访问。
+
+### 3. 单独安装 CLI
+
+尚未获取源码时，先执行：
+
+```bash
+git clone https://github.com/birdeye-so/birdeye_cli.git
+cd birdeye_cli
+```
+
+已有仓库时直接进入其根目录，然后构建并打包：
+
+```bash
+npm ci
+npm run build
+npm pack
+npm install --global ./birdeye-cli-0.4.0.tgz
+birdeye-cli --version
+birdeye-cli --help
+```
+
+请使用 `npm pack` 实际输出的文件名，版本号可能不同。如果维护者已经提供构建好的 `.tgz` 文件，只需执行全局安装和验证命令，无需重新构建。当前不支持通过 `npm install -g birdeye-cli` 从 npm registry 安装。
+
+保留完整源码或 npm 安装包，供助手读取引用文档。部分 skill 链接指向其目录外的文件，单独复制 skill 后可能无法解析；此时应在源码或 `$(npm root -g)/birdeye-cli` 中读取对应文件。使用已安装的 `birdeye-cli` 或 `token-dd-score` 命令，不要直接运行助手 skill 目录中复制的 `token-dd-score.mjs`，因为它依赖完整包内的 `dist/` 目录。
+
+### 4. 配置 API key 并验证
+
+先执行不需要 API key 的成本估算：
+
+```bash
+birdeye-cli case skill-trending-list --estimate-cu --short
+```
+
+该命令不会请求实时数据，也不消耗 Birdeye CU。若要查询实时数据，请使用自己的 [Birdeye API key](https://data.birdeye.so/)，并在本地终端输入：
+
+```bash
+birdeye-cli config init
+birdeye-cli doctor --short
+```
+
+在 `config init` 的隐藏输入提示中填写密钥，不要将其发送到聊天或写入 skill 文件。本仓库不提供公共演示密钥。网页 demo 播放的是已保存的数据快照，不需要用户的 key，也不能用来验证实时 API 权限。
+
+`doctor --short` 只检查本地配置。准备好调用实时接口后，可选执行 `birdeye-cli doctor --live --short`；该操作会使用 CU，且只验证它调用的接口。
+
+在新的助手会话中发送以下提示词：
+
+```text
+请使用 birdeye-market，确认你能读取它的 SKILL.md 并找到 birdeye-cli 命令。
+执行 birdeye-cli case skill-trending-list --estimate-cu --short，
+总结计划请求的接口和预计消耗的 CU。不要获取实时数据。
+```
+
+助手能够找到 skill、执行 CLI 并返回估算结果，才说明基本安装完成。进行实时研究时，请提供代币或钱包地址及明确的 CU 预算，让助手使用 `--max-cu`，并说明结果覆盖范围和缺失数据。成本估算成功并不代表 API key 有效或拥有全部接口权限。
+
+### 5. 更新、卸载和常见问题
+
+更新源码后，重新执行相同的 `npx skills add` 命令以更新指令。CLI 需要单独重新构建、打包和安装；更新 skill 不会升级 CLI。更新 CLI 前请参考英文版的 [Update and rollback](#update-and-rollback) 备份配置与历史记录。
+
+```bash
+# 仅移除当前用户范围内的 birdeye-market 技能
+npx skills remove birdeye-market --global
+```
+
+移除 skill 不会删除 CLI 的配置或研究历史。
+
+| 问题 | 处理方法 |
+| --- | --- |
+| GitHub 认证失败 | 使用有仓库权限的 Git 凭据，或从已授权的本地仓库安装。 |
+| 助手找不到 skill | 检查安装目标和用户/项目范围，然后重新打开会话。 |
+| `birdeye-cli: command not found` | 单独安装 CLI，检查 PATH，并重启助手进程。 |
+| 引用文档或 `dist/index.js` 不存在 | 使用完整源码/安装包查阅文档，并调用已安装的 CLI，不要运行复制的包装脚本。 |
+| 估算成功但实时请求失败 | 检查本地 API key 及接口权限；估算不会验证凭据。 |

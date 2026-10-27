@@ -3005,8 +3005,8 @@
       "id": "cli/README.md",
       "title": "Birdeye CLI",
       "source": "cli:README.md",
-      "sha256": "5598cb95a40976784e7e34b55779d133f71b7c9807e0a1aab6e10f5b28b017ae",
-      "sourceSha256": "5598cb95a40976784e7e34b55779d133f71b7c9807e0a1aab6e10f5b28b017ae"
+      "sha256": "3e9be82e94039cf91d111f51020027ae12055d4b27dd60aa74bed872d8af0a02",
+      "sourceSha256": "3e9be82e94039cf91d111f51020027ae12055d4b27dd60aa74bed872d8af0a02"
     },
     {
       "id": "cli/README.vi.md",
@@ -3019,8 +3019,8 @@
       "id": "cli/docs/INSTALLATION.md",
       "title": "Install Birdeye CLI and agent skills",
       "source": "cli:docs/INSTALLATION.md",
-      "sha256": "f7d84e1a6e49d6b93ded2495c01920651385bc31347254c569d7ecfe43c92839",
-      "sourceSha256": "f7d84e1a6e49d6b93ded2495c01920651385bc31347254c569d7ecfe43c92839"
+      "sha256": "d0774bf26a4c11afac45fab51ee5cf292657092ce57c41bfd1e21184b95a4137",
+      "sourceSha256": "d0774bf26a4c11afac45fab51ee5cf292657092ce57c41bfd1e21184b95a4137"
     },
     {
       "id": "cli/docs/USAGE.md",

@@ -2,7 +2,7 @@
 
 Query Solana token, market and wallet data from your terminal, or use a local web interface to run research workflows and explore saved results with optional AI chat.
 
-[Installation](docs/INSTALLATION.md) · [Usage](docs/USAGE.md) · [Tiếng Việt / full command reference](README.vi.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+[Installation](docs/INSTALLATION.md) · [中文安装指南](docs/INSTALLATION.md#中文安装指南) · [Usage](docs/USAGE.md) · [Tiếng Việt / full command reference](README.vi.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
 Standalone website: [Next.js landing, embeddable docs and live catalog](apps/landing/README.md). Run `npm run landing:install` then `npm run landing:dev` to open it at `http://localhost:3001`.
 
@@ -35,6 +35,25 @@ queries, guide me to enter my Birdeye API key locally via config init;
 do not ask me to paste the key into chat. Show the plan and CU estimate
 before fetching data.
 ```
+
+### 中文：复制给 AI 助手
+
+将以下内容复制给能够运行终端命令的 AI 助手：
+
+```text
+请从 https://github.com/birdeye-so/birdeye_cli 为我配置 Birdeye skills。
+先阅读 docs/INSTALLATION.md 中的“中文安装指南”，为我使用的 AI 助手安装
+birdeye-market、birdeye-token、birdeye-portfolio 和 token-duediligence。
+如果尚未安装 CLI，请从源码或已构建的 .tgz 包单独安装。
+如果 GitHub 访问失败，请使用我已有的本地仓库，或说明需要什么仓库访问权限。
+保留完整源码，以便读取 skill 引用的文档。先使用 --estimate-cu 验证，
+不要调用实时数据接口。需要实时查询时，引导我在本地通过 birdeye-cli config init
+输入 API key，不要让我把密钥发到聊天中。获取数据前先展示执行计划和 CU 估算。
+```
+
+完整步骤见[中文安装指南](docs/INSTALLATION.md#中文安装指南)，包括单个 skill 安装、CLI 配置及验证。
+
+### Terminal installation
 
 Already have this repository checked out? Run from its root:
 
