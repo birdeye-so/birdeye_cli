@@ -1,9 +1,17 @@
 import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {AppError} from "../shared.js";
-export async function startBrowserInterface(bind="127.0.0.1:3000") {
+export async function startBrowserInterface(bind="127.0.0.1:3000", publicUrlInput?:string) {
   const match=/^(127\.0\.0\.1|localhost):([0-9]+)$/.exec(bind);
   if(!match || Number(match[2])>65535)throw new AppError("INVALID_BIND","Browser preview supports localhost or 127.0.0.1. Deploy dist/browser to an HTTPS static host for public access.");
+  let publicUrl:URL|undefined;
+  if(publicUrlInput){
+    try{publicUrl=new URL(publicUrlInput);}catch{throw new AppError("INVALID_PUBLIC_URL","Use an HTTPS origin, for example https://demo.example.com.");}
+    if(publicUrl.protocol!=="https:" || publicUrl.username || publicUrl.password || publicUrl.pathname!=="/" || publicUrl.search || publicUrl.hash)
+      throw new AppError("INVALID_PUBLIC_URL","Public URL must be an HTTPS origin without credentials, path, query or fragment.");
+  }
+  const allowedHosts=new Set<string>(),allowedOrigins=new Set<string>();
+  if(publicUrl){allowedHosts.add(publicUrl.host);allowedOrigins.add(publicUrl.origin);}
   const assets:Record<string,[string,string]>={
     "/":["index.html","text/html; charset=utf-8"],
     "/index.html":["index.html","text/html; charset=utf-8"],
@@ -17,8 +25,9 @@ export async function startBrowserInterface(bind="127.0.0.1:3000") {
     res.setHeader("Referrer-Policy","no-referrer");
     res.setHeader("X-Frame-Options","DENY");
     res.setHeader("Cache-Control","no-store");
-    const host=req.headers.host?.split(":")[0];
-    if(!["localhost","127.0.0.1"].includes(host||"")){res.writeHead(403);res.end();return;}
+    if(!allowedHosts.has(req.headers.host||"") || (req.headers.origin && !allowedOrigins.has(req.headers.origin))){
+      res.writeHead(403);res.end("Origin is not allowed");return;
+    }
     const path=new URL(req.url||"/","http://localhost").pathname,asset=assets[path];
     if(req.method!=="GET"||!asset){res.writeHead(404);res.end("Not found");return;}
     try{
@@ -28,5 +37,10 @@ export async function startBrowserInterface(bind="127.0.0.1:3000") {
   });
   await new Promise<void>((resolve,reject)=>{server.once("error",reject);server.listen(Number(match[2]),match[1],()=>resolve());});
   const address=server.address();
-  return {url:`http://${match[1]}:${typeof address==="object"&&address?address.port:match[2]}`,close:()=>new Promise<void>(resolve=>{server.close(()=>resolve());server.closeAllConnections();})};
+  const port=typeof address==="object"&&address?address.port:Number(match[2]);
+  const listenUrl=`http://${match[1]}:${port}`;
+  for(const host of ["localhost","127.0.0.1"]){
+    allowedHosts.add(`${host}:${port}`);allowedOrigins.add(`http://${host}:${port}`);
+  }
+  return {url:publicUrl?.origin??listenUrl,listenUrl,close:()=>new Promise<void>(resolve=>{server.close(()=>resolve());server.closeAllConnections();})};
 }

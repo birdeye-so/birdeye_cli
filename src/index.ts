@@ -105,12 +105,12 @@ async function serve(
   if(opts.storage === "browser") {
     if(initial || initialCase || initialRunId || opts.sessionMaxCu !== undefined || opts.maxCu !== undefined)
       throw new AppError("INVALID_INPUT", "Browser mode starts an independent workspace. Choose your skill and budget in the browser.");
-    if(opts.requireCode || opts.tlsCert || opts.tlsKey || opts.publicUrl)
-      throw new AppError("INVALID_INPUT", "Browser preview is a loopback static server. Deploy dist/browser to HTTPS hosting for public access.");
+    if(opts.requireCode || opts.tlsCert || opts.tlsKey)
+      throw new AppError("INVALID_INPUT", "Browser mode serves static files on loopback. Terminate HTTPS at a reverse proxy and use --public-url; connection codes are not used.");
     const {startBrowserInterface}=await import("./interface/browser-server.js");
-    const app=await startBrowserInterface(opts.bind);
+    const app=await startBrowserInterface(opts.bind,opts.publicUrl);
     serving=true;
-    console.log(`Browser-only interface: ${app.url}\nKeys, history and CU stay in the browser. No SQLite workspace is opened.\nFor website hosting, deploy dist/browser over HTTPS.`);
+    console.log(`Browser-only interface: ${app.url}\nLocal upstream: ${app.listenUrl}\nKeys, history and CU stay in the browser. No SQLite workspace is opened.\nFor website hosting, deploy dist/browser over HTTPS.`);
     for(const signal of ["SIGINT","SIGTERM"] as const)process.once(signal,()=>{void app.close();});
     return;
   }

@@ -6,6 +6,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Public HTTPS reverse-proxy support for browser storage mode via `--public-url`, while serving only static assets and keeping user workspaces in the browser.
+
 - A browser-only static research demo with password-encrypted IndexedDB keys/history, temporary sessions, direct CORS-enabled provider calls, automatic locking, and `--storage browser` preview without SQLite.
 
 - A scripted landing-page demo with UI/CLI playback, three research scenarios, timeline controls, JSON scripts and a self-contained offline HTML export.

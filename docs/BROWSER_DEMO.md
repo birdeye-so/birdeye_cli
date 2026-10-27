@@ -16,6 +16,30 @@ The preview serves static assets only and does not open configuration, history o
 
 For the existing SQLite workspace, omit `--storage browser` or use `--storage sqlite`.
 
+## Serve behind a public HTTPS reverse proxy
+
+```bash
+npm run build
+node dist/index.js \
+  --format interface \
+  --storage browser \
+  --bind 127.0.0.1:8787 \
+  --public-url https://support-api.owland.xyz
+```
+
+An installed CLI uses the same flags with `birdeye-cli`. The public URL must be an HTTPS origin, without a path, query or credentials. It identifies the public site; it does not configure DNS or issue TLS certificates. The process stays bound to loopback and only serves static files. Keys and workspace data stay in each visitor's browser.
+
+In your existing HTTPS Nginx server block, proxy the UI to this process:
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:8787;
+    proxy_set_header Host $host;
+}
+```
+
+Keep existing specific locations such as `/agent/` pointed at the Skills API service. The UI process itself exposes no `/api` workspace endpoints. The proxy may preserve the configured public Host or use the loopback upstream Host. Arbitrary Host/Origin values are rejected; forwarded headers do not grant access. Use a dedicated origin when possible: other applications on the same origin can access its browser storage.
+
 ## Deploy as a static website
 
 ```bash
