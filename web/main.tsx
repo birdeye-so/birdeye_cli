@@ -1,9 +1,10 @@
+import {skillCategories,skillsInCategory} from "./skill-categories";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BigNumber } from "bignumber.js";
 import { WorkflowOverview, type PreparedCase } from "./workflow-overview";
 import { SkillSettings, SkillFindings } from "./skill-settings";
-import { SkillList, RunHistory, groups, plainResult } from "./skill-console";
+import { SkillList, RunHistory, plainResult } from "./skill-console";
 import { SkillIcon } from "./skill-icon";
 import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-text";
 import {ChatPanel} from "./chat-panel";
@@ -395,6 +396,7 @@ function App() {
         }
         const linkedSkill = s.cases.find((item: Data) => item.family === "data-skills" && window.location.pathname === `/${item.kind}`);
         if (linkedSkill) {
+          setSkillGroup(linkedSkill.category);
           chooseWorkflow(linkedSkill.kind);
           return;
         }
@@ -542,6 +544,8 @@ function App() {
         {notice}
       </main>
     );
+  const publicSkills = skillsInCategory(status.cases as Data[]);
+  const categoryFilters = [{id:"all",title:"All skills",skill_count:publicSkills.length}, ...skillCategories(publicSkills)];
   const config = status.config,
     aiConfigured = !!config.ai.profiles[status.activeAiProfile]?.configured;
   const result = run?.result,
@@ -559,7 +563,11 @@ function App() {
         <span><span className={`status-dot ${config.birdeyeConfigured ? "" : "off"}`} /> Birdeye: {config.birdeyeConfigured ? "key configured" : "key required"}</span>
         <span>AI: {aiConfigured ? status.config.ai.profiles[status.activeAiProfile]?.model : "not configured"}</span>
       </div>
-      {view === "research" && <div className="console-groups" role="group" aria-label="Skill group">{groups.map(([value,label]) => <button key={value} aria-pressed={skillGroup === value} className={skillGroup === value ? "case-choice active" : "case-choice"} onClick={() => {setSkillGroup(value); const first=status.cases.find((c:Data)=>value === "all" ? c.family === "data-skills" : c.group === value); if(first) chooseWorkflow(first.kind);}}>{label}<span aria-hidden="true">{status.cases.filter((c:Data)=>value === "all" ? c.family === "data-skills" : c.group === value).length}</span></button>)}</div>}
+      {view === "research" && <div className="console-groups" role="group" aria-label="Skill group">{categoryFilters.map(category => <button key={category.id} data-category={category.id} aria-pressed={skillGroup === category.id} className={skillGroup === category.id ? "case-choice active" : "case-choice"} onClick={() => {
+        setSkillGroup(category.id);
+        const matching = skillsInCategory(publicSkills, category.id);
+        if (!matching.some(skill => skill.kind === kind) && matching[0]) chooseWorkflow(matching[0].kind);
+      }}>{category.title}<span aria-hidden="true">{category.skill_count}</span></button>)}</div>}
       <div className={`console-layout ${view === "research" ? "" : "utility-layout"}`}>
       {view === "research" && <SkillList cases={status.cases} group={skillGroup} selected={kind} choose={chooseWorkflow} />}
       <div className="main-shell">

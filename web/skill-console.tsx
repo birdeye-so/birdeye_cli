@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {SkillIcon} from "./skill-icon";
+import {skillsInCategory} from "./skill-categories";
 type Data = Record<string, any>;
 function useRailDisclosure(storageKey?:string) {
   const [preference,setPreference]=useState<boolean|null>(()=>{
@@ -22,9 +23,8 @@ function useRailDisclosure(storageKey?:string) {
     }
   }};
 }
-export const groups = [["all", "All skills"], ["discover", "Discover"], ["token", "Token"], ["wallet", "Wallet"]];
 export function SkillList({cases, group, selected, choose}: {cases: Data[]; group: string; selected: string; choose: (kind: string) => void}) {
-  const visible = cases.filter(c => c.family === "data-skills" && (group === "all" || c.group === group));
+  const visible = skillsInCategory(cases, group);
   const disclosure = useRailDisclosure("birdeye.skills.disclosure");
   return <details className="skill-rail" {...disclosure}>
     <summary className="skill-toggle" aria-label={disclosure.open?"Collapse skills":"Expand skills"} title={disclosure.open?"Collapse skills":"Expand skills"}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6" /></svg><span className="skill-label">Skills</span><span className="skill-count">{visible.length}</span></summary>

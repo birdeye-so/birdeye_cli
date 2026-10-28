@@ -7,7 +7,8 @@
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"]
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "resolveJsonModule": true
   },
   "include": ["web/**/*.tsx", "web/**/*.ts"]
 }
