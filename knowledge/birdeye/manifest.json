@@ -3005,29 +3005,29 @@
       "id": "cli/README.md",
       "title": "Birdeye CLI",
       "source": "cli:README.md",
-      "sha256": "1d999ab65ecc0dab9799236b4c1e5c5c75e412aa3125cbf51befc8fcb2a536fe",
-      "sourceSha256": "1d999ab65ecc0dab9799236b4c1e5c5c75e412aa3125cbf51befc8fcb2a536fe"
+      "sha256": "8f223d31cafdb0161080ba5b239db8af3d31dd6d1d10db5fb2036be92ef5bf82",
+      "sourceSha256": "8f223d31cafdb0161080ba5b239db8af3d31dd6d1d10db5fb2036be92ef5bf82"
     },
     {
       "id": "cli/README.vi.md",
       "title": "Birdeye CLI",
       "source": "cli:README.vi.md",
-      "sha256": "b57e8d01c4a69fe670a56610b476c76f76ca821bd3d8abf2fe54d8831f31ccdb",
-      "sourceSha256": "b57e8d01c4a69fe670a56610b476c76f76ca821bd3d8abf2fe54d8831f31ccdb"
+      "sha256": "25af4e623ecebaba0b5b3f670fafbd3cf4e6f70a75a866288704f0c21510d46f",
+      "sourceSha256": "25af4e623ecebaba0b5b3f670fafbd3cf4e6f70a75a866288704f0c21510d46f"
     },
     {
       "id": "cli/docs/INSTALLATION.md",
       "title": "Install Birdeye CLI and agent skills",
       "source": "cli:docs/INSTALLATION.md",
-      "sha256": "abec280d20b823611ebe03d17ac724d513d010a69a23b6d8e8cfc192930b5946",
-      "sourceSha256": "abec280d20b823611ebe03d17ac724d513d010a69a23b6d8e8cfc192930b5946"
+      "sha256": "72c72824a7d3c11dfd6534255323b67e08df05cfb3f61464922c69c531b5cf35",
+      "sourceSha256": "72c72824a7d3c11dfd6534255323b67e08df05cfb3f61464922c69c531b5cf35"
     },
     {
       "id": "cli/docs/USAGE.md",
       "title": "Usage",
       "source": "cli:docs/USAGE.md",
-      "sha256": "8e5e741d9685617a886f018c8f340b64eb2aa707f39bc685c9b94b10276c59d8",
-      "sourceSha256": "8e5e741d9685617a886f018c8f340b64eb2aa707f39bc685c9b94b10276c59d8"
+      "sha256": "e265a7e5b08cd2629036ee3802d12af09321225bab8db2dcd8648bea81dcd254",
+      "sourceSha256": "e265a7e5b08cd2629036ee3802d12af09321225bab8db2dcd8648bea81dcd254"
     },
     {
       "id": "cli/docs/workflows/birdeye-data-skills.md",
@@ -3051,11 +3051,25 @@
       "sourceSha256": "79f5d3f636123008544c67a48a389bceeb0267de2e312ef53b5699f9990e3c8a"
     },
     {
+      "id": "cli/docs/workflows/price-surge.md",
+      "title": "Price Surge Screen",
+      "source": "cli:docs/workflows/price-surge.md",
+      "sha256": "062d65566f9c6e6e3945e55d2c11a2b3853906aaaec1f855612158789a7e74d7",
+      "sourceSha256": "062d65566f9c6e6e3945e55d2c11a2b3853906aaaec1f855612158789a7e74d7"
+    },
+    {
       "id": "cli/docs/workflows/README.md",
       "title": "Workflow Birdeye CLI — 0.2.0",
       "source": "cli:docs/workflows/README.md",
-      "sha256": "9030852f66125b0929bffa899351d358544d475babfbaa46a2c7d348d83cfbfb",
-      "sourceSha256": "9030852f66125b0929bffa899351d358544d475babfbaa46a2c7d348d83cfbfb"
+      "sha256": "3a1e20461dc1f450c32ed20094da0976ccc2d48ccf1778228f887c882b4d54ad",
+      "sourceSha256": "3a1e20461dc1f450c32ed20094da0976ccc2d48ccf1778228f887c882b4d54ad"
+    },
+    {
+      "id": "cli/docs/workflows/skill-support.md",
+      "title": "Skill chain support and limitations",
+      "source": "cli:docs/workflows/skill-support.md",
+      "sha256": "8abc451a4f95df1a53a4f0bb5eb74bc649b0d58a628b4cd2d0929d7eef83b118",
+      "sourceSha256": "8abc451a4f95df1a53a4f0bb5eb74bc649b0d58a628b4cd2d0929d7eef83b118"
     },
     {
       "id": "cli/docs/workflows/workflow-daily-brief.md",
@@ -3138,8 +3152,8 @@
       "id": "cli/skills/birdeye-market/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-market/SKILL.md",
-      "sha256": "9e66063f27d231bbfecd6214f24f25caca6fb12d8e87aa4dfb998866acaa9030",
-      "sourceSha256": "9e66063f27d231bbfecd6214f24f25caca6fb12d8e87aa4dfb998866acaa9030"
+      "sha256": "0e2e123c827e0b2609b3ac5d082e8e8f436ef38d4f31bc9df0e5acfd5fa2fcd2",
+      "sourceSha256": "0e2e123c827e0b2609b3ac5d082e8e8f436ef38d4f31bc9df0e5acfd5fa2fcd2"
     },
     {
       "id": "cli/skills/birdeye-portfolio/references/birdeye-data-skills.md",
@@ -3159,8 +3173,8 @@
       "id": "cli/skills/birdeye-portfolio/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-portfolio/SKILL.md",
-      "sha256": "ae8e32a2a8f189c55a840a066844475dd8dd63bf816019d47a44dcf1b49d7263",
-      "sourceSha256": "ae8e32a2a8f189c55a840a066844475dd8dd63bf816019d47a44dcf1b49d7263"
+      "sha256": "e637b2369dc9d726b6ad33b255fb47fba5ec10a3beb88c80a3f4d99f93a44509",
+      "sourceSha256": "e637b2369dc9d726b6ad33b255fb47fba5ec10a3beb88c80a3f4d99f93a44509"
     },
     {
       "id": "cli/skills/birdeye-token/references/birdeye-data-skills.md",
@@ -3187,50 +3201,64 @@
       "id": "cli/skills/birdeye-token/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/birdeye-token/SKILL.md",
-      "sha256": "110df08e4924e43f79f6757d2562f6dda0c4846c52721ba54ce9831fa5b10533",
-      "sourceSha256": "110df08e4924e43f79f6757d2562f6dda0c4846c52721ba54ce9831fa5b10533"
+      "sha256": "294e4d3ad5eabd20737c5134793dc36369f93ac4568c3b4fc11f563896908fd8",
+      "sourceSha256": "294e4d3ad5eabd20737c5134793dc36369f93ac4568c3b4fc11f563896908fd8"
     },
     {
       "id": "cli/skills/skill-contract-dd/SKILL.md",
       "title": "Contract DD",
       "source": "cli:skills/skill-contract-dd/SKILL.md",
-      "sha256": "8f280dc2816517ab260f940fca3ba22e287ea9f66a6145e7db5506e3db0e23b5",
-      "sourceSha256": "8f280dc2816517ab260f940fca3ba22e287ea9f66a6145e7db5506e3db0e23b5"
+      "sha256": "16dee68953ec2fa60a9e9d7d05a0f8083c73f20feaf6562e09187b374cc88d51",
+      "sourceSha256": "16dee68953ec2fa60a9e9d7d05a0f8083c73f20feaf6562e09187b374cc88d51"
     },
     {
       "id": "cli/skills/skill-kline-pattern/SKILL.md",
       "title": "Kline Pattern",
       "source": "cli:skills/skill-kline-pattern/SKILL.md",
-      "sha256": "0e545cfbf0a0863187c17b90bcc2092d37d1d5eca018d7bf2545f344b748e9d5",
-      "sourceSha256": "0e545cfbf0a0863187c17b90bcc2092d37d1d5eca018d7bf2545f344b748e9d5"
+      "sha256": "c3489d868fc281a6396a4b2c868df345eb9c611644ff4892acc11b12fd6f2b4d",
+      "sourceSha256": "c3489d868fc281a6396a4b2c868df345eb9c611644ff4892acc11b12fd6f2b4d"
+    },
+    {
+      "id": "cli/skills/skill-price-surge/references/details.md",
+      "title": "Price Surge Screen",
+      "source": "cli:skills/skill-price-surge/references/details.md",
+      "sha256": "94b5db0e24d18118a03318a1848b4bd94cc5994fe6f0880ca582b6d2011dca32",
+      "sourceSha256": "94b5db0e24d18118a03318a1848b4bd94cc5994fe6f0880ca582b6d2011dca32"
+    },
+    {
+      "id": "cli/skills/skill-price-surge/SKILL.md",
+      "title": "Price Surge Screen",
+      "source": "cli:skills/skill-price-surge/SKILL.md",
+      "sha256": "b80b0bc43f5aa0203983332a567da2b8c2d709bd58bb2b45dd864dd7323cb0ba",
+      "sourceSha256": "b80b0bc43f5aa0203983332a567da2b8c2d709bd58bb2b45dd864dd7323cb0ba"
     },
     {
       "id": "cli/skills/skill-rugcheck-audit/SKILL.md",
       "title": "RugCheck Audit",
       "source": "cli:skills/skill-rugcheck-audit/SKILL.md",
-      "sha256": "e1d5f6914f3400e96a4fc84e69ab7980278823733c882148a0b906707968e144",
-      "sourceSha256": "e1d5f6914f3400e96a4fc84e69ab7980278823733c882148a0b906707968e144"
+      "sha256": "b281af9adcfb55c343f7103484807c16754bdd7a45642625b7feba35ef077268",
+      "sourceSha256": "b281af9adcfb55c343f7103484807c16754bdd7a45642625b7feba35ef077268"
     },
     {
       "id": "cli/skills/skill-smart-money-leaderboard/SKILL.md",
       "title": "Smart Money Leaderboard",
       "source": "cli:skills/skill-smart-money-leaderboard/SKILL.md",
-      "sha256": "54a3fe6a36429dbc637eb236d04b3c6149f75eaa22700f89a923a1c5abbf7213",
-      "sourceSha256": "54a3fe6a36429dbc637eb236d04b3c6149f75eaa22700f89a923a1c5abbf7213"
+      "sha256": "328def382b6cc2e2fc756d7a46500e4147cacb218701a586253ad7169202d7ea",
+      "sourceSha256": "328def382b6cc2e2fc756d7a46500e4147cacb218701a586253ad7169202d7ea"
     },
     {
       "id": "cli/skills/skill-smart-money-profile/SKILL.md",
       "title": "Smart Money Profile",
       "source": "cli:skills/skill-smart-money-profile/SKILL.md",
-      "sha256": "e9ef13c3d4bbcbcef5c71cdbd7f4626cd309cf2dd2422587746f3eae858a07cd",
-      "sourceSha256": "e9ef13c3d4bbcbcef5c71cdbd7f4626cd309cf2dd2422587746f3eae858a07cd"
+      "sha256": "5fa640fca275e897ba1f7ba48fdf7cb430ff97db9e423d190a1337143126710d",
+      "sourceSha256": "5fa640fca275e897ba1f7ba48fdf7cb430ff97db9e423d190a1337143126710d"
     },
     {
       "id": "cli/skills/skill-smart-wallets/SKILL.md",
       "title": "Smart Wallets",
       "source": "cli:skills/skill-smart-wallets/SKILL.md",
-      "sha256": "2d31ac2aa5413db6cc1a29093fbc89e713a7407c025debe31d7ccc568ad32fb6",
-      "sourceSha256": "2d31ac2aa5413db6cc1a29093fbc89e713a7407c025debe31d7ccc568ad32fb6"
+      "sha256": "eacce279829654980d94e7b61f8d132c3202367900f193d2e1e5a822fa728643",
+      "sourceSha256": "eacce279829654980d94e7b61f8d132c3202367900f193d2e1e5a822fa728643"
     },
     {
       "id": "cli/skills/skill-token-dd-score/references/details.md",
@@ -3243,36 +3271,36 @@
       "id": "cli/skills/skill-token-dd-score/SKILL.md",
       "title": "Token DD",
       "source": "cli:skills/skill-token-dd-score/SKILL.md",
-      "sha256": "eae5cb2852554fb29b47da0196c9bfdb10a13956030643232e544c13d22aeb0d",
-      "sourceSha256": "eae5cb2852554fb29b47da0196c9bfdb10a13956030643232e544c13d22aeb0d"
+      "sha256": "f19ebe7d83520d8b2ff50772dbd649ee1c71dd74218971f8b5d532ed057c26ca",
+      "sourceSha256": "f19ebe7d83520d8b2ff50772dbd649ee1c71dd74218971f8b5d532ed057c26ca"
     },
     {
       "id": "cli/skills/skill-trending-list/SKILL.md",
       "title": "Trending List",
       "source": "cli:skills/skill-trending-list/SKILL.md",
-      "sha256": "0ba684e137d5fb382f6ef9698788e973ca55d7f8199af5c0a7ba966b2d74b35a",
-      "sourceSha256": "0ba684e137d5fb382f6ef9698788e973ca55d7f8199af5c0a7ba966b2d74b35a"
+      "sha256": "92b145e4e3464a70f388cbfca28cf9b2e09dca434dedadf01f1abff33bd688d0",
+      "sourceSha256": "92b145e4e3464a70f388cbfca28cf9b2e09dca434dedadf01f1abff33bd688d0"
     },
     {
       "id": "cli/skills/skill-wallet-analysis/SKILL.md",
       "title": "Wallet Analysis",
       "source": "cli:skills/skill-wallet-analysis/SKILL.md",
-      "sha256": "b57b2d7ef82dc8c8fdede681c0126c9e2af753b0c9aa80027c5349b476428645",
-      "sourceSha256": "b57b2d7ef82dc8c8fdede681c0126c9e2af753b0c9aa80027c5349b476428645"
+      "sha256": "fdd1f7db7278da138a798ad05ead9495d9a7d6003c54044cb07370879a55de1e",
+      "sourceSha256": "fdd1f7db7278da138a798ad05ead9495d9a7d6003c54044cb07370879a55de1e"
     },
     {
       "id": "cli/skills/skill-wallet-score/SKILL.md",
       "title": "Wallet Score",
       "source": "cli:skills/skill-wallet-score/SKILL.md",
-      "sha256": "7ad35958e8e9b9fa62251767787ed6fdbb1c60e7545df310a2c02666c0cb1aa3",
-      "sourceSha256": "7ad35958e8e9b9fa62251767787ed6fdbb1c60e7545df310a2c02666c0cb1aa3"
+      "sha256": "a70e46d8d6922f42b7f77c92810b4fe5a2a60485e476eea23f75bddd07f5a33f",
+      "sourceSha256": "a70e46d8d6922f42b7f77c92810b4fe5a2a60485e476eea23f75bddd07f5a33f"
     },
     {
       "id": "cli/skills/skill-wallet-style/SKILL.md",
       "title": "Wallet Style",
       "source": "cli:skills/skill-wallet-style/SKILL.md",
-      "sha256": "ab47d092c622acd3be6efb379d8b5bbc72aabf9bca09ec9db3b7649d18be71c3",
-      "sourceSha256": "ab47d092c622acd3be6efb379d8b5bbc72aabf9bca09ec9db3b7649d18be71c3"
+      "sha256": "88b2205c1202f4448edbbea76dfaf70b0026278c76c44281011e56ba419e02f9",
+      "sourceSha256": "88b2205c1202f4448edbbea76dfaf70b0026278c76c44281011e56ba419e02f9"
     },
     {
       "id": "cli/skills/token-duediligence/doc.md",
@@ -3292,8 +3320,8 @@
       "id": "cli/skills/token-duediligence/SKILL.md",
       "title": "SKILL.md",
       "source": "cli:skills/token-duediligence/SKILL.md",
-      "sha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24",
-      "sourceSha256": "d645d3a6bc446eb080a4dd41a1d8bff4d9ffa814a443a6c0e2da3587a6115f24"
+      "sha256": "1df73354fc4b4a2b347aafba53073d63f376a00336b518029cc4495a4866d653",
+      "sourceSha256": "1df73354fc4b4a2b347aafba53073d63f376a00336b518029cc4495a4866d653"
     }
   ]
 }

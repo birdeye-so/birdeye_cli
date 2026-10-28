@@ -13,6 +13,11 @@ export default defineWorkflow({
   purpose: "Combine short and monthly performance with position, trade and net-worth history for one wallet.",
   produces: "7d/30d PnL, position details, holdings, swaps and net-worth snapshots. Balance changes include cash flows and are not trading ROI.",
   source: "docs/workflows/birdeye-data-skills.md",
+  limitations: [
+    "Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time range are separate inputs; do not merge incompatible scopes.",
+    "Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.",
+    "Net-worth changes include deposits and withdrawals; neither those changes nor the smart-money label establish trading ROI or future returns. First funding is provenance only.",
+  ],
   window: "duration",
   plan(context) {
     const {input: a, add} = context;

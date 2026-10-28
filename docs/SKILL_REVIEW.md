@@ -11,6 +11,7 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 <!-- GENERATED SKILL REVIEW START -->
 | Skill ID | Mặc định: bước / request / CU | Chế độ khác | Cần review |
 | --- | --- | --- | --- |
+| `skill-price-surge` | 1 / 1 / 50 | Advanced: 3 bước, 21 req, 650 CU; Advanced + security: 4 bước, 31 req, 950 CU | Duyệt các bước và phạm vi dữ liệu trước khi đổi mặc định. |
 | `skill-token-dd-score` | 7 / 7 / 181 | Standard DD: 2 bước, 2 req, 51 CU | Advanced mặc định có bảy bước; Standard có hai. OHLC 30 CU còn provisional. Cần duyệt chế độ mặc định và bằng chứng tối thiểu trước khi chấm điểm. |
 | `skill-smart-wallets` | 2 / 4 / 110 | Standard discovery: 3 bước, 7 req, 170 CU; Deep: 5 bước, 13 req, 320 CU | Token → traders → wallet → PnL/positions. Cần duyệt dedup, số wallet tối đa, và Fast/Standard/Deep. Không cộng PnL theo token thành PnL toàn ví. |
 | `skill-contract-dd` | 4 / 4 / 178 | — | Candles có cần đi cùng kiểm tra contract mặc định? skip-kline giảm một bước; giá không chứng minh contract an toàn. |
@@ -22,6 +23,27 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 | `skill-smart-money-leaderboard` | 3 / 3 / 70 | 10 wallet: 30 bước, 30 req, 700 CU | Mỗi wallet cần ba request, tối đa 10 wallet. Cần duyệt giới hạn, scope PnL thống nhất và cách giữ wallet thiếu dữ liệu ngoài bảng xếp hạng. |
 
 ## Chi tiết thực thi để review
+
+### Price Surge Screen — `skill-price-surge`
+
+Định nghĩa: [definition.ts](../src/workflows/skill-price-surge/definition.ts).
+
+**Standard: 1 bước / tối đa 1 request / 50 CU trước retry.**
+
+1. `tokens` → `market.token-list` (50 CU/request).
+
+**Advanced: 3 bước / tối đa 21 request / 650 CU trước retry.**
+
+1. `tokens` → `market.token-list` (50 CU/request).
+2. `top_traders` → `token.top-traders` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
+3. `holder_profile` → `token.holder-profile` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
+
+**Advanced + security: 4 bước / tối đa 31 request / 950 CU trước retry.**
+
+1. `tokens` → `market.token-list` (50 CU/request).
+2. `security` → `token.security` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
+3. `top_traders` → `token.top-traders` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
+4. `holder_profile` → `token.holder-profile` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
 
 ### Token DD — `skill-token-dd-score`
 

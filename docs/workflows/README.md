@@ -1,5 +1,9 @@
 # Workflow Birdeye CLI — 0.2.0
 
+Xem [chain hỗ trợ và giới hạn của mọi skill](skill-support.md) trước khi chọn. Có 12 skill hiện tại; Price Surge hỗ trợ năm chain, các skill còn lại chỉ Solana. Các case cũ bên dưới được giữ để tương thích, không phải skill cài đặt riêng.
+
+[Price Surge Screen](price-surge.md): skill mới để lọc token tăng giá theo vốn hóa, kiểm tra rủi ro và bổ sung dữ liệu có giới hạn CU; hỗ trợ CLI và API nội bộ `/price-surge`.
+
 Chín workflow nghiên cứu lấy cảm hứng từ GMGN đã chạy được qua `case`, interface và AI tools. Hai case cũ `market-shortlist`, `wallet-exposure` vẫn được giữ. Xem [phạm vi và giới hạn migration](migration-audit.md).
 
 ## Chọn workflow

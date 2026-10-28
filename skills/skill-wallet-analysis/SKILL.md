@@ -40,3 +40,13 @@ Use `birdeye-cli case skill-wallet-analysis --help` for optional flags. Run from
 Selected PnL windows, per-token PnL, optional holdings, transactions and first funding. Overlapping periods are not added together.
 
 Report sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.
+
+## Supported chains and limitations
+
+Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Select up to five distinct summary windows from 24h, 7d, 30d, 90d and all. These overlap and must not be added. Per-token positions use the separate duration input, default 30d.
+- Default holdings, positions and transactions each cover one page of up to 100 rows; low-liquidity assets and provider history may be missing. --skip-* flags remove evidence, not just output.
+- Net worth is not PnL, first funding is not proven age, and observed PnL is not copy-trade ROI. Preserve the accounting method and requested windows in comparisons.
+
+Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.

@@ -30,6 +30,8 @@ import { planCase, workflowCatalog, type CaseInput } from "./workflows.js";
 import { registerDataCommands } from "./commands.js";
 import { completion } from "./ai.js";
 import { AppError, errorData, integer, now, type Data } from "./shared.js";
+import {registerPriceSurge} from "./price-surge/command.js";
+import {planPriceSurge} from "./price-surge/api.js";
 
 const program = new Command()
   .name("birdeye-cli")
@@ -38,11 +40,11 @@ const program = new Command()
 program
   .addOption(
     new Option("--format <format>", "output format")
-      .choices(["json", "table", "interface"])
+      .choices(["json", "table", "interface", "plain", "ui"])
       .default("json"),
   )
   .option("--short", "compact deterministic output", false)
-  .option("--chain <chain>", "chain supported by this release", "solana")
+  .option("--chain <chain>", "chain (Price Surge also supports bsc, base, ethereum, robinhood)", "solana")
   .option(
     "--max-cu <cu>",
     "optional maximum estimated CU per run (default: unlimited)",
@@ -71,6 +73,8 @@ let runStore: RunStore | undefined;
 let serving = false;
 function options(command: Command) {
   const opts = command.optsWithGlobals();
+  if (opts.format === "ui") opts.format = "json";
+  if (opts.format === "plain") opts.format = "table";
   if (opts.configDir) process.env.BIRDEYE_CONFIG_DIR = opts.configDir;
   if (opts.storage === "browser" && opts.format !== "interface")
     throw new AppError("INVALID_INPUT", "--storage browser requires --format interface.");
@@ -100,7 +104,7 @@ async function serve(
   initialCase?: CaseInput,
   initialRunId?: string,
 ) {
-  if (opts.chain !== "solana")
+  if (opts.chain !== "solana" && initialCase?.kind !== "skill-price-surge")
     throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");
   if(opts.storage === "browser") {
     if(initial || initialCase || initialRunId || opts.sessionMaxCu !== undefined || opts.maxCu !== undefined)
@@ -258,7 +262,11 @@ program
   .action(async (o: Data, c: Command) =>
     o.refresh
       ? execute("chains.refresh", {}, c)
-      : print({ implemented: ["solana"] }, options(c)),
+      : print({
+        implemented: [...new Set(capabilities().flatMap(operation => operation.chains))],
+        skills: Object.fromEntries(workflowCatalog().filter(skill => skill.family !== "legacy").map(skill => [skill.kind, skill.supportedChains])),
+        note: "Support varies by skill and operation; check cases and capabilities. Upstream network discovery does not enable additional CLI chains.",
+      }, options(c)),
   );
 const usage = program.command("usage");
 usage.command("show").action((_: unknown, c: Command) => {
@@ -342,6 +350,21 @@ program.command("demo <id>").description("Run a customer demo snapshot; see demo
     const result=await runDemo(runner,currentRun,plan.demoInput,undefined,undefined,result=>checkpoint(result));
     checkpoint(result,true);print(result,opts);if(result.meta.coverage==="partial")process.exitCode=5;
   });
+async function executePriceSurge(params: Data, command: Command) {
+  const opts = options(command);
+  const plan = planPriceSurge(params);
+  const output = {...opts, format: ["ui", "interface"].includes(opts.format) ? "json" : opts.format === "plain" ? "table" : opts.format};
+  if (opts.estimateCu) { print(plan, output); return; }
+  const input = planCase({kind: "skill-price-surge", priceSurge: plan.params}).input;
+  if (opts.format === "interface") { await serve(opts, undefined, input); return; }
+  const runner = new Runner(db(), dataKey(readConfig()));
+  currentRun = db().createRun(opts.maxCu, opts.workflow, Math.max(20, plan.maxRequests * 2));
+  beginStoredRun("Price Surge Screen", {mode: "case", case: input});
+  const result = await runCase(runner, currentRun, input, undefined, undefined, result => checkpoint(result));
+  checkpoint(result, true); print(result, output);
+  if (result.meta.coverage === "partial") process.exitCode = 5;
+}
+registerPriceSurge(program, executePriceSurge);
 program.command("cases").description("List available workflow recipes").action((_: unknown, c: Command) => print(workflowCatalog().filter(item => item.family !== "legacy"), options(c)));
 program
   .command("case <kind>")
@@ -383,8 +406,14 @@ program
   .option("--skip-transactions", "omit wallet transaction/trade page")
   .option("--skip-positions", "omit per-token PnL; scores may become unavailable")
   .option("--step-overrides <json>", "Per-step API parameter overrides as a JSON object", JSON.parse)
+  .option("--price-surge <json>", "Price Surge parameters as a JSON object", JSON.parse)
   .action(async (kind: string, o: Data, c: Command) => {
     const opts = options(c);
+    if (kind === "skill-price-surge") {
+      const unsupported = Object.keys(o).filter(key => key !== "priceSurge");
+      if (unsupported.length) throw new AppError("INVALID_INPUT", "Use price-surge with flags, or case skill-price-surge --price-surge '{...}'.");
+      await executePriceSurge({...o.priceSurge, chain: o.priceSurge?.chain ?? opts.chain}, c); return;
+    }
     if (opts.chain !== "solana") throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");
     if (o.rescore) {
       if(kind!=="skill-token-dd-score")throw new AppError("INVALID_INPUT","--rescore requires skill-token-dd-score.");

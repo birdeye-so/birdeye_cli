@@ -1,5 +1,7 @@
 # Install Birdeye CLI and agent skills
 
+For Price Surge, complete the CLI setup below, then run `npx skills add ./skills --skill skill-price-surge --global` from your checkout. Verify without an API key using `birdeye-cli price-surge --estimate-cu`; the standard plan is 50 CU. See [Price Surge setup and API](workflows/price-surge.md).
+
 [Back to README](../README.md) · [Usage](USAGE.md) · [中文安装指南](#中文安装指南)
 
 Install the built package with npm to use `birdeye-cli` from any directory. Registry installation (`npm install -g birdeye-cli`) is not available yet; use a maintainer-provided `.tgz` or build the package from source as described below.
@@ -95,12 +97,13 @@ Use this flow to give your AI agent Birdeye capabilities: choose a skill, instal
 
 | Skill name | Use it for | Example prompt after setup |
 | --- | --- | --- |
+| `skill-price-surge` | Momentum within a market-cap band and bounded risk screening | Use skill-price-surge to estimate a Base screen; explain which checks are unavailable on that chain. |
 | `skill-trending-list` | Trending tokens, market discovery and smart-money research | Use skill-trending-list to plan a Solana trending-token scan. Show the CU estimate without fetching data. |
-| `token-research` | Token overview, holders, security and pool research | Use token-research to research PUMP at `pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn`. Show the plan and CU estimate first. |
+| `skill-contract-dd` | Token overview, security, holder distribution and optional candles | Use skill-contract-dd to research PUMP at `pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn`. Show the plan and CU estimate first. |
 | `skill-wallet-analysis` | Wallet holdings, performance and activity | Use skill-wallet-analysis to plan analysis of `GNRgBxkRFnyLYUTX8DSs3SM3Wm4jYSHQn6JQQVXapoRc`, keeping 7d and 30d PnL separate. Estimate only. |
 | `skill-token-dd-score` | Token DD Score, evidence coverage and saved-run re-scoring | Use skill-token-dd-score to estimate an advanced PUMP review. Explain the checks and missing evidence. Do not fetch yet. |
 
-These are examples from the 23 skills in the catalog. Each skill has its own instructions and matching CLI command. Birdeye currently supports Solana research, not trading or continuous monitoring.
+The catalog has 12 current skills; four older instruction packages remain for compatibility. Price Surge supports Solana, BSC, Base, Ethereum and Robinhood. The other 11 current skills are Solana-only. See the [complete chain-support and limitations matrix](workflows/skill-support.md) before selecting a skill. Skills perform research, not trading or continuous monitoring.
 
 ### 2. Install the instructions
 
@@ -114,14 +117,14 @@ npx skills add ./skills --list
 npx skills add ./skills --skill skill-trending-list --global
 
 # Or install these example skills.
-npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
+npx skills add ./skills --skill skill-trending-list skill-contract-dd skill-wallet-analysis skill-token-dd-score --global
 ```
 
 `--global` installs for your user rather than the current project. Omit it for a project-scoped installation. To choose the target explicitly, append `--agent claude-code` or `--agent codex`, for example:
 
 ```bash
-npx skills add ./skills --skill token-research --global --agent claude-code
-npx skills add ./skills --skill token-research --global --agent codex
+npx skills add ./skills --skill skill-contract-dd --global --agent claude-code
+npx skills add ./skills --skill skill-contract-dd --global --agent codex
 ```
 
 These commands install instructions for the chosen agent, not the agent application itself. An installer invoked from inside an agent may auto-select that agent; check its reported destination. Reopen the agent session after installing.
@@ -260,18 +263,19 @@ Open `http://127.0.0.1:8787` and enter the code printed by the server. Keep the 
 
 本指南介绍如何为 AI 助手安装 Birdeye skills，并配置运行这些技能所需的 CLI。也可以直接复制 [README 中的中文安装提示词](../README.md#中文复制给-ai-助手)交给助手完成。
 
-需要 Node.js **22.16.0 或更新版本**及 npm。支持 macOS、Linux；Windows 用户请使用 WSL。当前仅支持 Solana 数据研究，不执行交易，也不需要钱包私钥。
+需要 Node.js **22.16.0 或更新版本**及 npm。支持 macOS、Linux；Windows 用户请使用 WSL。Price Surge 支持 Solana、BSC、Base、Ethereum 和 Robinhood；其他当前 skill 仅支持 Solana。不执行交易，也不需要钱包私钥。
 
 ### 1. 选择需要的 skill
 
 | Skill 名称 | 用途 |
 | --- | --- |
+| `skill-price-surge` | 按市值和涨幅筛选代币，并在限定 CU 内补充风险证据 |
 | `skill-trending-list` | 热门代币、市场发现、聪明钱研究 |
-| `token-research` | 代币概览、持有人、安全检查和流动性池分析 |
+| `skill-contract-dd` | 代币概览、安全检查、持有人分布和可选 K 线分析 |
 | `skill-wallet-analysis` | 钱包持仓、盈亏和交易活动分析 |
 | `skill-token-dd-score` | 代币尽调评分、证据覆盖率及已保存结果的重新评分 |
 
-上表为 23 个 skill 中的示例。每个 skill 都有对应的使用说明和 CLI 命令。安装 skill 只会注册助手指令，**不会自动安装 CLI，也不会配置 API key**。
+上表为 12 个当前 skill 中的示例；另有 4 个兼容指令包。Price Surge 支持 Solana、BSC、Base、Ethereum 和 Robinhood，其余 11 个当前 skill 仅支持 Solana。每个 skill 的范围和限制见[完整支持矩阵](workflows/skill-support.md)。安装 skill 只会注册助手指令，**不会自动安装 CLI，也不会配置 API key**。
 
 ### 2. 安装 skill 指令
 
@@ -285,17 +289,17 @@ npx skills add ./skills --list
 npx skills add ./skills --skill skill-trending-list --global
 
 # 或安装全部四个技能
-npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
+npx skills add ./skills --skill skill-trending-list skill-contract-dd skill-wallet-analysis skill-token-dd-score --global
 ```
 
 `--global` 表示安装到当前用户范围；省略它则安装到当前项目。按提示选择使用的 AI 助手，也可以明确指定目标：
 
 ```bash
 # Claude Code
-npx skills add ./skills --skill token-research --global --agent claude-code
+npx skills add ./skills --skill skill-contract-dd --global --agent claude-code
 
 # Codex
-npx skills add ./skills --skill token-research --global --agent codex
+npx skills add ./skills --skill skill-contract-dd --global --agent codex
 ```
 
 安装器可能自动识别当前助手，请检查输出中的安装位置。完成后重新打开助手会话。这些命令安装的是 skill 指令，不是助手应用本身。

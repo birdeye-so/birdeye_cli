@@ -3,11 +3,16 @@ import { AppError, errorData, type Data } from "../shared.js";
 import { caseSchema, type CaseInput } from "./schema.js";
 import { getWorkflow } from "./registry.js";
 import type { Step, Selection } from "./types.js";
+import {planPriceSurge} from "../price-surge/api.js";
 export type CasePlan = { kind: string; input: CaseInput; steps: Step[]; estimatedCu: number; maxRequests: number; pricingVersion: string; notes: string[] };
 
 export function planCase(input: unknown, at = Math.floor(Date.now() / 1000)): CasePlan {
   const a = caseSchema.parse(input);
   const definition = getWorkflow(a.kind);
+  if (a.kind === "skill-price-surge") {
+    const plan = planPriceSurge(a.priceSurge ?? {});
+    return {...plan, input: {...a, priceSurge: plan.params}};
+  }
   if (a.wallets) a.wallets = [...new Set(a.wallets)];
   a.limit ??= definition.defaultLimit ?? 3;
   a.to ??= at;

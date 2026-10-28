@@ -47,6 +47,10 @@ function strip(value: any): any {
 export function project(result: Result, short = false): Result {
   if (!short) return result;
   let data = strip(result.data);
+  if (result.data?.kind === "price-surge-v1") {
+    const {raw_response, sources, skillAnalysis, ...screen} = data;
+    return {...result, data: screen, meta: {...result.meta, outputTruncation: "Short Price Surge result omits raw_response, sources and duplicate skillAnalysis; full evidence remains in history."}};
+  }
   if(result.data?.plan?.kind==="skill-token-dd-score") {
     data={...data,sources:[],skillAnalysis:{...data.skillAnalysis,findings:data.skillAnalysis.findings.map((f:Data)=>({...f,pillars:Object.fromEntries(Object.entries(f.pillars).map(([k,p])=>[k,{score:(p as Data).score,coverage:(p as Data).coverage}])),holder_cohorts:undefined,top_holders:undefined,flow_evidence:undefined}))}};
     return {...result,data,meta:{...result.meta,outputTruncation:"Short DD summary; re-score requires SQLite ID or full export."}};
@@ -94,6 +98,11 @@ export function render(value: unknown, format = "json", short = false) {
     return JSON.stringify(data, null, short ? undefined : 2);
   const d = object(data);
   const body = d.data ?? data;
+  if (body?.kind === "price-surge-v1") {
+    const columns = ["rank", "symbol", "address", "price_change_interval_pct", "market_cap", "liquidity", "hydration_status", "risk_flags"];
+    const table = (rows: Data[], keys: string[]) => [keys.join("\t"), ...rows.map(row => keys.map(key => cell(row[key])).join("\t"))].join("\n");
+    return `Price Surge · ${body.params.chain} · ${body.params.interval}\n${body.n_rows} kept / ${body.n_scanned} scanned / ${body.n_excluded} excluded / ${body.n_hydrated} hydrated\n\n${table(body.rows, columns)}\n\nAuto-filtered\n${table(body.dropped, ["symbol", "address", "reason", "flags"])}\n\n${body.hydration_note ?? ""}\nCU: ${JSON.stringify(d.meta?.cu)}\n${(d.meta?.warnings ?? []).join("\n")}`;
+  }
   const list = Array.isArray(body) ? body : (body?.items ?? body?.tokens);
   if (Array.isArray(list) && list.length && typeof list[0] === "object") {
     const keys = [

@@ -31,6 +31,7 @@ import { previewCase } from "../workflow-preview.js";
 import {WorkflowImports,planImported,runImported,importRuntimeSchema} from "../workflow-import.js";
 import {githubDocuments,sourceDocument} from "../workflow-sources.js";
 import {demoCatalog,demoInputSchema,planDemo,runDemo} from "../demos.js";
+import {planPriceSurge} from "../price-surge/api.js";
 
 const operationSchema = z
   .object({
@@ -464,7 +465,7 @@ export async function startInterface(options: ServerOptions) {
         json(res, 200, { ok: true });
         return;
       }
-      if (path.startsWith("/api/")) {
+      if (path.startsWith("/api/") || path === "/price-surge") {
         const cookie =
           req.headers.cookie
             ?.split(";")
@@ -479,6 +480,21 @@ export async function startInterface(options: ServerOptions) {
             },
           });
           return;
+        }
+        if (path === "/price-surge" && req.method === "POST") {
+          const {estimate_cu, max_cu, ...params} = z.record(z.string(), z.unknown()).parse(await body(req));
+          const controls = z.object({estimate_cu: z.boolean().default(false), max_cu: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable().optional()}).parse({estimate_cu, max_cu});
+          const plan = planPriceSurge(params);
+          if (controls.estimate_cu) { json(res, 200, plan); return; }
+          if (active || closing) { json(res, 409, {error: {code: "RUN_BUSY", message: "A run is already active. Stop it or wait for completion."}}); return; }
+          const id = launch(requestSchema.parse({mode: "case", case: {kind: plan.kind, priceSurge: plan.params}, maxCu: controls.max_cu}));
+          const run = runs.get(id)!;
+          const disconnect = () => { if (!res.writableEnded) run.controller.abort(); };
+          res.once("close", disconnect);
+          await run.task;
+          res.off("close", disconnect);
+          if (run.error) { json(res, 502, {error: run.error, ...(run.result ? {result: run.result} : {}), run_id: id}); return; }
+          json(res, 200, run.result); return;
         }
         if (path === "/api/status" && req.method === "GET") {
           const page = history();

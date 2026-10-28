@@ -16,6 +16,8 @@ export type WorkflowDefinition = {
   purpose: string;
   produces: string;
   source: string;
+  supportedChains?: readonly string[];
+  limitations?: readonly string[];
   defaultLimit?: number;
   tokenPolicy?: "supported" | "full-depth" | "unsupported" | "per-step";
   liquidityBaseline?: boolean;
@@ -28,5 +30,5 @@ export type WorkflowDefinition = {
   finalize?: (input: WorkflowInput, steps: Step[]) => void;
 };
 export function defineWorkflow<const Id extends string, const Family extends WorkflowDefinition["family"]>(definition: WorkflowDefinition & {id: Id; family: Family}) {
-  return definition;
+  return {supportedChains: ["solana"] as readonly string[], limitations: [] as readonly string[], ...definition};
 }

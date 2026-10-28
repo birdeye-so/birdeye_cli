@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AppError, type Data } from "./shared.js";
-import { address } from "./schemas.js";
+import { address, evmAddress, tokenAddress } from "./schemas.js";
+import {surgeChains} from "./price-surge/schema.js";
 import { extendedCatalog } from "./extended-catalog.js";
 import { skillCatalog } from "./skill-catalog.js";
 
@@ -11,6 +12,7 @@ const token = z.object({ address }).strict();
 // Snapshot plus the two endpoint-page CU corrections documented in workflow-import-mapping.md.
 export const PRICING_VERSION = "bds-2026-10-22-dd-score-v1";
 export type Entry = {
+  chains?: readonly string[];
   method?: "GET" | "POST";
   bareArray?: boolean;
   dataWithoutSuccess?: boolean;
@@ -45,7 +47,9 @@ export const catalog = {
   "token.security": {
     path: "/defi/token_security",
     cost: 30,
-    schema: token,
+    chains: surgeChains,
+    schema: z.object({address: tokenAddress}).strict(),
+    dataSchema: z.record(z.string(), z.unknown()),
     description: "Upstream security observations",
   },
   "token.holders": {
@@ -154,9 +158,9 @@ export function prepare(
 ) {
   if (!Object.hasOwn(catalog, operation))
     throw new AppError("UNKNOWN_OPERATION", `Unknown operation: ${operation}`);
-  if (chain !== "solana")
-    throw new AppError("UNSUPPORTED_CHAIN", "This release supports solana.");
   const entry: Entry = catalog[operation as Operation];
+  if (!(entry.chains ?? ["solana"]).includes(chain))
+    throw new AppError("UNSUPPORTED_CHAIN", `${operation} supports ${(entry.chains ?? ["solana"]).join(", ")}.${operation === "market.token-list" && chain === "arbitrum" ? " Arbitrum is not documented for Token List V3." : ""}`);
   const result = entry.schema.safeParse(params);
   if (!result.success)
     throw new AppError(
@@ -165,6 +169,15 @@ export function prepare(
         .map((i) => `${i.path.join(".") || "input"}: ${i.message}`)
         .join("; "),
     );
+  const values = result.data as Data;
+  if (entry.chains && values.address && !(chain === "solana" ? address : evmAddress).safeParse(values.address).success)
+    throw new AppError("INVALID_INPUT", `Invalid token address for ${chain}.`);
+  if (operation === "token.top-traders" && chain !== "solana") {
+    if (values.wallet_tags || values.get_holders_networth || values.sort_by === "hold_volume" || values.time_frame === "all_time")
+      throw new AppError("INVALID_INPUT", "Holder metrics, wallet tags and all_time top traders require Solana.");
+    delete values.ui_amount_mode;
+    delete values.get_holders_networth;
+  }
   return {
     operation: operation as Operation,
     entry: entry.costFor ? {...entry, cost: entry.costFor(result.data as Data)} : entry,
@@ -176,6 +189,7 @@ export function capabilities() {
   return Object.entries(catalog).map(([operation, e]) => ({
     operation,
     chain: "solana",
+    chains: (e as Entry).chains ?? ["solana"],
     method: (e as Entry).method || "GET",
     path: e.path,
     estimatedCu: e.cost,

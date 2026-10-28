@@ -13,6 +13,11 @@ export default defineWorkflow({
   purpose: "Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows.",
   produces: "A versioned alpha heuristic with component breakdown and missing-data checks. Scores use fetched positions and are not a copy-trading return forecast.",
   source: "docs/workflows/birdeye-data-skills.md",
+  limitations: [
+    "Alpha requires matching 30d/90d duration-only PnL and a 30d position page using the same accounting method. Other duration inputs are rejected; incompatible overrides or skipped/missing positions make the score unavailable.",
+    "Positions and holdings are one page of up to 100 each by default, not the full portfolio. The 24h summary is additional context, not a replacement for the required scoring windows.",
+    "First funding is provenance, not proven wallet age. The alpha score is a research heuristic, not expected copy-trading ROI; provider history can be incomplete.",
+  ],
   window: "duration",
   validate(a, issue) {
     if (a.duration !== "30d") issue("Wallet Score alpha requires a 30d position scope");

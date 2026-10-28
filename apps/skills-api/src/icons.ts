@@ -1,5 +1,6 @@
 // Lucide icons served by Iconify's public SVG API.
 const icons: Record<string, string> = {
+  'skill-price-surge': 'trending-up',
   'skill-token-dd-score': 'clipboard-check',
   'skill-trending-list': 'flame',
   'skill-smart-wallets': 'wallet-cards',

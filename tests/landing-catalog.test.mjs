@@ -6,7 +6,7 @@ import { createCatalog, destination } from '../scripts/sync-landing-catalog.mjs'
 test('landing exposes one skill list with descriptions and usage instructions', async () => {
   const catalog = await createCatalog();
   assert.equal(catalog.schemaVersion, 3);
-  assert.equal(catalog.skills.length, 11);
+  assert.equal(catalog.skills.length, 12);
   assert.ok(!('workflows' in catalog));
   for (const skill of catalog.skills) {
     assert.ok(catalog.categories.some(item => item.id === skill.category));

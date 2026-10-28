@@ -10,7 +10,9 @@ Standalone website: [Next.js landing, embeddable docs and live catalog](apps/lan
 
 **Pre-1.0, under active development.** The current development version is `0.4.0`. No tagged release baseline is recorded in this checkout. The documented install paths are a source build or a maintainer-provided `.tgz`; installation from the npm registry is not a supported distribution path yet.
 
-The CLI currently supports **Solana only**, even though the bundled provider documentation describes other chains. It reads data and does not execute trades or require a wallet private key.
+Most CLI research supports **Solana**. The Price Surge screen also supports BSC, Base, Ethereum and Robinhood through its documented source endpoints. It reads data and does not execute trades or require a wallet private key.
+
+See [chain support and limitations for all skills](docs/workflows/skill-support.md): 12 current skills plus four compatibility packages. Each skill's installed instructions carry its own chain scope and evidence limits.
 
 ## Requirements
 
@@ -26,7 +28,7 @@ Copy this prompt into an agent that can run terminal commands:
 ```text
 Set up Birdeye skills from https://github.com/birdeye-so/birdeye_cli.
 Read docs/INSTALLATION.md, section "Install agent skills". Install the
-skill-trending-list, token-research, skill-wallet-analysis and skill-token-dd-score
+skill-trending-list, skill-contract-dd, skill-wallet-analysis and skill-token-dd-score
 skills for my agent. Install the CLI separately from source or a built
 .tgz if it is missing. If GitHub access fails, use my existing checkout
 or explain which repository access is needed. Each skill includes its referenced documentation. Verify with --estimate-cu only. For live
@@ -42,7 +44,7 @@ before fetching data.
 ```text
 请从 https://github.com/birdeye-so/birdeye_cli 为我配置 Birdeye skills。
 先阅读 docs/INSTALLATION.md 中的“中文安装指南”，为我使用的 AI 助手安装
-skill-trending-list、token-research、skill-wallet-analysis 和 skill-token-dd-score。
+skill-trending-list、skill-contract-dd、skill-wallet-analysis 和 skill-token-dd-score。
 如果尚未安装 CLI，请从源码或已构建的 .tgz 包单独安装。
 如果 GitHub 访问失败，请使用我已有的本地仓库，或说明需要什么仓库访问权限。
 每个 skill 已包含引用的文档。先使用 --estimate-cu 验证，
@@ -61,7 +63,7 @@ Already have this repository checked out? Run from its root:
 npx skills add ./skills --list
 
 # Install these example skills in your user scope for the agent you select.
-npx skills add ./skills --skill skill-trending-list token-research skill-wallet-analysis skill-token-dd-score --global
+npx skills add ./skills --skill skill-trending-list skill-contract-dd skill-wallet-analysis skill-token-dd-score --global
 ```
 
 For direct GitHub installation when your Git credentials can access the repository:
@@ -119,6 +121,18 @@ birdeye-cli usage show --short
 ```
 
 `--estimate-cu` plans without calling the API. `--max-cu` caps documented cost estimates; actual provider billing can differ. `--short` reduces output size, not API cost. No CU limit is applied unless you set one. MCP tool costs may be unknown; see [usage and billing](docs/USAGE.md#costs-and-output).
+
+## Price Surge Screen
+
+Find surging tokens in a market-cap band, with optional security and holder/trader enrichment:
+
+```bash
+birdeye-cli price-surge --min-market-cap 50000 --max-market-cap 5000000 --estimate-cu
+birdeye-cli price-surge --min-market-cap 50000 --max-market-cap 5000000 --max-cu 50
+npx skills add ./skills --skill skill-price-surge --global
+```
+
+Standard costs 50 CU. Advanced mode bounds enrichment with `--top`; `--with-security` enables security checks. The authenticated `POST /price-surge` endpoint returns collected data, computed rows and every exclusion reason using the same service as the CLI. See [Price Surge setup, inputs, API and interpretation](docs/workflows/price-surge.md).
 
 ## Local web interface
 

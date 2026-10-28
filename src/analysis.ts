@@ -3,6 +3,7 @@ import { caseSchema, planCase, executePlan, type CaseInput, type Execution } fro
 import { workflowMetrics } from "./metrics.js";
 import { skillAnalysis } from "./skill-metrics.js";
 import { attachDdCu } from "./token-dd-runtime.js";
+import {runPriceSurge} from "./price-surge/api.js";
 export { caseSchema, type CaseInput };
 import { Runner, type Result } from "./runner.js";
 import { object, decimal, errorData, now, type Data } from "./shared.js";
@@ -112,6 +113,7 @@ export async function runCase(
   evidence: (result: Result) => void = () => {},
 ): Promise<Result> {
   const plan = planCase(input);
+  if (plan.kind === "skill-price-surge") return runPriceSurge(runner, run, plan.input.priceSurge, signal, progress, evidence);
   function resultFor(state: Execution) {
     const result = analysisResult(run, runner, plan.kind, state.sources, state.warnings);
     result.data.plan = {kind: plan.kind, input: plan.input, steps: plan.steps, estimatedCu: plan.estimatedCu, maxRequests: plan.maxRequests, pricingVersion: plan.pricingVersion};

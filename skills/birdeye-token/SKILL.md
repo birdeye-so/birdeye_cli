@@ -5,6 +5,14 @@ description: Research Solana tokens with Birdeye CLI due diligence, deep reports
 
 Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
 
+## Supported chains and limitations
+
+Compatibility package. These token research procedures support `solana` only. Some raw security/trader operations accept other chains, but that does not extend the complete research procedure.
+
+The procedures fetch bounded pages and snapshots. They do not audit contract source, independently simulate honeypots or verify LP locks, or verify teams and social claims. Missing checks stay unknown; scores and observations do not prove safety. Current focused packages are `skill-token-dd-score`, `skill-contract-dd`, `skill-rugcheck-audit` and `skill-kline-pattern`.
+
+## Use
+
 Require a Solana contract address. `token search <keyword>` returns candidates; confirm the intended contract before research. Read `capabilities --short` for current inputs and `cases --short` for workflow names.
 
 Choose the smallest workflow that answers the request:

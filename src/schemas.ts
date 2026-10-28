@@ -19,6 +19,8 @@ export const address = z
     return bytes + (value.match(/^1*/)?.[0].length ?? 0) === 32;
   }, "Solana addresses must decode to 32 bytes.");
 export const timestamp = z.number().int().min(1).max(10_000_000_000);
+export const evmAddress = z.string().regex(/^0x[0-9a-fA-F]{40}$/, "Use a 20-byte EVM contract address.");
+export const tokenAddress = z.union([address, evmAddress]);
 export const amount = z.number().finite().min(0);
 export const direction = z.enum(["asc", "desc"]);
 export const holderTags = ["bundler", "sniper", "insider", "dev", "smart_trader", "kol"] as const;

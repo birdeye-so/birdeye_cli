@@ -13,7 +13,12 @@ const variants = [
 const rows = workflowCatalog().filter(item => item.family !== "legacy").map(item => {
   const base = {kind: item.kind, ...(['token', 'wallet'].includes(item.subject) ? {address} : item.subject === 'wallets' ? {wallets: [address]} : {})};
   const plans = [];
-  for (const [label, extra] of variants) {
+  const choices = item.kind === 'skill-price-surge' ? [
+    ['Standard', {priceSurge: {mode: 'standard'}}],
+    ['Advanced', {priceSurge: {mode: 'advanced'}}],
+    ['Advanced + security', {priceSurge: {mode: 'advanced', with_security: true}}],
+  ] : variants;
+  for (const [label, extra] of choices) {
     const plan = planCase({...base, ...extra}, at);
     const key = JSON.stringify(plan.steps);
     if (!plans.some(item => item.key === key)) plans.push({label, plan, key});

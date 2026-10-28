@@ -24,13 +24,27 @@
   ],
   "skills": [
     {
+      "id": "skill-price-surge",
+      "title": "Price Surge Screen",
+      "category": "discover",
+      "description": "Find surging tokens within a market-cap band and screen liquidity, trading and optional security risks.",
+      "usage": {
+        "input": "Chain, surge interval and market-cap band. Standard is the default; choose advanced, top and optional security to bound enrichment. Supported chains in this CLI: solana, bsc, base, ethereum, robinhood.",
+        "instructions": "Install birdeye-cli and configure the Birdeye API key locally. Preview the user's filters and CU budget, then run the same command with --max-cu. Standard costs 50 CU. Advanced hydrates at most --top survivors; --with-security adds security, while --no-holder-health skips Solana holder cohorts. --no-auto-filter retains every row with its flags. Top-10 and developer caps require security evidence. Unknown KOL tags are not zero buyers. Use --help for the full filter list; read the detailed reference for interpretation and the /price-surge API contract.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`, `bsc`, `base`, `ethereum`, `robinhood`. Broader upstream API support does not enable additional chains for this skill.\n\n- Arbitrum is unavailable because Token List V3 does not document it. Other upstream chains are outside this skill's implemented scope.\n- Standard requests one page of 1–100 tokens for 50 CU. Advanced hydrates at most min(top, limit) first-pass survivors; exclusions are not backfilled. Unhydrated rows have no advanced risk assessment.\n- Holder health is Solana-only in this implementation, even though the provider also documents Robinhood. Non-Solana runs omit holder profiles and Solana-only trader options.\n- Security is opt-in in advanced mode. Developer/top-10 caps remain unevaluated without security; unknown authority, lock, tax or KOL evidence stays null, not a passed check.\n- Trader metrics cover at most ten sampled wallets; 1m/5m screens use a 30m trader window. Holder-profile volume uses 1h. Profitability is not a market-wide win rate; a KOL holder count is not a KOL buyer count.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
+        "preview_command": "birdeye-cli price-surge --chain solana --interval 1h --min-market-cap 50000 --max-market-cap 5000000 --short --estimate-cu",
+        "run_command": "birdeye-cli price-surge --chain solana --interval 1h --min-market-cap 50000 --max-market-cap 5000000 --short",
+        "result": "Ranked candidates, every exclusion reason, bounded advanced evidence, raw source data and CU usage. Unknown risk fields stay null.",
+        "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-price-surge --global"
+      }
+    },
+    {
       "id": "skill-token-dd-score",
       "title": "Token DD",
       "category": "token",
       "description": "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.",
       "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running.",
+        "input": "A Solana token address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Standard uses overview/security only; advanced adds holder, flow and liquidity evidence. Scores from different modes or coverage are not comparable.\n- Advanced distribution covers 10–50 top wallets, holders one page of up to 100, and liquidity 1–100 candles. Labeled cohorts can overlap; these samples are not the full holder population.\n- Liquidity OHLC reserves a provisional 30 CU, not a verified billing upper bound. Missing checks are excluded from scored coverage and cannot establish safety.\n- Only the default reconstructed scoring preset is implemented; canonical-mint/LST checks, pace and alternative presets are unavailable. Local re-scoring cannot fetch missing or wider-window evidence.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short --estimate-cu",
         "run_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short",
         "result": "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.",
@@ -43,8 +57,8 @@
       "category": "discover",
       "description": "Discover tokens by activity, liquidity or market size, optionally within a launch platform.",
       "usage": {
-        "input": "No address is required. Choose filters appropriate to the research question.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "No address is required. Choose filters appropriate to the research question. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- This skill remains Solana-only even though the underlying raw Token List V3 operation supports other chains.\n- The default scan is one page of up to 50 tokens; per-step overrides remain bounded by the selected endpoint. Intervals are 1h, 4h or 24h. This ranking is not a market-wide scan or a risk screen.\n- Platform filters require v3-list. Native trending permits volume, liquidity or rank; rank requires native trending. No per-token security or holder hydration is performed.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-trending-list --short --estimate-cu",
         "run_command": "birdeye-cli case skill-trending-list --short",
         "result": "A ranked token page. Choose V3 token list or native trending; sorting options follow the selected API.",
@@ -57,8 +71,8 @@
       "category": "discover",
       "description": "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.",
       "usage": {
-        "input": "No address is required. Choose filters appropriate to the research question.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "No address is required. Choose filters appropriate to the research question. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Default discovery takes at most 20 smart-money tokens from a 1d page, then ten 30d top traders for each of 1–5 selected tokens. It deduplicates at most 1–5 wallets in provider order; this is not a complete wallet leaderboard.\n- Fast mode has no wallet-wide PnL evidence; standard adds 30d PnL and deep adds holdings and a per-token PnL page. Token-scoped trader PnL cannot be summed into wallet-wide PnL or win rate.\n- Provider labels may be incomplete and do not establish future performance. Holdings and positions are paginated samples; no copy-trade return is calculated.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-smart-wallets --short --estimate-cu",
         "run_command": "birdeye-cli case skill-smart-wallets --short",
         "result": "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed.",
@@ -71,8 +85,8 @@
       "category": "token",
       "description": "Review contract controls, ownership concentration and price behavior together.",
       "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana token address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Uses Birdeye observations, a top-ten wallet distribution and optional candles; it does not audit source code, simulate selling, or independently verify LP locks.\n- No Safe tier or composite safety score is produced. Missing controls remain unknown, and price action cannot establish contract safety.\n- Candles use closed observations with a maximum 5000-interval request window; at least eight valid closed candles are needed for a pattern. --skip-kline omits that evidence and its CU.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-contract-dd --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-contract-dd --address <SOLANA_ADDRESS> --short",
         "result": "Security checklist, holder distribution and optional candlestick analysis. Unknown controls stay unknown; price action cannot establish contract safety.",
@@ -85,8 +99,8 @@
       "category": "token",
       "description": "Review contract, holder and actual liquidity-history evidence for potential risk.",
       "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana token address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Uses Birdeye, not RugCheck.org. Honeypot simulation and independent LP-lock verification are unavailable; unknown controls are not passed checks.\n- Default holder evidence is one 20-row page plus labeled cohorts. Liquidity history takes at most 100 snapshots; at least two are required for a change calculation. Cohorts can overlap.\n- USD liquidity changes do not prove LP withdrawal; price falls are never substituted for liquidity history. Liquidity-history CU uses a conservative resolution/lookback estimate, not confirmed billing.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-rugcheck-audit --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-rugcheck-audit --address <SOLANA_ADDRESS> --short",
         "result": "Birdeye observations, holder groups and historical liquidity snapshots. This is not a RugCheck.org integration; unavailable honeypot/LP-lock checks are explicit.",
@@ -99,8 +113,8 @@
       "category": "token",
       "description": "Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules.",
       "usage": {
-        "input": "A Solana token address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana token address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Supports 1m, 5m, 15m, 30m, 1H, 4H and 1D candles over a maximum 5000-interval request window. Intervals are case-sensitive; closed valid candles only, with at least eight required.\n- Reports invalid candles and gaps; a missing volume baseline receives no volume adjustment. Observed support/resistance are sample extrema, not forecasts.\n- The pattern score is a heuristic, not a backtest or prediction. OHLCV CU reserves the largest documented tier; actual billing may differ.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-kline-pattern --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-kline-pattern --address <SOLANA_ADDRESS> --short",
         "result": "Pattern, heuristic score and supporting measurements from closed candles. Thin or invalid data produces an unavailable result.",
@@ -113,8 +127,8 @@
       "category": "wallet",
       "description": "Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows.",
       "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana wallet address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Alpha requires matching 30d/90d duration-only PnL and a 30d position page using the same accounting method. Other duration inputs are rejected; incompatible overrides or skipped/missing positions make the score unavailable.\n- Positions and holdings are one page of up to 100 each by default, not the full portfolio. The 24h summary is additional context, not a replacement for the required scoring windows.\n- First funding is provenance, not proven wallet age. The alpha score is a research heuristic, not expected copy-trading ROI; provider history can be incomplete.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-wallet-score --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-wallet-score --address <SOLANA_ADDRESS> --short",
         "result": "A versioned alpha heuristic with component breakdown and missing-data checks. Scores use fetched positions and are not a copy-trading return forecast.",
@@ -127,8 +141,8 @@
       "category": "wallet",
       "description": "Describe how often a wallet trades and how profitable those trades were over a fixed period.",
       "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana wallet address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Style classification supports 7d or 30d only, with matching summary and position scopes. Missing, empty, incompatible or skipped positions can make classification unavailable.\n- The default position and optional transaction requests each return up to 100 rows. Loss share describes fetched positions; it is not a full wallet census.\n- Frequency and PnL do not establish holding time, intent or trader identity. First funding does not establish wallet age; the result is not a return forecast.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-wallet-style --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-wallet-style --address <SOLANA_ADDRESS> --short",
         "result": "Frequency × PnL classification with sample size and per-token loss share. Transaction and first-funding evidence are optional.",
@@ -141,8 +155,8 @@
       "category": "wallet",
       "description": "Compare wallet PnL across several periods and inspect holdings, positions and recent activity.",
       "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana wallet address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Select up to five distinct summary windows from 24h, 7d, 30d, 90d and all. These overlap and must not be added. Per-token positions use the separate duration input, default 30d.\n- Default holdings, positions and transactions each cover one page of up to 100 rows; low-liquidity assets and provider history may be missing. --skip-* flags remove evidence, not just output.\n- Net worth is not PnL, first funding is not proven age, and observed PnL is not copy-trade ROI. Preserve the accounting method and requested windows in comparisons.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-wallet-analysis --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-wallet-analysis --address <SOLANA_ADDRESS> --short",
         "result": "Selected PnL windows, per-token PnL, optional holdings, transactions and first funding. Overlapping periods are not added together.",
@@ -155,8 +169,8 @@
       "category": "wallet",
       "description": "Combine short and monthly performance with position, trade and net-worth history for one wallet.",
       "usage": {
-        "input": "A Solana wallet address.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "A Solana wallet address. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time range are separate inputs; do not merge incompatible scopes.\n- Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.\n- Net-worth changes include deposits and withdrawals; neither those changes nor the smart-money label establish trading ROI or future returns. First funding is provenance only.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-smart-money-profile --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-smart-money-profile --address <SOLANA_ADDRESS> --short",
         "result": "7d/30d PnL, position details, holdings, swaps and net-worth snapshots. Balance changes include cash flows and are not trading ROI.",
@@ -169,8 +183,8 @@
       "category": "wallet",
       "description": "Compare an explicit list of wallets using consistent PnL windows and accounting.",
       "usage": {
-        "input": "One to ten Solana wallet addresses, separated by commas.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.",
+        "input": "One to ten Solana wallet addresses, separated by commas. Supported chains in this CLI: solana.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Accepts 1–10 explicitly supplied Solana wallets, deduplicated before calls. This is a relative comparison of that list, not discovery of all top wallets.\n- Ranking requires matching 7d/30d duration-only summaries and complete comparison metrics; missing inputs remain unranked. Per-token evidence is one page of up to 100 rows per wallet by default.\n- Higher PnL improves relative rank, but the score is not absolute alpha or copy-trading ROI. Scores can change when the comparison set changes.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-smart-money-leaderboard --wallets <WALLET_1,WALLET_2> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-smart-money-leaderboard --wallets <WALLET_1,WALLET_2> --short",
         "result": "7d/30d performance and per-token evidence per wallet, ranked with higher PnL scoring higher. Missing metrics remain unranked.",

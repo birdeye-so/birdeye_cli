@@ -40,3 +40,13 @@ Use `birdeye-cli case skill-kline-pattern --help` for optional flags. Run from a
 Pattern, heuristic score and supporting measurements from closed candles. Thin or invalid data produces an unavailable result.
 
 Report sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.
+
+## Supported chains and limitations
+
+Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Supports 1m, 5m, 15m, 30m, 1H, 4H and 1D candles over a maximum 5000-interval request window. Intervals are case-sensitive; closed valid candles only, with at least eight required.
+- Reports invalid candles and gaps; a missing volume baseline receives no volume adjustment. Observed support/resistance are sample extrema, not forecasts.
+- The pattern score is a heuristic, not a backtest or prediction. OHLCV CU reserves the largest documented tier; actual billing may differ.
+
+Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.

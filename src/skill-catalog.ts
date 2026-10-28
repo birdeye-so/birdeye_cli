@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { Entry } from "./catalog.js";
 import { address, timestamp, amount, direction, page, validPage } from "./schemas.js";
+import {surgeChains, tokenListSchema} from "./price-surge/schema.js";
 const list = z.array(z.record(z.string(), z.unknown()));
 export const skillCatalog = {
   "token.liquidity-ohlc": {
@@ -12,8 +13,9 @@ export const skillCatalog = {
   },
   "market.token-list": {
     path: "/defi/v3/token/list", cost: 50, paginated: true,
+    chains: surgeChains,
     description: "Token discovery ranked by market data, with optional platform filter",
-    schema: z.object({sort_by: z.enum(["liquidity", "market_cap", "fdv", "holder", "volume_1h_usd", "volume_4h_usd", "volume_24h_usd", "trade_1h_count", "trade_4h_count", "trade_24h_count"]).default("volume_24h_usd"), sort_type: direction.default("desc"), platform_name: z.string().min(1).max(100).optional(), min_liquidity: amount.optional(), min_volume_1h_usd: amount.optional(), min_volume_4h_usd: amount.optional(), min_volume_24h_usd: amount.optional(), ...page(100, 20)}).strict().refine(validPage),
+    schema: tokenListSchema,
     dataSchema: z.object({items: list}).passthrough(),
   },
   "token.liquidity-history": {

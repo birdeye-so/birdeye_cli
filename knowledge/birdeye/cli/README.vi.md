@@ -372,7 +372,7 @@ birdeye-cli case <kind> [cờ workflow] [cờ chung]
 birdeye-cli --format interface [cờ giao diện]
 ```
 
-`<...>` là giá trị cần thay, không nhập dấu ngoặc. `[ ... ]` trong cú pháp là phần tùy chọn. Đối số vị trí như địa chỉ phải đứng sau lệnh con; ví dụ `token price ADDRESS`, còn `case` dùng `--address ADDRESS`. Địa chỉ API phải là địa chỉ Solana base58 hợp lệ, không dùng symbol hoặc chuỗi base64. Dùng dấu nháy cho chuỗi có khoảng trắng, đường dẫn và JSON.
+`<...>` là giá trị cần thay, không nhập dấu ngoặc. `[ ... ]` trong cú pháp là phần tùy chọn. Đối số vị trí như địa chỉ phải đứng sau lệnh con; ví dụ `token price ADDRESS`, còn `case` dùng `--address ADDRESS`. Tác vụ Solana cần địa chỉ base58 hợp lệ; các operation EVM được hỗ trợ cần địa chỉ contract `0x` 20 byte. Không dùng symbol hoặc chuỗi base64. Dùng dấu nháy cho chuỗi có khoảng trắng, đường dẫn và JSON.
 
 ```bash
 birdeye-cli --help
@@ -392,7 +392,7 @@ birdeye-cli capabilities
 | `-V`, `--version` | Không cần giá trị | In phiên bản CLI. |
 | `--format <format>` | `json`; nhận `json`, `table`, `interface` | JSON cho automation; table để đọc nhanh; interface mở UI ở các lệnh có hỗ trợ. |
 | `--short` | Tắt | Output ngắn, JSON một dòng; không giảm CU của request. Không cần truyền `true`. |
-| `--chain <chain>` | `solana` | Chain cho tác vụ dữ liệu; bản này chỉ thực thi Solana. |
+| `--chain <chain>` | `solana` | Chain tùy skill/operation: Price Surge hỗ trợ solana, bsc, base, ethereum, robinhood; các skill khác chỉ Solana. Xem [ma trận hỗ trợ](docs/workflows/skill-support.md). |
 | `--max-cu <cu>` | Không giới hạn; nếu đặt thì số nguyên ≥ 0 | Budget CU ước tính mỗi lượt; với `workflow create` là budget của nhóm workflow mới. Không bao gồm AI tokens hoặc chi phí MCP chưa xác định. |
 | `--workflow <id>` | Không có | Khi chạy API qua CLI, ghi CU vào budget tích lũy đã tạo bằng `workflow create`; dùng với `usage show` để lọc tổng CU theo nhóm. Đây không phải ID workflow import; UI dùng `--session-max-cu` cho budget phiên. |
 | `--estimate-cu` | Tắt | Lập kế hoạch cho lệnh dữ liệu, `case` hoặc `workflow imports run`, không gửi request Birdeye. Không phải dry-run chung cho lệnh ghi config/import. |
@@ -525,7 +525,7 @@ Các bảng dưới liệt kê cờ riêng; cờ chung vẫn áp dụng. API ch�
 
 | Lệnh | Cờ riêng và ý nghĩa |
 | --- | --- |
-| `token price <address>`, `token overview <address>`, `token security <address>` | Không có cờ riêng; đối số là địa chỉ token. |
+| `token price <address>`, `token overview <address>`, `token security <address>` | Không có cờ riêng; đối số là địa chỉ token. Price/overview chỉ Solana; security hỗ trợ năm chain của Price Surge. |
 | `token holders <address>` | `--limit <n>`: mặc định 10, 1–100; `--offset <n>`: mặc định 0, 0–10.000, offset + limit ≤ 10.000; `--mode <mode>`: `wallet` mặc định hoặc `token_account`, cách nhóm holders. |
 | `market trending` | `--limit <n>`: mặc định 20, 1–50; `--offset <n>`: mặc định 0; `--interval <window>`: mặc định `24h`, nhận `1h`, `4h`, `24h`; `--sort-by <field>`: mặc định `rank`, nhận `rank`, `volumeUSD`, `liquidity`; `--sort-type <direction>`: mặc định `asc`, nhận `asc`, `desc`. |
 | `market ohlcv <address>` | Bắt buộc `--from <seconds>` và `--to <seconds>`, Unix giây, from < to; `--interval <value>` mặc định `1H`, chọn khung nến. Các giá trị: `1s`, `15s`, `30s`, `1m`, `3m`, `5m`, `15m`, `30m`, `1H`, `2H`, `4H`, `6H`, `8H`, `12H`, `1D`, `3D`, `1W`, `1M`. |
@@ -857,9 +857,11 @@ Discover wallets by realized PnL or provider trader score, not wealth.
 
 Token traders with optional wallet tags; highest volume does not imply highest skill.
 
+Operation này hỗ trợ `solana`, `bsc`, `base`, `ethereum`, `robinhood`. `all_time`, `hold_volume`, `wallet_tags` và `get_holders_networth=true` chỉ dành cho Solana; không dùng chúng với EVM.
+
 | Đối số / cờ | Giá trị hợp lệ | Mặc định / bắt buộc | Ý nghĩa |
 | --- | --- | --- | --- |
-| `<address>` | Chuỗi | Bắt buộc | Địa chỉ token Solana. |
+| `<address>` | Chuỗi | Bắt buộc | Địa chỉ token Solana hoặc contract EVM `0x` 20 byte theo `--chain`. |
 | `--time-frame <value>` | `30m`, `1h`, `2h`, `4h`, `6h`, `8h`, `12h`, `24h`, `2d`, `3d`, `7d`, `14d`, `30d`, `60d`, `90d`, `all_time` | `24h` | Khung thời gian tổng hợp/xếp hạng; dùng đúng enum của endpoint. |
 | `--sort-by <value>` | `volume`, `trade`, `total_pnl`, `unrealized_pnl`, `realized_pnl`, `volume_usd`, `hold_volume` | `realized_pnl` | Trường xếp hạng kết quả; dùng đúng tên enum của endpoint. |
 | `--sort-type <value>` | `asc`, `desc` | `desc` | asc: tăng dần; desc: giảm dần. |
@@ -873,6 +875,8 @@ Token traders with optional wallet tags; highest volume does not imply highest s
 
 <details>
 <summary>market token-list</summary>
+
+Raw operation hỗ trợ `solana`, `bsc`, `base`, `ethereum`, `robinhood`; skill `skill-trending-list` vẫn chỉ hỗ trợ Solana. Các bộ lọc mới theo khoảng thời gian, vốn hóa và giá nằm trong `market token-list --help`; dùng [Price Surge](docs/workflows/price-surge.md) để chạy logic screening tổng hợp.
 
 Token discovery ranked by market data, with optional platform filter.
 
@@ -1294,7 +1298,7 @@ node dist/index.js case skill-token-dd-score --address So11111111111111111111111
 | `--estimate-cu` | Chỉ lập kế hoạch, không gọi API |
 | `--max-cu` | Budget CU ước tính tùy chọn; mặc định không trần |
 | `--config-dir` | Chọn thư mục cấu hình và SQLite đang chứa lượt chạy |
-| `--chain` | Hiện hỗ trợ `solana` |
+| `--chain` | Price Surge: `solana`, `bsc`, `base`, `ethereum`, `robinhood`; các skill khác: `solana` |
 | `--bind`, `--public-url` | Địa chỉ bind và origin công khai cho `--format interface` |
 
 Standard dùng overview + security: **2 calls / 51 CU**. Advanced thêm distribution, holder profile, top holders, tagged money flow và liquidity OHLC: **7 calls / tạm tính 181 CU** trước retry. Giá OHLC 30 CU lấy từ đặc tả; docs provider còn mô tả giá theo resolution nên đây **không phải upper bound đã xác minh**. `cu_billed_total` để null, còn CU ước tính/reserved lấy từ ledger.
@@ -1479,7 +1483,7 @@ Trong sandbox triển khai ban đầu, TCP listen và Chrome launch bị chặn.
 
 Ba skill có trong `skills/birdeye-token`, `skills/birdeye-market`, `skills/birdeye-portfolio`. Cài thư mục skill vào nơi agent của bạn đọc skills, và bảo đảm executable `birdeye-cli` nằm trên PATH. Skills dùng CU do CLI trả về, không nhân bản bảng giá.
 
-Phạm vi tiếp theo: multi-chain, multi-price batching, pagination tự động, scheduler/WebSocket, provider capability probing/fallback, biểu đồ và kiểm thử live. Workflow hiện chạy một lần; không tự giao dịch, không backtest copy-trade ROI.
+Price Surge đã hỗ trợ năm chain nêu trong [ma trận hỗ trợ](docs/workflows/skill-support.md); các skill khác vẫn chỉ Solana. Phạm vi tiếp theo: mở rộng multi-chain cho các skill khác, multi-price batching, pagination tự động, scheduler/WebSocket, provider capability probing/fallback, biểu đồ và kiểm thử live. Workflow hiện chạy một lần; không tự giao dịch, không backtest copy-trade ROI.
 
 ### CU limit tùy chọn và command preview
 

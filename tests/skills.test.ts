@@ -59,7 +59,7 @@ function fixture(url:URL,init?:RequestInit){
 }
 
 test("all current skill recipes execute planned documented requests with bounded CU",async()=>{
-  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,11);
+  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,12);
   for(const kind of skillKinds){
     const info=skillInfo[kind];
     const input={kind,...(info.subject==="token"?{address:token}:info.subject==="wallet"?{address:wallet}:info.subject==="wallets"?{wallets:[wallet]}:{}),from:at-86400*7,to:at,resolution:"1H",skillDepth:"deep",include:["list","advanced_security","risk_history"]};
@@ -80,6 +80,26 @@ test("all current skill recipes execute planned documented requests with bounded
       if(kind==="skill-rugcheck-audit")assert.equal(out.data.skillAnalysis.findings.find((f:any)=>f.kind==="liquidity-change").liquidityChangePct,"-10");
     }finally{ledger.close();}
   }
+});
+
+test("declared skill chains are executable by every planned source, with endpoint-specific restrictions", () => {
+  for (const skill of workflowCatalog().filter(item => item.family === "data-skills")) {
+    assert.ok(skill.supportedChains.length > 0 && skill.limitations.length > 0, skill.kind);
+    for (const chain of skill.supportedChains) {
+      const input = {kind: skill.kind,
+        ...(skill.subject === "token" || skill.subject === "wallet" ? {address: token} : skill.subject === "wallets" ? {wallets: [wallet]} : {}),
+        ...(skill.kind === "skill-price-surge" ? {priceSurge: {chain, mode: "advanced", with_security: true}} : {}),
+      };
+      const plan = planCase(input, at);
+      for (const step of plan.steps) {
+        const subject = chain === "solana" ? token : "0x0000000000000000000000000000000000000001";
+        const params = {...step.params, ...(step.subjects ? {[step.subjectKey!]: subject} : {})};
+        assert.doesNotThrow(() => prepare(step.operation, params, chain), `${skill.kind}: ${chain}/${step.operation}`);
+      }
+    }
+    if (skill.kind !== "skill-price-surge") assert.deepEqual(skill.supportedChains, ["solana"], skill.kind);
+  }
+  assert.throws(() => prepare("token.holder-profile", {token_address: "0x0000000000000000000000000000000000000001"}, "robinhood"), {code: "UNSUPPORTED_CHAIN"});
 });
 
 test("liquidity resolution edits change preview, run reservations and budget enforcement",async()=>{

@@ -5,6 +5,14 @@ description: Analyze Solana wallet holdings, PnL, recent trades and performance 
 
 Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
 
+## Supported chains and limitations
+
+Compatibility package. Wallet and portfolio research supports `solana` only. Wider provider wallet-network support does not enable additional chains in this CLI.
+
+Holdings, positions and trades are bounded pages; low-liquidity assets and historical records can be missing. Page weights do not represent total wealth, overlapping PnL windows are not additive, net-worth changes include cash flows, and first funding does not establish wallet age. No copy-trading ROI is computed. Use the current wallet skills for focused analysis.
+
+## Use
+
 For holdings only, use `case wallet-exposure --address <wallet> --short` or `portfolio holdings <wallet> --limit <n> --short`. For performance, use `case wallet-analysis --address <wallet> --duration 30d --pnl-method wac`; full adds per-token PnL details and checks a bounded set of positions. `case smart-money-profile --address <wallet>` compares 7d/30d PnL with holdings/trades; omit address to discover a bounded set from a realized-PnL ranking, not a rich list.
 
 Before executing, use --estimate-cu --short and respect the user's --max-cu. For multiple calls, create a workflow budget and pass its ID through --workflow. Finish with usage show --workflow <id> --short. Cumulative CU totals are not additive; uncertain attempts remain charged against the local budget.

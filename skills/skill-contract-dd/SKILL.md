@@ -40,3 +40,13 @@ Use `birdeye-cli case skill-contract-dd --help` for optional flags. Run from any
 Security checklist, holder distribution and optional candlestick analysis. Unknown controls stay unknown; price action cannot establish contract safety.
 
 Report sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.
+
+## Supported chains and limitations
+
+Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Uses Birdeye observations, a top-ten wallet distribution and optional candles; it does not audit source code, simulate selling, or independently verify LP locks.
+- No Safe tier or composite safety score is produced. Missing controls remain unknown, and price action cannot establish contract safety.
+- Candles use closed observations with a maximum 5000-interval request window; at least eight valid closed candles are needed for a pattern. --skip-kline omits that evidence and its CU.
+
+Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.

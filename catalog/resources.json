@@ -24,6 +24,8 @@
   ],
   "documents": [
     "docs/INSTALLATION.md",
-    "docs/USAGE.md"
+    "docs/USAGE.md",
+    "docs/workflows/price-surge.md",
+    "docs/workflows/skill-support.md"
   ]
 }

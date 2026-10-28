@@ -40,3 +40,13 @@ Use `birdeye-cli case skill-trending-list --help` for optional flags. Run from a
 A ranked token page. Choose V3 token list or native trending; sorting options follow the selected API.
 
 Report sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.
+
+## Supported chains and limitations
+
+Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- This skill remains Solana-only even though the underlying raw Token List V3 operation supports other chains.
+- The default scan is one page of up to 50 tokens; per-step overrides remain bounded by the selected endpoint. Intervals are 1h, 4h or 24h. This ranking is not a market-wide scan or a risk screen.
+- Platform filters require v3-list. Native trending permits volume, liquidity or rank; rank requires native trending. No per-token security or holder hydration is performed.
+
+Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.

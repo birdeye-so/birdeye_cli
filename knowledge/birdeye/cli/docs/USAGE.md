@@ -4,6 +4,8 @@
 
 ## Discover commands
 
+Use `birdeye-cli price-surge --help` for market-cap and momentum screening, risk flags and bounded advanced enrichment. The same aggregate result is available through `POST /price-surge` on the local service. See the [Price Surge command and API reference](workflows/price-surge.md).
+
 ```bash
 birdeye-cli --help
 birdeye-cli token --help
@@ -12,7 +14,7 @@ birdeye-cli capabilities --short
 birdeye-cli cases --short
 ```
 
-`capabilities` includes schemas and estimated CU costs. `cases` lists research workflows. The CLI validates parameters before requests. Only `--chain solana` is supported by this release.
+`capabilities` includes schemas, estimated CU costs and each raw operation's `chains`; `cases` includes each current skill's `supportedChains` and `limitations`. Price Surge supports `solana`, `bsc`, `base`, `ethereum` and `robinhood`. The other 11 current skills are Solana-only. Raw Token List V3, token security and top-trader calls also accept those five chains, which does not extend complete skill support. Parameters and chain restrictions are validated before requests. See [all skill scopes and limitations](workflows/skill-support.md).
 
 ## Costs and output
 

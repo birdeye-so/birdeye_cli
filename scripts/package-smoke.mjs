@@ -27,7 +27,8 @@ try {
   for (const required of ['dist/index.js', 'dist/web/main.js', 'dist/web/index.html',
     'bin/token-dd-score.mjs', 'knowledge/birdeye/manifest.json',
     'README.md', 'README.vi.md', 'CHANGELOG.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md',
-    'docs/INSTALLATION.md', 'docs/USAGE.md']) {
+    'docs/INSTALLATION.md', 'docs/USAGE.md', 'docs/workflows/price-surge.md',
+    'dist/price-surge/api.js', 'skills/skill-price-surge/SKILL.md', 'skills/skill-price-surge/references/details.md']) {
     assert.ok(files.has(required), `Missing package asset: ${required}`);
   }
   for (const path of files) {
@@ -44,6 +45,8 @@ try {
   assert.equal(JSON.parse(run(cli, ['config', 'show', '--short'])).birdeyeConfigured, false);
   const estimate = JSON.parse(run(cli, ['token', 'price', address, '--estimate-cu']));
   assert.equal(estimate.estimatedCu, 3);
+  assert.equal(JSON.parse(run(cli, ['price-surge', '--estimate-cu'])).estimatedCu, 50);
+  assert.equal(JSON.parse(run(cli, ['price-surge', '--chain', 'base', '--mode', 'advanced', '--with-security', '--top', '3', '--estimate-cu'])).estimatedCu, 230);
   assert.match(run(cli, ['knowledge', 'search', 'token', '--short']), /source/);
   assert.ok(JSON.parse(run(score, [address, '--estimate-cu', '--format', 'json'])));
 

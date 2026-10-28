@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { address, amount, timestamp, duration } from "../schemas.js";
+import {priceSurgeSchema} from "../price-surge/schema.js";
 
 export const workflowInputSchema = z.object({
+  priceSurge: priceSurgeSchema.optional(),
   kind: z.string(), address: address.optional(),
   limit: z.number().int().min(1).max(5).optional(),
   scanLimit: z.number().int().min(1).max(50).default(50),

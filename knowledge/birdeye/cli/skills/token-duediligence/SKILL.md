@@ -5,6 +5,14 @@ description: Calculate or explain Birdeye Token DD Score for a Solana token, inc
 
 Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
 
+## Supported chains and limitations
+
+Compatibility package for `skill-token-dd-score`. Both entrypoints support `solana` only, including saved-evidence re-scoring.
+
+Standard and advanced scores are not comparable; missing checks reduce evidence coverage. Holder evidence and liquidity candles are bounded samples, and liquidity OHLC CU remains provisional. Only the default reconstructed scoring preset is implemented; canonical-mint/LST checks, pace and alternative presets remain unavailable. Local re-scoring cannot fetch additional evidence, and the result does not establish safety.
+
+## Use
+
 Use `birdeye-cli case skill-token-dd-score --address <mint>` or the Node.js entrypoint `token-dd-score <mint>`. Both use the same scorer and SQLite run store. API credentials come from CLI configuration or `BIRDEYE_API_KEY`.
 
 Select standard for overview/security evidence or advanced for holder distribution, labeled cohorts, top holders, tagged money flow and liquidity candles. Preview with `--estimate-cu`; respect an explicit user budget with `--max-cu`. Advanced defaults to 15m × 96 liquidity candles and one 50-row distribution page. The estimate is 51 / provisional 181 CU before retries; OHLC pricing is unresolved in provider docs.

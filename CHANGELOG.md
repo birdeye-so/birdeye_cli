@@ -6,6 +6,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Price Surge Screen: an aggregate `/price-surge` internal API, matching `birdeye-cli price-surge` command and installable `skill-price-surge` package. Includes server-side market filters, two-pass risk screening, bounded multi-chain enrichment, source evidence, CU budgets and installation/API documentation.
+
 - Public HTTPS reverse-proxy support for browser storage mode via `--public-url`, while serving only static assets and keeping user workspaces in the browser.
 
 - A browser-only static research demo with password-encrypted IndexedDB keys/history, temporary sessions, direct CORS-enabled provider calls, automatic locking, and `--storage browser` preview without SQLite.
@@ -21,6 +23,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 ### Changed
 
 - Local and browser-only demo skill filters now share Agent API category IDs, titles and public-skill counts; archived workflows are excluded consistently.
+
+- Every current skill now states its implemented chains and evidence limits in its generated instructions and catalog usage. Added an all-skill support matrix, clarified compatibility packages, and corrected stale Solana-only guidance and retired skill installation examples.
 
 - Workflows now own metadata, validation and planning in individual modules registered once; CLI IDs, commands, request scopes and CU accounting remain compatible.
 - Agent skill packages carry their own reference documents, synchronized from canonical sources with isolated-package link checks. The `token-dd-score` executable moves into the CLI's `bin/` directory; its installed command stays unchanged.

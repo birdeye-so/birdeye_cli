@@ -5,7 +5,7 @@ import type {LedgerPort} from "./ledger-port.js";
 import { AppError, parseData, now, object, type Data } from "./shared.js";
 import { BirdeyeMcp, BIRDEYE_MCP_URL } from "./mcp.js";
 
-export type Result = { schemaVersion: number; data: any; meta: Data };
+export type Result = { schemaVersion: number; data: any; meta: Data; rawResponse?: unknown };
 export class Runner {
   constructor(
     public ledger: LedgerPort,
@@ -66,7 +66,7 @@ export class Runner {
   async execute(
     operation: string,
     params: unknown,
-    context: { run: string; chain?: string; signal?: AbortSignal },
+    context: { run: string; chain?: string; signal?: AbortSignal; captureRawResponse?: boolean },
   ): Promise<Result> {
     const p = prepare(operation, params, context.chain);
     if (!this.key)
@@ -184,6 +184,7 @@ export class Runner {
         return {
           schemaVersion: 1,
           data,
+          ...(context.captureRawResponse ? {rawResponse: parsed} : {}),
           meta: {
             operation,
             params: p.params,

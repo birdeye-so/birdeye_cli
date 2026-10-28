@@ -14,6 +14,12 @@ export default defineWorkflow({
   purpose: "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.",
   produces: "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.",
   source: "skills/token-duediligence/references/scoring.md",
+  limitations: [
+    "Standard uses overview/security only; advanced adds holder, flow and liquidity evidence. Scores from different modes or coverage are not comparable.",
+    "Advanced distribution covers 10–50 top wallets, holders one page of up to 100, and liquidity 1–100 candles. Labeled cohorts can overlap; these samples are not the full holder population.",
+    "Liquidity OHLC reserves a provisional 30 CU, not a verified billing upper bound. Missing checks are excluded from scored coverage and cannot establish safety.",
+    "Only the default reconstructed scoring preset is implemented; canonical-mint/LST checks, pace and alternative presets are unavailable. Local re-scoring cannot fetch missing or wider-window evidence.",
+  ],
   window: "windowDays",
   plan(context) {
     const {input: a, add, notes} = context;

@@ -1,6 +1,8 @@
 import { z } from "zod";
 import type { Entry } from "./catalog.js";
 import { address, timestamp, amount, direction, holderTags, trackerTags, flowFrames, pnlFields, page, validPage } from "./schemas.js";
+import {tokenAddress as multiChainAddress} from "./schemas.js";
+import {surgeChains} from "./price-surge/schema.js";
 
 const record = z.record(z.string(), z.unknown());
 const list = z.array(record);
@@ -126,7 +128,8 @@ export const extendedCatalog = {
   },
   "token.top-traders": {
     path: "/defi/v2/tokens/top_traders", cost: 30, paginated: true,
+    chains: surgeChains,
     description: "Token traders with optional wallet tags; highest volume does not imply highest skill",
-    schema: z.object({ address, time_frame: z.enum(["30m", "1h", "2h", "4h", "6h", "8h", "12h", "24h", "2d", "3d", "7d", "14d", "30d", "60d", "90d", "all_time"]).default("24h"), sort_by: z.enum(["volume", "trade", "total_pnl", "unrealized_pnl", "realized_pnl", "volume_usd", "hold_volume"]).default("realized_pnl"), sort_type: direction.default("desc"), wallet_tags: z.array(z.enum(["dev", "bundler", "sniper", "insider", "smart_trader"])).min(1).max(5).optional(), ui_amount_mode: uiMode, get_holders_networth: z.boolean().default(false), ...page(10) }).strict().refine(validPage), dataSchema: envelopeList(),
+    schema: z.object({ address: multiChainAddress, time_frame: z.enum(["30m", "1h", "2h", "4h", "6h", "8h", "12h", "24h", "2d", "3d", "7d", "14d", "30d", "60d", "90d", "all_time"]).default("24h"), sort_by: z.enum(["volume", "trade", "total_pnl", "unrealized_pnl", "realized_pnl", "volume_usd", "hold_volume"]).default("realized_pnl"), sort_type: direction.default("desc"), wallet_tags: z.array(z.enum(["dev", "bundler", "sniper", "insider", "smart_trader"])).min(1).max(5).optional(), ui_amount_mode: uiMode, get_holders_networth: z.boolean().default(false), ...page(10) }).strict().refine(validPage), dataSchema: envelopeList(),
   },
 } satisfies Record<string, Entry>;

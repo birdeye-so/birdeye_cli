@@ -36,7 +36,8 @@ test("every skill/workflow CLI preview reproduces the planned input and requests
       ...(recipe.subject === "wallets" ? {wallets: [address]} : {})};
     const plan = planCase(input);
     const actual = estimate(caseCliArgs(plan.input, 432));
-    assert.deepEqual(actual.input, plan.input, recipe.kind);
+    if (recipe.kind === "skill-price-surge") assert.deepEqual(actual.params, plan.input.priceSurge, recipe.kind);
+    else assert.deepEqual(actual.input, plan.input, recipe.kind);
     assert.deepEqual(actual.steps, JSON.parse(JSON.stringify(plan.steps)), recipe.kind);
     assert.equal(actual.estimatedCu, plan.estimatedCu, recipe.kind);
   }

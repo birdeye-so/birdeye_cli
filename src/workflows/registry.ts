@@ -22,8 +22,10 @@ import workflow20 from "./skill-wallet-analysis/definition.js";
 import workflow21 from "./skill-smart-money-profile/definition.js";
 import workflow22 from "./skill-smart-money-leaderboard/definition.js";
 import type { WorkflowDefinition } from "./types.js";
+import priceSurge from "./skill-price-surge/definition.js";
 
 export const workflowDefinitions = [
+  priceSurge,
   workflow0,
   workflow1,
   workflow2,
@@ -62,6 +64,6 @@ export function getWorkflow(id: string): WorkflowDefinition {
   return definition;
 }
 export const legacyCaseKinds = workflowDefinitions.filter(item => item.family === "legacy").map(item => item.id);
-export const workflowCatalog = () => workflowDefinitions.map(({id: kind, title, category, family, subject, description, purpose, produces, source}) => ({
-  kind, title, category, group: family === "legacy" ? "legacy" : category, family, subject, description: description ?? purpose, purpose, produces, source,
+export const workflowCatalog = () => workflowDefinitions.map(({id: kind, title, category, family, subject, description, purpose, produces, source, supportedChains, limitations}) => ({
+  kind, title, category, group: family === "legacy" ? "legacy" : category, family, subject, description: description ?? purpose, purpose, produces, source, supportedChains, limitations,
 }));

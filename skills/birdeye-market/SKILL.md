@@ -5,6 +5,14 @@ description: Discover and compare Solana tokens using Birdeye CLI market opportu
 
 Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.
 
+## Supported chains and limitations
+
+Compatibility package. These market research procedures support `solana` only. For BSC, Base, Ethereum or Robinhood surge screening, use the separate `skill-price-surge` package; its holder health remains Solana-only.
+
+Discovery covers bounded pages and selected candidates, not the entire market. Listing, creation and graduation are different events; token samples cannot establish chain-wide trends. The procedures do not trade, schedule alerts or monitor WebSockets. Current focused packages are `skill-trending-list` and `skill-smart-wallets`.
+
+## Use
+
 Choose a workflow by purpose:
 
 - `case skill-trending-list --list-source v3-list --sort-by volume`: reference discovery via token list V3; optional `--platform pump.fun`. Native `--list-source trending` supports volume/liquidity/rank only.

@@ -15,7 +15,7 @@ test('bundled API catalog exposes the current skills and usage only', async () =
   assert.deepEqual(bundled.categories, current.categories);
   assert.equal(bundled.schemaVersion, 3);
   assert.deepEqual(bundled.skills, current.skills.map(({source, ...skill}) => skill));
-  assert.equal(bundled.skills.length, 11);
+  assert.equal(bundled.skills.length, 12);
   assert.ok(!('workflows' in bundled));
   assert.ok(bundled.skills.every(skill => skill.usage.run_command && !('steps' in skill) && !('related_skill_ids' in skill)));
 });

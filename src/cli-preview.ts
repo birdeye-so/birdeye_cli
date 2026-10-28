@@ -1,4 +1,5 @@
 // Browser-safe serialization: only supported flags, never credentials or incidental UI fields.
+import {priceSurgeSchema} from "./price-surge/schema.js";
 type Input = Record<string, unknown>;
 const caseFlags = [
   "address", "limit", "scanLimit", "interval", "depth", "duration", "pnlMethod",
@@ -21,6 +22,12 @@ function flags(input: Input, names: string[]): string[] {
 }
 const outputFlags = (budget: number | null) => ["--chain", "solana", ...(budget === null ? [] : ["--max-cu", String(budget)]), "--format", "json"];
 export function caseCliArgs(input: Input, budget: number | null): string[] {
+  if (input.kind === "skill-price-surge") {
+    const p = (input.priceSurge ?? {}) as Input;
+    const args = Object.entries(p).filter(([key]) => Object.hasOwn(priceSurgeSchema.shape, key)).flatMap(([key, value]) => value === undefined || value === false || value === null ? [] :
+      value === true ? [`--${key.replaceAll("_", "-")}`] : [`--${key.replaceAll("_", "-")}`, String(value)]);
+    return ["price-surge", ...args, ...(budget === null ? [] : ["--max-cu", String(budget)]), "--format", "json"];
+  }
   return ["case", String(input.kind), ...flags(input, caseFlags), ...outputFlags(budget)];
 }
 export function demoCliArgs(input: Input, budget: number | null): string[] {

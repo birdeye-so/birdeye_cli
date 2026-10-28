@@ -13,6 +13,11 @@ export default defineWorkflow({
   purpose: "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.",
   produces: "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed.",
   source: "docs/workflows/birdeye-data-skills.md",
+  limitations: [
+    "Default discovery takes at most 20 smart-money tokens from a 1d page, then ten 30d top traders for each of 1–5 selected tokens. It deduplicates at most 1–5 wallets in provider order; this is not a complete wallet leaderboard.",
+    "Fast mode has no wallet-wide PnL evidence; standard adds 30d PnL and deep adds holdings and a per-token PnL page. Token-scoped trader PnL cannot be summed into wallet-wide PnL or win rate.",
+    "Provider labels may be incomplete and do not establish future performance. Holdings and positions are paginated samples; no copy-trade return is calculated.",
+  ],
   window: "windowDays",
   plan(context) {
     const {input: a, add, notes} = context;

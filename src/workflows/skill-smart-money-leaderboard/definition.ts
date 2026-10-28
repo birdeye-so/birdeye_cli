@@ -13,6 +13,11 @@ export default defineWorkflow({
   purpose: "Compare an explicit list of wallets using consistent PnL windows and accounting.",
   produces: "7d/30d performance and per-token evidence per wallet, ranked with higher PnL scoring higher. Missing metrics remain unranked.",
   source: "docs/workflows/birdeye-data-skills.md",
+  limitations: [
+    "Accepts 1–10 explicitly supplied Solana wallets, deduplicated before calls. This is a relative comparison of that list, not discovery of all top wallets.",
+    "Ranking requires matching 7d/30d duration-only summaries and complete comparison metrics; missing inputs remain unranked. Per-token evidence is one page of up to 100 rows per wallet by default.",
+    "Higher PnL improves relative rank, but the score is not absolute alpha or copy-trading ROI. Scores can change when the comparison set changes.",
+  ],
   window: "windowDays",
   plan(context) {
     const {input: a} = context;
