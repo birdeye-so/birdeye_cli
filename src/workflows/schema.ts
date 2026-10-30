@@ -5,6 +5,7 @@ import { caseKinds, getWorkflow } from "./registry.js";
 export const caseSchema = workflowInputSchema.extend({kind: z.enum(caseKinds)}).superRefine((p, ctx) => {
   const issue = (message: string) => ctx.addIssue({code: "custom", message});
   const definition = getWorkflow(p.kind);
+  if (definition.fixedSources && Object.keys(p.stepOverrides).length) issue("This skill preserves fixed source semantics; use its documented skill options rather than stepOverrides");
   if (p.priceSurge && p.kind !== "skill-price-surge") issue("priceSurge inputs require skill-price-surge");
   definition.validate?.(p, issue);
   if (definition.subject === "wallets" && !p.wallets?.length) issue("Provide 1–10 wallet addresses");

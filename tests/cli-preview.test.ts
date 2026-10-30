@@ -31,7 +31,7 @@ const estimate = (args: string[]) => JSON.parse(execFileSync(process.execPath,
 
 test("every skill/workflow CLI preview reproduces the planned input and requests without a key", () => {
   for (const recipe of workflowCatalog()) {
-    const input = {kind: recipe.kind, ...window,
+    const input = {kind: recipe.kind, ...(["skill-token-stats", "skill-top-trader-analysis"].includes(recipe.kind) ? {} : window),
       ...(["token", "wallet"].includes(recipe.subject) ? {address} : {}),
       ...(recipe.subject === "wallets" ? {wallets: [address]} : {})};
     const plan = planCase(input);
@@ -49,11 +49,14 @@ test("custom API parameters, booleans, arrays and zero thresholds survive CLI ex
     {kind: "skill-wallet-analysis", address, intervals: ["7d", "30d"], skipPortfolio: true, skipFirstFunded: true, skipTransactions: true},
     {kind: "skill-token-dd", address, include: ["list", "advanced_security", "risk_history"]},
     {kind: "skill-trending-list", platform: "a'b $(printf injected) `printf injected`", scanLimit: 7},
+    {kind: "skill-kol-signal", address, trackerFrame: "4h", signalThresholdUsd: 42},
+    {kind: "skill-smart-money-holders", address, includeExited: true},
+    {kind: "skill-launchpad-trending", launchSort: "liquidity"},
   ]) {
     const plan = planCase({...input, ...window});
     const actual = estimate(caseCliArgs(plan.input, 0));
     assert.deepEqual(actual.input, plan.input);
-    assert.deepEqual(actual.steps, plan.steps);
+    assert.deepEqual(actual.steps, JSON.parse(JSON.stringify(plan.steps)));
   }
 });
 

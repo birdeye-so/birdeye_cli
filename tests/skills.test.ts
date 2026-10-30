@@ -9,6 +9,7 @@ import { skillKinds, skillInfo } from "../src/skill-recipes.js";
 import { prepare } from "../src/catalog.js";
 import { analyzeCandles, walletAlpha, walletStyle, rankWallets } from "../src/skill-metrics.js";
 import { previewCase } from "../src/workflow-preview.js";
+import {dataSkillIds, tokenDataFixture} from "./fixtures/token-data.js";
 const token="So11111111111111111111111111111111111111112", wallet="11111111111111111111111111111112", second="11111111111111111111111111111113", at=1791504000;
 const summary=(r=3000)=>({unique_tokens:10,pnl:{realized_profit_usd:r,unrealized_usd:0},cashflow_usd:{total_invested:10000,total_sold:13000},counts:{total_trade:100,total_win:7,total_loss:3}});
 const positions=Array.from({length:10},(_,i)=>({address:token,pnl:{realized_profit_usd:300,unrealized_usd:0,total_percent:.3,realized_profit_percent:.3},counts:{total_buy:5,total_sell:5},cashflow_usd:{total_invested:1000}}));
@@ -59,14 +60,14 @@ function fixture(url:URL,init?:RequestInit){
 }
 
 test("all current skill recipes execute planned documented requests with bounded CU",async()=>{
-  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,12);
+  assert.equal(workflowCatalog().filter(c=>c.family==="data-skills").length,20);
   for(const kind of skillKinds){
     const info=skillInfo[kind];
-    const input={kind,...(info.subject==="token"?{address:token}:info.subject==="wallet"?{address:wallet}:info.subject==="wallets"?{wallets:[wallet]}:{}),from:at-86400*7,to:at,resolution:"1H",skillDepth:"deep",include:["list","advanced_security","risk_history"]};
+    const input={kind,...(info.subject==="token"?{address:token}:info.subject==="wallet"?{address:wallet}:info.subject==="wallets"?{wallets:[wallet]}:{}),...(["skill-token-stats","skill-top-trader-analysis"].includes(kind)?{}:{from:at-86400*7,to:at}),resolution:"1H",skillDepth:"deep",include:["list","advanced_security","risk_history"]};
     const plan=planCase(input,at),ledger=new Ledger(":memory:");
     const seen:string[]=[];
     try{
-      const runner=new Runner(ledger,"fixture",{fetch:async(u,init)=>{const url=new URL(String(u));seen.push(url.pathname);return fixture(url,init);}});
+      const runner=new Runner(ledger,"fixture",{fetch:async(u,init)=>{const url=new URL(String(u));seen.push(url.pathname);if(dataSkillIds.includes(kind)){assertContract(url,init);return tokenDataFixture(url);}return fixture(url,init);}});
       const out=await runCase(runner,ledger.createRun(plan.estimatedCu,undefined,100),plan.input);
       assert.ok(out.data.sources.length>0,`${kind}: ${JSON.stringify(out.data.missing)}`);
       assert.ok(out.data.missing.every((m:any)=>m.step==="analysis"),`${kind}: ${JSON.stringify(out.data.missing)}`);

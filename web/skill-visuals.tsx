@@ -174,6 +174,8 @@ export function SkillDashboard({analysis,sources=[],kind,onRescore}: {analysis:D
   const findings:Data[]=analysis.findings??[],clean=usableSources(sources);
   const dd=findings.find(f=>f.kind==="token-dd-score");
   if(dd)return <TokenDdScore report={dd} sources={clean} onRescore={onRescore}/>;
+  const dataReport=findings.find(f=>f.kind==="token-data");
+  if(dataReport)return <TokenDataReport report={dataReport}/>;
   const wallet=kind?.includes("wallet")||kind?.includes("smart-money"),address=clean.find(s=>wallet?s.meta?.params?.wallet:s.meta?.params?.address)?.meta?.params;
   return <section className="skill-visuals" aria-label="Skill findings">
     <header className="sv-report-header"><div className="sv-report-title"><DemoIcon id={wallet?"wallet-intelligence":["skill-trending-list","skill-kline-pattern"].includes(kind??"")?"terminal":"security-signals"} size={26}/><div><h3>{titles[kind??""]??"Research findings"}</h3>{(address?.wallet??address?.address)&&<AddressText text={address.wallet??address.address} compact kind={wallet?"wallet":"token"} chain="solana"/>}</div></div><span>{clean.length} evidence sources</span></header>
@@ -182,5 +184,21 @@ export function SkillDashboard({analysis,sources=[],kind,onRescore}: {analysis:D
     {["skill-wallet-score","skill-wallet-style","skill-wallet-analysis","skill-smart-money-profile"].includes(kind??"")&&<WalletPerformance sources={clean}/>}
     {["skill-token-dd","skill-contract-dd","skill-rugcheck-audit"].includes(kind??"")&&<MarketContext sources={clean}/>}
     {!findings.length&&!["skill-trending-list","skill-wallet-score","skill-wallet-style","skill-wallet-analysis","skill-smart-money-profile"].includes(kind??"")&&<Empty/>}
+  </section>;
+}
+
+function TokenDataReport({report}: {report:Data}) {
+  const display = (value:unknown) => value === null || value === undefined ? "N/A" : typeof value === "boolean" ? value ? "Yes" : "No" : typeof value === "object" ? JSON.stringify(value) : String(value);
+  const label = (key:string) => human(key.replace(/([A-Z])/g," $1")).replace(/\bUsd\b/g,"USD").replace(/\bPct\b/g,"%").replace(/\bFdv\b/g,"FDV");
+  const title = report.skill === "skill-lp-analysis" ? "LP Analysis" : report.skill === "skill-kol-signal" ? "KOL Buy/Sell Signal" : human(report.skill?.replace(/^skill-/,"").replaceAll("-"," "));
+  return <section className="skill-visuals" aria-label="Skill findings">
+    <header className="sv-report-header"><h3>{title}</h3></header>
+    <Facts items={Object.entries(report.summary??{}).filter(([key])=>!["sourceId","retrievedAt"].includes(key)).map(([key,value])=>[label(key),display(value)])}/>
+    {(report.tables??[]).map((t:Data,index:number)=><section className="sv-finding" key={index}>
+      <h4>{t.title}</h4>
+      {t.rows.length ? <div className="table-wrap" tabIndex={0} role="region" aria-label={t.title}><table><thead><tr>{t.columns.map((c:Data)=><th scope="col" key={c.key}>{c.label}</th>)}</tr></thead><tbody>{t.rows.map((r:Data,i:number)=><tr key={i}>{t.columns.map((c:Data)=><td key={c.key}>{c.key==="address"&&report.skill==="skill-lp-analysis"?<code>{display(r[c.key])}</code>:["wallet","address"].includes(c.key)&&r[c.key]?<AddressText text={r[c.key]} compact kind={c.key==="wallet"?"wallet":"token"} chain="solana"/>:display(r[c.key])}</td>)}</tr>)}</tbody></table></div> : <p className="sv-note">No rows available in the fetched evidence.</p>}
+    </section>)}
+    {!!report.missing?.length&&<div className="sv-note" role="status"><strong>Incomplete evidence</strong><ul>{report.missing.map((note:string)=><li key={note}>{note}</li>)}</ul></div>}
+    <details className="sv-evidence"><summary>Source coverage and pagination</summary><pre>{JSON.stringify(report.pagination,null,2)}</pre></details>
   </section>;
 }

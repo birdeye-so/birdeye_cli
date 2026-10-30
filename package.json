@@ -5,6 +5,7 @@
   "type": "module",
   "bin": {
     "birdeye-cli": "dist/index.js",
+    "birdeye-api": "dist/internal-api/index.js",
     "token-dd-score": "bin/token-dd-score.mjs"
   },
   "files": [
@@ -32,6 +33,8 @@
     "build": "npm run skills:sync && tsc -p tsconfig.json && node scripts/build-web.mjs && node scripts/build-browser.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.web.json",
     "dev": "npm run build && node dist/index.js",
+    "api:start": "node dist/internal-api/index.js",
+    "api:dev": "npm run build && npm run api:start --",
     "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js tests/*.test.mjs",
     "test:browser": "npm run build && node tests/browser-smoke.mjs",
     "prepack": "npm run build",

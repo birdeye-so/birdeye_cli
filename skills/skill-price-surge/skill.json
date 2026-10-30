@@ -2,6 +2,7 @@
   "category": "discover",
   "generated": true,
   "resources": {
-    "references/details.md": "docs/workflows/price-surge.md"
+    "references/details.md": "docs/workflows/price-surge.md",
+    "references/internal-api.md": "docs/workflows/internal-api.md"
   }
 }

@@ -31,7 +31,7 @@ export const extendedCatalog = {
     dataSchema: envelopeList(),
   },
   "token.markets": {
-    path: "/defi/v2/markets", cost: 20, paginated: true,
+    path: "/defi/v2/markets", cost: 25, paginated: true,
     description: "One page of pools for a token; liquidity is not an executable quote",
     schema: z.object({ address, sort_by: z.enum(["liquidity", "volume24h"]).default("liquidity"), sort_type: direction.default("desc"), ...page(20, 10) }).strict().refine(validPage), dataSchema: envelopeList(),
   },
@@ -41,7 +41,7 @@ export const extendedCatalog = {
     schema: z.object({ address, ui_amount_mode: uiMode }).strict(), dataSchema: record,
   },
   "token.trade-data": {
-    path: "/defi/v3/token/trade-data/single", cost: 10,
+    path: "/defi/v3/token/trade-data/single", cost: 12,
     description: "Token buy/sell activity and unique-wallet metrics for selected frames",
     schema: z.object({ address, frames: z.array(z.enum([...flowFrames, "6h", "12h"])).min(1).max(10).default(["1h", "24h"]), ui_amount_mode: uiMode }).strict(), dataSchema: record,
   },

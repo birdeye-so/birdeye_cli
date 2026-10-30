@@ -12,7 +12,7 @@ Standalone website: [Next.js landing, embeddable docs and live catalog](apps/lan
 
 Most CLI research supports **Solana**. The Price Surge screen also supports BSC, Base, Ethereum and Robinhood through its documented source endpoints. It reads data and does not execute trades or require a wallet private key.
 
-See [chain support and limitations for all skills](docs/workflows/skill-support.md): 12 current skills plus four compatibility packages. Each skill's installed instructions carry its own chain scope and evidence limits.
+See [chain support and limitations for all skills](docs/workflows/skill-support.md): 20 current skills plus four compatibility packages. Each skill's installed instructions carry its own chain scope and evidence limits. The [token data skills guide](docs/workflows/token-data-skills.md) covers launchpad discovery, security, stats, holders, traders, liquidity pools, smart-money holders and KOL activity, with use cases and API choices.
 
 ## Requirements
 
@@ -132,7 +132,18 @@ birdeye-cli price-surge --min-market-cap 50000 --max-market-cap 5000000 --max-cu
 npx skills add ./skills --skill skill-price-surge --global
 ```
 
-Standard costs 50 CU. Advanced mode bounds enrichment with `--top`; `--with-security` enables security checks. The authenticated `POST /price-surge` endpoint returns collected data, computed rows and every exclusion reason using the same service as the CLI. See [Price Surge setup, inputs, API and interpretation](docs/workflows/price-surge.md).
+Standard costs 50 CU. Advanced mode bounds enrichment with `--top`; `--with-security` enables security checks. The authenticated `POST /price-surge` endpoint returns collected data, computed rows and every exclusion reason using the same research logic as the CLI. See [Price Surge setup, inputs, API and interpretation](docs/workflows/price-surge.md).
+
+## Standalone research API
+
+Run the API wrapper independently of the CLI web interface:
+
+```bash
+birdeye-api --port 8788 --max-cu 320
+# From a built source checkout: npm run api:start -- --port 8788 --max-cu 320
+```
+
+`POST /price-surge` supports Solana, BSC, Base, Ethereum and Robinhood, with holder health on Solana only. `POST /token-dd` supports Solana, with standard and advanced scoring. Clients send their own Birdeye key in `X-API-KEY` on each live request; the wrapper calls Birdeye with that key and does not load a server key or require a separate internal token. Both return raw evidence, computed results and CU usage. Free estimates need no key. See [installation, requests, limits and migration](docs/workflows/internal-api.md). Terminal skills still run in-process without a background server.
 
 ## Local web interface
 

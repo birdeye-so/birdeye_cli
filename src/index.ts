@@ -407,6 +407,13 @@ program
   .option("--skip-positions", "omit per-token PnL; scores may become unavailable")
   .option("--step-overrides <json>", "Per-step API parameter overrides as a JSON object", JSON.parse)
   .option("--price-surge <json>", "Price Surge parameters as a JSON object", JSON.parse)
+  .option("--launch-sort <field>", "Launchpad: volume_24h_usd, liquidity, market_cap, creation_time, graduated_time or progress_percent")
+  .option("--stats-frames <frames>", "Token Stats rolling windows, e.g. 1h,24h", value => value.split(",").map((s: string) => s.trim()))
+  .option("--trader-window <window>", "Top Trader window, from 30m to all_time; default 24h")
+  .option("--trader-sort <field>", "Top Traders: volume_usd, trade, total_pnl, realized_pnl, unrealized_pnl or hold_volume")
+  .option("--tracker-frame <frame>", "Cohort bucket: 1m,5m,15m,30m,1h,4h,1D; default 1h")
+  .option("--include-exited", "Smart Money Holders: include labeled wallets with zero current balance")
+  .option("--signal-threshold-usd <usd>", "KOL: absolute net USD threshold for observed buy/sell dominance", Number)
   .action(async (kind: string, o: Data, c: Command) => {
     const opts = options(c);
     if (kind === "skill-price-surge") {

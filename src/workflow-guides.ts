@@ -1,6 +1,7 @@
 import type { Operation } from "./catalog.js";
 type StepGuide = { title: string; purpose: string; collects: string };
 export const stepGuides: Partial<Record<Operation, StepGuide>> = {
+  "token.meme-detail": {title: "Launch metadata", purpose: "Inspect the launch venue and lifecycle of a selected token.", collects: "Launchpad source, creator, pool, progress and graduation fields when available."},
   "token.liquidity-ohlc": {title: "Liquidity & exit depth candles", purpose: "Measure depth, deterioration and liquidity stability; apply a maximum 15% drawdown discount.", collects: "Up to 100 timestamped liquidity and exit-liquidity candles, with pair counts. Missing series remain unknown."},
   "token.top-traders": {title: "Token traders", purpose: "Find wallets trading each selected token, then deduplicate a wallet shortlist.", collects: "One page of traders for each token and time window. Token-scoped PnL is not wallet-wide PnL."},
   "token.holder-distribution": {title: "Holder distribution", purpose: "Inspect concentration in a defined holder segment.", collects: "Distribution summary and optional holder rows for the requested top-N or percentage range."},

@@ -13,9 +13,12 @@ const prefix = join(work, 'prefix');
 const env = { ...process.env, BIRDEYE_CONFIG_DIR: join(work, 'config') };
 delete env.BIRDEYE_API_KEY;
 delete env.BIRDEYE_AI_API_KEY;
+delete env.BIRDEYE_INTERNAL_API_TOKEN;
 delete env.NODE_PATH;
 let server;
 let closed;
+let apiServer;
+let apiClosed;
 const run = (command, args, cwd = work) => execFileSync(command, args, {
   cwd, env, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8', timeout: 120_000, maxBuffer: 16 * 1024 * 1024,
 });
@@ -27,7 +30,9 @@ try {
   for (const required of ['dist/index.js', 'dist/web/main.js', 'dist/web/index.html',
     'bin/token-dd-score.mjs', 'knowledge/birdeye/manifest.json',
     'README.md', 'README.vi.md', 'CHANGELOG.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md',
-    'docs/INSTALLATION.md', 'docs/USAGE.md', 'docs/workflows/price-surge.md',
+    'docs/INSTALLATION.md', 'docs/USAGE.md', 'docs/workflows/price-surge.md', 'docs/workflows/internal-api.md',
+    'dist/internal-api/index.js', 'dist/internal-api/server.js', 'dist/internal-api/service.js',
+    'skills/skill-price-surge/references/internal-api.md', 'skills/skill-token-dd-score/references/internal-api.md',
     'dist/price-surge/api.js', 'skills/skill-price-surge/SKILL.md', 'skills/skill-price-surge/references/details.md']) {
     assert.ok(files.has(required), `Missing package asset: ${required}`);
   }
@@ -38,10 +43,14 @@ try {
   run('npm', ['install', '--global', '--prefix', prefix, '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', join(work, archive.filename)]);
   const cli = join(prefix, 'bin', 'birdeye-cli');
   const score = join(prefix, 'bin', 'token-dd-score');
-  assert.ok(existsSync(cli) && existsSync(score), 'npm must create both executable links');
+  const api = join(prefix, 'bin', 'birdeye-api');
+  assert.ok(existsSync(cli) && existsSync(score) && existsSync(api), 'npm must create all three executable links');
   assert.equal(run(cli, ['--version']).trim(), pkg.version);
   assert.match(run(cli, ['--help']), /Usage: birdeye-cli/);
   assert.match(run(score, ['--help']), /Usage: token-dd-score/);
+  assert.equal(run(api, ['--version']).trim(), pkg.version);
+  assert.match(run(api, ['--help']), /POST \/token-dd/);
+  assert.match(run(api, ['--help']), /X-API-KEY/);
   assert.equal(JSON.parse(run(cli, ['config', 'show', '--short'])).birdeyeConfigured, false);
   const estimate = JSON.parse(run(cli, ['token', 'price', address, '--estimate-cu']));
   assert.equal(estimate.estimatedCu, 3);
@@ -49,6 +58,11 @@ try {
   assert.equal(JSON.parse(run(cli, ['price-surge', '--chain', 'base', '--mode', 'advanced', '--with-security', '--top', '3', '--estimate-cu'])).estimatedCu, 230);
   assert.match(run(cli, ['knowledge', 'search', 'token', '--short']), /source/);
   assert.ok(JSON.parse(run(score, [address, '--estimate-cu', '--format', 'json'])));
+  for (const id of ['skill-launchpad-trending', 'skill-token-security', 'skill-token-stats', 'skill-top-holder-analysis', 'skill-top-trader-analysis', 'skill-lp-analysis', 'skill-smart-money-holders', 'skill-kol-signal']) {
+    for (const path of [`skills/${id}/SKILL.md`, `skills/${id}/references/details.md`, `skills/${id}/skill.json`]) assert.ok(files.has(path), `Missing data-skill asset: ${path}`);
+    const plan = JSON.parse(run(cli, ['case', id, ...(id === 'skill-launchpad-trending' ? [] : ['--address', address]), '--estimate-cu']));
+    assert.ok(plan.estimatedCu > 0 && plan.steps.length > 0, `${id} must plan from the installed package without a key`);
+  }
 
   server = spawn(cli, ['--format', 'interface', '--bind', '127.0.0.1:0'], { cwd: work, env, stdio: ['ignore', 'pipe', 'pipe'] });
   closed = new Promise(resolve => server.once('close', resolve));
@@ -82,13 +96,55 @@ try {
     signal: AbortSignal.timeout(5000), headers: { Cookie: login.headers.get('set-cookie').split(';')[0] },
   });
   assert.equal(status.status, 200);
-  console.log(`Package smoke passed: ${archive.filename}, ${files.size} files, ${archive.size} bytes; installed CLI, offline data and HTTP UI verified.`);
+  assert.equal((await get('/price-surge')).status, 404);
+
+  apiServer = spawn(api, ['--port', '0', '--max-cu', '320'], {
+    // A server environment key must never become a fallback for HTTP callers.
+    cwd: work, env: {...env, BIRDEYE_API_KEY: 'server-key-must-not-be-used'}, stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  apiClosed = new Promise(resolve => apiServer.once('close', resolve));
+  const apiUrl = await new Promise((resolveUrl, reject) => {
+    let output = '';
+    const timer = setTimeout(() => reject(new Error('Installed API did not start within 15s')), 15_000);
+    apiServer.once('error', error => {clearTimeout(timer); reject(error);});
+    apiServer.once('exit', code => {clearTimeout(timer); reject(new Error(`Installed API exited (${code})`));});
+    apiServer.stderr.on('data', () => {});
+    apiServer.stdout.on('data', chunk => {
+      output += chunk;
+      const match = output.match(/Birdeye internal API: (http:\/\/127\.0\.0\.1:\d+)/);
+      if (match) {clearTimeout(timer); resolveUrl(match[1]);}
+    });
+  });
+  assert.equal((await fetch(`${apiUrl}/health`)).status, 200);
+  const apiHeaders = {'Content-Type': 'application/json'};
+  const missingKey = await fetch(`${apiUrl}/price-surge`, {method: 'POST', headers: apiHeaders, body: '{"max_cu":0}'});
+  assert.equal(missingKey.status, 401);
+  const withKey = await fetch(`${apiUrl}/price-surge`, {method: 'POST',
+    headers: {...apiHeaders, 'X-API-KEY': 'package-client-key'}, body: '{"max_cu":0}'});
+  assert.equal(withKey.status, 200);
+  const capped = await withKey.json();
+  assert.equal(capped.meta.cu.attempts, 0); // Credential path tested without a paid request.
+  for (const [path, body, cu] of [
+    ['/price-surge', {chain: 'base', mode: 'advanced', top: 3, with_security: true}, 230],
+    ['/token-dd', {address, mode: 'standard'}, 51],
+    ['/token-dd', {address}, 181],
+  ]) {
+    const response = await fetch(`${apiUrl}${path}`, {method: 'POST', headers: apiHeaders,
+      signal: AbortSignal.timeout(5000), body: JSON.stringify({...body, estimate_cu: true})});
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).estimatedCu, cu);
+  }
+  assert.equal((await fetch(`${apiUrl}/api/status`, {headers: apiHeaders})).status, 404);
+  assert.equal((await get('/')).status, 200, 'UI remains independent while research API is running');
+  console.log(`Package smoke passed: ${archive.filename}, ${files.size} files, ${archive.size} bytes; installed CLI, offline data, HTTP UI and independent research API verified.`);
 } finally {
-  if (server && server.exitCode === null && server.signalCode === null) {
-    server.kill('SIGTERM');
-    const force = setTimeout(() => server.kill('SIGKILL'), 5000);
-    await closed;
-    clearTimeout(force);
+  for (const [child, done] of [[apiServer, apiClosed], [server, closed]]) {
+    if (child && child.exitCode === null && child.signalCode === null) {
+      child.kill('SIGTERM');
+      const force = setTimeout(() => child.kill('SIGKILL'), 5000);
+      await done;
+      clearTimeout(force);
+    }
   }
   rmSync(work, { recursive: true, force: true });
 }

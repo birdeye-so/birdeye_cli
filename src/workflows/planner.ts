@@ -15,10 +15,12 @@ export function planCase(input: unknown, at = Math.floor(Date.now() / 1000)): Ca
   }
   if (a.wallets) a.wallets = [...new Set(a.wallets)];
   a.limit ??= definition.defaultLimit ?? 3;
-  a.to ??= at;
-  a.from ??= a.to - (definition.window === "duration" ? ({"24h": 1, "7d": 7, "30d": 30, "90d": 90}[a.duration]) : definition.window === "windowDays" ? a.windowDays : 1) * 86400;
-  if (a.from < 1) throw new AppError("INVALID_INPUT", "Observation window precedes Unix epoch");
-  if (a.baselineTime !== undefined && a.baselineTime >= a.to) throw new AppError("INVALID_INPUT", "baselineTime must precede observation time");
+  if (definition.window !== "rolling") {
+    a.to ??= at;
+    a.from ??= a.to - (definition.window === "duration" ? ({"24h": 1, "7d": 7, "30d": 30, "90d": 90}[a.duration]) : definition.window === "windowDays" ? a.windowDays : 1) * 86400;
+  }
+  if (a.from !== undefined && a.from < 1) throw new AppError("INVALID_INPUT", "Observation window precedes Unix epoch");
+  if (a.baselineTime !== undefined && a.baselineTime >= a.to!) throw new AppError("INVALID_INPUT", "baselineTime must precede observation time");
   const steps: Step[] = [];
   const notes = ["Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."];
   const add = (id: string, operation: Operation, params: Data, subjects?: Selection, subjectKey = "address") => {

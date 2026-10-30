@@ -1,6 +1,6 @@
 {
   "source": "bds-docs-mintlify/openapi/data/openapi_docs.json",
-  "note": "Request constraints copied from local official OpenAPI; response fixtures in skills.test.ts are synthetic and follow documented field nesting. Smart-money raw envelope follows reference _be().",
+  "note": "Request constraints copied from local official OpenAPI; response fixtures in skills.test.ts are synthetic and follow documented field nesting. Smart-money raw envelope follows reference _be(). Holder-positions pagination supplemented from the official endpoint page checked 2026-10-28 (local snapshot omits offset/limit).",
   "paths": {
     "/smart-money/v1/token/list": {
       "GET": {
@@ -1103,6 +1103,676 @@
         },
         "requiredQuery": [
           "address"
+        ]
+      }
+    },
+    "/defi/v3/token/meme/list": {
+      "GET": {
+        "query": {
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "progress_percent",
+              "graduated_time",
+              "creation_time",
+              "liquidity",
+              "market_cap",
+              "fdv",
+              "recent_listing_time",
+              "last_trade_unix_time",
+              "holder",
+              "volume_1m_usd",
+              "volume_5m_usd",
+              "volume_30m_usd",
+              "volume_1h_usd",
+              "volume_2h_usd",
+              "volume_4h_usd",
+              "volume_8h_usd",
+              "volume_24h_usd",
+              "volume_7d_usd",
+              "volume_30d_usd",
+              "volume_1m_change_percent",
+              "volume_5m_change_percent",
+              "volume_30m_change_percent",
+              "volume_1h_change_percent",
+              "volume_2h_change_percent",
+              "volume_4h_change_percent",
+              "volume_8h_change_percent",
+              "volume_24h_change_percent",
+              "volume_7d_change_percent",
+              "volume_30d_change_percent",
+              "price_change_1m_percent",
+              "price_change_5m_percent",
+              "price_change_30m_percent",
+              "price_change_1h_percent",
+              "price_change_2h_percent",
+              "price_change_4h_percent",
+              "price_change_8h_percent",
+              "price_change_24h_percent",
+              "price_change_7d_percent",
+              "price_change_30d_percent",
+              "trade_1m_count",
+              "trade_5m_count",
+              "trade_30m_count",
+              "trade_1h_count",
+              "trade_2h_count",
+              "trade_4h_count",
+              "trade_8h_count",
+              "trade_24h_count",
+              "trade_7d_count",
+              "trade_30d_count",
+              "global_fees_paid"
+            ],
+            "default": "progress_percent"
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "default": "desc"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "all",
+              "pump_dot_fun",
+              "moonshot",
+              "raydium_launchlab",
+              "meteora_dynamic_bonding_curve",
+              "four.meme",
+              "nad.fun",
+              "flap",
+              "something",
+              "lfj_token_mill"
+            ],
+            "default": "all"
+          },
+          "creator": {
+            "type": "string"
+          },
+          "platform_id": {
+            "type": "string"
+          },
+          "graduated": {
+            "type": "boolean"
+          },
+          "min_progress_percent": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 100
+          },
+          "max_progress_percent": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 100,
+            "exclusiveMaximum": true
+          },
+          "min_graduated_time": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 10000000000
+          },
+          "max_graduated_time": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 10000000000
+          },
+          "min_creation_time": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 10000000000
+          },
+          "max_creation_time": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 10000000000
+          },
+          "min_liquidity": {
+            "type": "number"
+          },
+          "max_liquidity": {
+            "type": "number"
+          },
+          "min_market_cap": {
+            "type": "number"
+          },
+          "max_market_cap": {
+            "type": "number"
+          },
+          "min_fdv": {
+            "type": "number"
+          },
+          "max_fdv": {
+            "type": "number"
+          },
+          "min_recent_listing_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "max_recent_listing_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "min_last_trade_unix_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "max_last_trade_unix_time": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "min_holder": {
+            "type": "integer"
+          },
+          "min_volume_1m_usd": {
+            "type": "number"
+          },
+          "min_volume_5m_usd": {
+            "type": "number"
+          },
+          "min_volume_30m_usd": {
+            "type": "number"
+          },
+          "min_volume_1h_usd": {
+            "type": "number"
+          },
+          "min_volume_2h_usd": {
+            "type": "number"
+          },
+          "min_volume_4h_usd": {
+            "type": "number"
+          },
+          "min_volume_8h_usd": {
+            "type": "number"
+          },
+          "min_volume_24h_usd": {
+            "type": "number"
+          },
+          "min_volume_7d_usd": {
+            "type": "number"
+          },
+          "min_volume_30d_usd": {
+            "type": "number"
+          },
+          "min_volume_1m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_5m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_30m_change_percent": {
+            "type": "number"
+          },
+          "min_volume_1h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_2h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_4h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_8h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_24h_change_percent": {
+            "type": "number"
+          },
+          "min_volume_7d_change_percent": {
+            "type": "number"
+          },
+          "min_volume_30d_change_percent": {
+            "type": "number"
+          },
+          "min_price_change_1m_percent": {
+            "type": "number"
+          },
+          "min_price_change_5m_percent": {
+            "type": "number"
+          },
+          "min_price_change_30m_percent": {
+            "type": "number"
+          },
+          "min_price_change_1h_percent": {
+            "type": "number"
+          },
+          "min_price_change_2h_percent": {
+            "type": "number"
+          },
+          "min_price_change_4h_percent": {
+            "type": "number"
+          },
+          "min_price_change_8h_percent": {
+            "type": "number"
+          },
+          "min_price_change_24h_percent": {
+            "type": "number"
+          },
+          "min_price_change_7d_percent": {
+            "type": "number"
+          },
+          "min_price_change_30d_percent": {
+            "type": "number"
+          },
+          "min_trade_1m_count": {
+            "type": "integer"
+          },
+          "min_trade_5m_count": {
+            "type": "integer"
+          },
+          "min_trade_30m_count": {
+            "type": "integer"
+          },
+          "min_trade_1h_count": {
+            "type": "integer"
+          },
+          "min_trade_2h_count": {
+            "type": "integer"
+          },
+          "min_trade_4h_count": {
+            "type": "integer"
+          },
+          "min_trade_8h_count": {
+            "type": "integer"
+          },
+          "min_trade_24h_count": {
+            "type": "integer"
+          },
+          "min_trade_7d_count": {
+            "type": "integer"
+          },
+          "min_trade_30d_count": {
+            "type": "integer"
+          },
+          "min_global_fees_paid": {
+            "type": "number"
+          },
+          "offset": {
+            "type": "integer",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "requiredQuery": [
+          "sort_by",
+          "sort_type"
+        ]
+      }
+    },
+    "/defi/v3/token/meme/detail/single": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string",
+            "default": "HHuLN58RAJoyNxwYte8NdEyV7dhQzDCLXDmTraHspump"
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/v2/tokens/new_listing": {
+      "GET": {
+        "query": {
+          "time_to": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 20
+          },
+          "meme_platform_enabled": {
+            "type": "boolean",
+            "enum": [
+              true,
+              false
+            ],
+            "default": false
+          }
+        },
+        "requiredQuery": []
+      }
+    },
+    "/defi/v3/token/trade-data/single": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "frames": {
+            "type": "string"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ],
+            "default": "scaled"
+          },
+          "includes": {
+            "type": "string",
+            "enum": [
+              "money_flow"
+            ]
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/defi/v2/markets": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "sort_type": {
+            "type": "string",
+            "enum": [
+              "desc",
+              "asc"
+            ],
+            "default": "desc"
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "liquidity",
+              "volume24h"
+            ],
+            "default": "liquidity"
+          },
+          "offset": {
+            "type": "integer",
+            "default": 0
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 20
+          }
+        },
+        "requiredQuery": [
+          "address",
+          "sort_type",
+          "sort_by"
+        ]
+      }
+    },
+    "/defi/v3/pair/overview/single": {
+      "GET": {
+        "query": {
+          "address": {
+            "type": "string"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "raw",
+              "scaled"
+            ],
+            "default": "scaled"
+          }
+        },
+        "requiredQuery": [
+          "address"
+        ]
+      }
+    },
+    "/token/v1/holder-positions": {
+      "GET": {
+        "query": {
+          "token_address": {
+            "type": "string",
+            "example": "J3Dhvhga7QwgLWUGn43caDJtaoUTkDLmiMGqstS2Dw8A"
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "bundler",
+                "sniper",
+                "insider",
+                "dev",
+                "smart_trader",
+                "kol",
+                "whales"
+              ]
+            },
+            "default": [
+              "bundler"
+            ],
+            "example": [
+              "bundler",
+              "sniper"
+            ]
+          },
+          "sort_by": {
+            "type": "string",
+            "enum": [
+              "amount"
+            ],
+            "default": "amount"
+          },
+          "order_type": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "default": "desc"
+          },
+          "ui_amount_mode": {
+            "type": "string",
+            "enum": [
+              "scaled",
+              "raw"
+            ],
+            "default": "raw"
+          },
+          "include_zero_balance": {
+            "type": "boolean",
+            "default": true
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "requiredQuery": [
+          "token_address"
+        ]
+      }
+    },
+    "/token/v1/wallet-tags-tracker": {
+      "GET": {
+        "query": {
+          "token_address": {
+            "type": "string",
+            "example": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump"
+          },
+          "time_from": {
+            "type": "integer",
+            "example": 1782864000
+          },
+          "time_to": {
+            "type": "integer",
+            "example": 1785369600
+          },
+          "time_frame": {
+            "type": "string",
+            "default": "1D",
+            "enum": [
+              "1s",
+              "5s",
+              "15s",
+              "30s",
+              "1m",
+              "3m",
+              "5m",
+              "15m",
+              "30m",
+              "1h",
+              "2h",
+              "4h",
+              "1D",
+              "1W",
+              "1M"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "dev",
+                "sniper",
+                "smart_trader",
+                "kol"
+              ]
+            },
+            "example": [
+              "dev",
+              "sniper",
+              "smart_trader",
+              "kol"
+            ]
+          },
+          "top_10_holder": {
+            "type": "boolean",
+            "default": false
+          },
+          "include_tag_combinations": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "requiredQuery": [
+          "token_address",
+          "time_from"
+        ]
+      }
+    },
+    "/token/v1/wallet-tags-tracker/details": {
+      "GET": {
+        "query": {
+          "token_address": {
+            "type": "string",
+            "example": "9cRCn9rGT8V2imeM2BaKs13yhMEais3ruM3rPvTGpump"
+          },
+          "time_from": {
+            "type": "integer",
+            "example": 1782864000
+          },
+          "time_to": {
+            "type": "integer",
+            "example": 1785369600
+          },
+          "time_frame": {
+            "type": "string",
+            "example": "1D",
+            "enum": [
+              "1s",
+              "5s",
+              "15s",
+              "30s",
+              "1m",
+              "3m",
+              "5m",
+              "15m",
+              "30m",
+              "1h",
+              "2h",
+              "4h",
+              "1D",
+              "1W",
+              "1M"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "dev",
+                "sniper",
+                "smart_trader",
+                "kol"
+              ]
+            },
+            "example": [
+              "dev",
+              "sniper",
+              "smart_trader",
+              "kol"
+            ]
+          },
+          "wallets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "min_volume_usd": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0
+          },
+          "top_10_holder": {
+            "type": "boolean",
+            "default": false
+          },
+          "limit_wallet": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 10
+          },
+          "limit_bucket": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 300,
+            "default": 300
+          }
+        },
+        "requiredQuery": [
+          "token_address",
+          "time_from",
+          "time_frame"
         ]
       }
     }

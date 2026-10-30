@@ -19,7 +19,7 @@ Chain, surge interval and market-cap band. Standard is the default; choose advan
 
 ## Use
 
-Install birdeye-cli and configure the Birdeye API key locally. Preview the user's filters and CU budget, then run the same command with --max-cu. Standard costs 50 CU. Advanced hydrates at most --top survivors; --with-security adds security, while --no-holder-health skips Solana holder cohorts. --no-auto-filter retains every row with its flags. Top-10 and developer caps require security evidence. Unknown KOL tags are not zero buyers. Use --help for the full filter list; read the detailed reference for interpretation and the /price-surge API contract.
+Install birdeye-cli and configure the Birdeye API key locally. Preview the user's filters and CU budget, then run the same command with --max-cu. Standard costs 50 CU. Advanced hydrates at most --top survivors; --with-security adds security, while --no-holder-health skips Solana holder cohorts. --no-auto-filter retains every row with its flags. Top-10 and developer caps require security evidence. Unknown KOL tags are not zero buyers. Use --help for the full filter list; read the detailed reference for interpretation and the /price-surge API contract. HTTP automation uses the separate birdeye-api process: send the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. Terminal usage needs no background server.
 
 Preview without API calls:
 
@@ -54,3 +54,5 @@ Supported chains in this CLI: `solana`, `bsc`, `base`, `ethereum`, `robinhood`. 
 Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.
 
 Read [the detailed reference](references/details.md) for filters, risk interpretation, missing data, installation or the aggregate HTTP API.
+
+For HTTP integration, read [the standalone research API reference](references/internal-api.md): `birdeye-api` startup, per-request Birdeye keys via `X-API-KEY`, endpoint inputs, chain limits and partial results. Terminal commands run in-process and need no background API server.

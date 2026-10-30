@@ -28,7 +28,7 @@ function fixture(security:Record<string,unknown>={freezeable:false,top10HolderPe
   };
 }
 test("all customer demos preview without keys and freeze the window used by execution",()=>{
-  const costs:Record<string,number>={terminal:169,"dex-inspector":143,"wallet-intelligence":110,"security-signals":78,"telegram-brief":58};
+  const costs:Record<string,number>={terminal:169,"dex-inspector":148,"wallet-intelligence":110,"security-signals":78,"telegram-brief":58};
   for(const demo of demoCatalog){
     const preview=planDemo({id:demo.id},true);
     assert.equal(preview.estimatedCu,costs[demo.id]);

@@ -19,7 +19,7 @@ A Solana token address.
 
 ## Use
 
-Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running.
+Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.
 
 Preview without API calls:
 
@@ -53,3 +53,5 @@ Supported chains in this CLI: `solana`. Broader upstream API support does not en
 Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.
 
 Read [the detailed reference](references/details.md) when interpreting formulas, selecting evidence modes, or re-scoring saved evidence.
+
+For HTTP integration, read [the standalone research API reference](references/internal-api.md): `birdeye-api` startup, per-request Birdeye keys via `X-API-KEY`, endpoint inputs, chain limits and partial results. Terminal commands run in-process and need no background API server.

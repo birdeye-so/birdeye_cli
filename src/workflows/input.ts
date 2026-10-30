@@ -1,9 +1,16 @@
 import { z } from "zod";
-import { address, amount, timestamp, duration } from "../schemas.js";
+import { address, amount, timestamp, duration, flowFrames } from "../schemas.js";
 import {priceSurgeSchema} from "../price-surge/schema.js";
 
 export const workflowInputSchema = z.object({
   priceSurge: priceSurgeSchema.optional(),
+  launchSort: z.enum(["volume_24h_usd", "liquidity", "market_cap", "creation_time", "graduated_time", "progress_percent"]).default("volume_24h_usd"),
+  statsFrames: z.array(z.enum(flowFrames)).min(1).max(8).refine(v => new Set(v).size === v.length, "Stats frames must be unique").default(["1h", "24h"]),
+  traderWindow: z.enum(["30m", "1h", "2h", "4h", "6h", "8h", "12h", "24h", "2d", "3d", "7d", "14d", "30d", "60d", "90d", "all_time"]).default("24h"),
+  traderSort: z.enum(["volume_usd", "trade", "total_pnl", "realized_pnl", "unrealized_pnl", "hold_volume"]).default("volume_usd"),
+  trackerFrame: z.enum(["1m", "5m", "15m", "30m", "1h", "4h", "1D"]).default("1h"),
+  includeExited: z.boolean().default(false),
+  signalThresholdUsd: amount.default(0),
   kind: z.string(), address: address.optional(),
   limit: z.number().int().min(1).max(5).optional(),
   scanLimit: z.number().int().min(1).max(50).default(50),

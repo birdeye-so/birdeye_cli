@@ -4,10 +4,24 @@ import {build} from 'esbuild';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {reports} from './fixtures/skill-visual-reports.mjs';
+import {dataReports} from './fixtures/token-data-reports.mjs';
 await build({entryPoints:['web/skill-visuals.tsx','web/skill-visual-data.ts'],outdir:'.test-dist/skill-visuals',bundle:true,packages:'external',platform:'node',format:'esm',jsx:'automatic',outExtension:{'.js':'.mjs'}});
 const {SkillDashboard}=await import('../.test-dist/skill-visuals/skill-visuals.mjs');
 const {numeric,timeSeries,pnlWindows,trendingRows}=await import('../.test-dist/skill-visuals/skill-visual-data.mjs');
 const render=props=>renderToStaticMarkup(React.createElement(SkillDashboard,props));
+test('eight data reports render evidence tables, units and missing values from executed fixtures',()=>{
+ for(const [kind,report] of Object.entries(dataReports)){
+  const html=render(report);
+  assert.match(html,/<table>/,kind);
+  assert.match(html,/Source coverage and pagination/,kind);
+  assert.doesNotMatch(html,/NaN|undefined|\[object Object\]/,kind);
+ }
+ assert.match(render(dataReports['skill-token-security']),/N\/A/);
+ const pools=render(dataReports['skill-lp-analysis']);
+ assert.match(pools,/Fetched-page share/);
+ assert.doesNotMatch(pools,/href="https:\/\/birdeye.so\/solana\/token\//,'Pool addresses must not link to a token page');
+ assert.match(render(dataReports['skill-kol-signal']),/Incomplete evidence/);
+});
 test('all eleven other skills show their data-specific visual report',()=>{
  const expected={ 'skill-trending-list':'Market watchlist','skill-smart-wallets':'Discovery path','skill-token-dd':'Contract controls','skill-contract-dd':'Closing price','skill-rugcheck-audit':'Liquidity history','skill-kline-pattern':'Closing price','skill-wallet-score':'Score breakdown','skill-wallet-style':'Trading profile','skill-wallet-analysis':'PnL by period','skill-smart-money-profile':'Net-worth history','skill-smart-money-leaderboard':'Wallet leaderboard'};
  for(const [kind,report] of Object.entries(reports)){

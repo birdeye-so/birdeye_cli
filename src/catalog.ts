@@ -10,7 +10,7 @@ const positive = (max: number, fallback: number) =>
 const offset = z.coerce.number().int().min(0).max(10000).default(0);
 const token = z.object({ address }).strict();
 // Snapshot plus the two endpoint-page CU corrections documented in workflow-import-mapping.md.
-export const PRICING_VERSION = "bds-2026-10-22-dd-score-v1";
+export const PRICING_VERSION = "bds-2026-10-28-token-data-v1";
 export type Entry = {
   chains?: readonly string[];
   method?: "GET" | "POST";

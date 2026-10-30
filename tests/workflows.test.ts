@@ -26,7 +26,7 @@ test("workflow previews describe every step without turning missing subjects int
         assert.ok(step.title && step.purpose && step.collects, `${kind}/${step.id}`);
         assert.ok(step.path.startsWith("/"));
         assert.ok(step.inputSchema.properties);
-        for (const name of step.lockedParams) assert.equal(step.params[name], undefined);
+        for (const name of step.lockedParams.filter(name => ["address", "token_address", "wallet", "wallets"].includes(name))) assert.equal(step.params[name], undefined);
       }
       if (preview.needsAddress) {
         assert.equal(preview.input.address, undefined);
@@ -216,9 +216,9 @@ test("invalid upstream response stays uncertain rather than generating metrics",
 
 test("recipe plans have reviewed costs, bounded candidate counts and no network dependency", () => {
   const cases: [string, number, Record<string, unknown>?][] = [
-    ["token-research", 78], ["token-research", 143, {depth: "full"}],
-    ["token-due-diligence", 48], ["token-due-diligence", 113, {depth: "full"}],
-    ["project-deep-report", 253], ["wallet-analysis", 50], ["wallet-analysis", 224, {depth: "full"}],
+    ["token-research", 78], ["token-research", 148, {depth: "full"}],
+    ["token-due-diligence", 48], ["token-due-diligence", 118, {depth: "full"}],
+    ["project-deep-report", 260], ["wallet-analysis", 50], ["wallet-analysis", 224, {depth: "full"}],
     ["smart-money-profile", 70], ["risk-warning", 78], ["risk-warning", 198, {depth: "full"}],
     ["wallet-exposure", 20],
   ];

@@ -23,9 +23,18 @@ import workflow21 from "./skill-smart-money-profile/definition.js";
 import workflow22 from "./skill-smart-money-leaderboard/definition.js";
 import type { WorkflowDefinition } from "./types.js";
 import priceSurge from "./skill-price-surge/definition.js";
+import launchpad from "./skill-launchpad-trending/definition.js";
+import security from "./skill-token-security/definition.js";
+import stats from "./skill-token-stats/definition.js";
+import holders from "./skill-top-holder-analysis/definition.js";
+import traders from "./skill-top-trader-analysis/definition.js";
+import liquidity from "./skill-lp-analysis/definition.js";
+import smartHolders from "./skill-smart-money-holders/definition.js";
+import kol from "./skill-kol-signal/definition.js";
 
 export const workflowDefinitions = [
   priceSurge,
+  launchpad, security, stats, holders, traders, liquidity, smartHolders, kol,
   workflow0,
   workflow1,
   workflow2,
@@ -64,6 +73,6 @@ export function getWorkflow(id: string): WorkflowDefinition {
   return definition;
 }
 export const legacyCaseKinds = workflowDefinitions.filter(item => item.family === "legacy").map(item => item.id);
-export const workflowCatalog = () => workflowDefinitions.map(({id: kind, title, category, family, subject, description, purpose, produces, source, supportedChains, limitations}) => ({
-  kind, title, category, group: family === "legacy" ? "legacy" : category, family, subject, description: description ?? purpose, purpose, produces, source, supportedChains, limitations,
+export const workflowCatalog = () => workflowDefinitions.map(({id: kind, title, category, family, subject, description, purpose, produces, source, guide, fixedSources, supportedChains, limitations}) => ({
+  kind, title, category, group: family === "legacy" ? "legacy" : category, family, subject, description: description ?? purpose, purpose, produces, source, guide, fixedSources, supportedChains, limitations,
 }));

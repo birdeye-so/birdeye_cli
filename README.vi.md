@@ -8,6 +8,20 @@ CLI dữ liệu Solana với CU accounting, output `--short` và giao diện loc
 
 Tra nhanh: [Cài đặt](#cài-đặt-và-bắt-đầu-sử-dụng) · [Tham số CLI và ý nghĩa](#cli-arguments) · [Demo cho khách hàng](docs/workflows/customer-demos.md).
 
+## API wrapper chạy riêng
+
+`birdeye-api` là entrypoint riêng cho service nghiên cứu, mặc định port 8788:
+
+```bash
+npm run build
+npm run api:start -- --port 8788 --max-cu 320
+# Nếu đã cài package global: birdeye-api --port 8788 --max-cu 320
+```
+
+Client gửi Birdeye API key của user qua header `X-API-KEY` trong từng request live. Wrapper dùng đúng key đó cho mọi lời gọi Birdeye và retry của request; CU được tính vào tài khoản Birdeye của user. Server không đọc key từ env/config, không dùng lại key của request trước và không yêu cầu token internal riêng. Key không được lưu vào input/history; ledger chỉ giữ fingerprint. `POST /price-surge` hỗ trợ Solana, BSC, Base, Ethereum, Robinhood; holder health chỉ Solana. `POST /token-dd` chỉ hỗ trợ Solana, có mode standard/advanced. Cả hai trả dữ liệu nguồn, kết quả tính toán, phần còn thiếu và CU; `estimate_cu: true` chỉ lập kế hoạch, không gọi Birdeye và không cần key.
+
+`--max-cu` trên service là trần mỗi request, client chỉ có thể giảm. Mỗi process chạy tối đa một live request; chạy lại POST sẽ tạo run và tiêu CU mới. CLI/skill tiếp tục dùng logic chung trong process của CLI. Web interface vẫn chạy riêng qua `birdeye-cli --format interface` trên port 8787; `/price-surge` đã chuyển khỏi interface, không dùng cookie của UI nữa. Xem [hướng dẫn API, input Token DD, giới hạn và chuyển đổi client](docs/workflows/internal-api.md).
+
 ## Cài đặt và bắt đầu sử dụng
 
 Hướng dẫn dưới đây dùng terminal Bash/Zsh trên macOS/Linux; trên Windows có thể dùng terminal WSL. Chọn **một** trong hai cách cài ở bước 2. Bản hướng dẫn này đi kèm package **0.4.0**; tên file và kết quả `--version` phải khớp bản bạn nhận.
@@ -1135,7 +1149,7 @@ Chế độ chỉ dùng session không xóa cấu hình đã lưu trước đó:
 
 Bộ [chín workflow Birdeye CLI](docs/workflows/README.md) đối chiếu với GMGN theo mục đích: token research, due diligence, deep report, wallet analysis, smart money, risk warning, early screening, daily brief và market opportunities. Mỗi recipe ghi input, thứ tự gọi, CU, điều kiện dừng và kết quả cần trả.
 
-Xem [workflow migration audit](docs/workflows/migration-audit.md) để biết phạm vi và giới hạn của các workflow. `workflow create` là nhóm ngân sách tích lũy; `case <kind>` thực thi recipe. Bản 0.4.0 có 35 data operations và 22 workflows (11 từ Birdeye Data Skills, 11 case trước đó), dùng chung registry cho CLI/AI/interface.
+Xem [workflow migration audit](docs/workflows/migration-audit.md) để biết phạm vi và giới hạn của các workflow. `workflow create` là nhóm ngân sách tích lũy; `case <kind>` thực thi recipe. Bản 0.4.0 có 36 data operations, 20 skill hiện tại và 12 case tương thích, dùng chung registry cho CLI/AI/interface.
 
 ### Workflow chạy được ở 0.2.0
 
@@ -1260,7 +1274,22 @@ Kỳ vọng: lỗi `CU_BUDGET_EXCEEDED`, exit code `4`; không gửi request Bir
 
 ### Workflows theo Birdeye Data Skills
 
-UI có thêm Token DD Score Advanced và 11 skill theo source `./birdeye-data-skills`, chia **Discover / Token / Wallet**. Các case cũ nằm trong **Earlier workflows**. Xem [workflow, mục đích, API steps, CU và các điểm điều chỉnh](docs/workflows/birdeye-data-skills.md).
+CLI và UI có 20 skill hiện tại, chia **Discover / Token / Wallet**. Các case cũ nằm trong **Earlier workflows**. Xem [chain hỗ trợ và giới hạn](docs/workflows/skill-support.md).
+
+Tám skill dữ liệu bổ sung có mục đích riêng:
+
+| Skill | Mục đích và trường hợp sử dụng | API chính |
+| --- | --- | --- |
+| `skill-launchpad-trending` | Tìm token mới tạo, gần tốt nghiệp hoặc đã tốt nghiệp; ví dụ lọc Pump.fun đạt tiến độ từ 80%. | Meme List, Meme Detail; New Listing cho sự kiện niêm yết. |
+| `skill-token-security` | Kiểm tra quyền mint/freeze, khả năng chuyển token và các quan sát bảo mật trước khi nghiên cứu sâu. | Token Security. |
+| `skill-token-stats` | Xem giá, vốn hóa, thanh khoản, holder; so sánh hoạt động 1h với 24h. | Token Overview + Trade Data. |
+| `skill-top-holder-analysis` | Xác định ví nắm giữ lớn và mức tập trung nguồn cung; bổ sung nhóm holder khi cần. | Holder Distribution theo wallet; Holder Profile. |
+| `skill-top-trader-analysis` | Tìm ví giao dịch nhiều hoặc có lợi nhuận cao trên một token trong kỳ chọn. | Top Traders; PnL chỉ thuộc token đang xét. |
+| `skill-lp-analysis` | Xác định pool cung cấp thanh khoản chính và xem biến động thanh khoản cấp token. | Markets + Pair Overview; Liquidity History. |
+| `skill-smart-money-holders` | Tìm ví được Birdeye gắn nhãn smart trader còn giữ token; xem thêm mua/bán trong khoảng thời gian khi cần. | Holder Profile + Holder Positions (`smart_trader`); Wallet Tags Tracker. |
+| `skill-kol-signal` | So sánh lượng mua/bán quan sát được của nhóm KOL, tìm ví mẫu đóng góp vào hoạt động đó. | Wallet Tags Tracker (`kol`) + Details. |
+
+Xem [cách chạy, tham số, API và cách diễn giải dữ liệu](docs/workflows/token-data-skills.md). Mỗi package trong `skills/` có `SKILL.md` và reference đi kèm. Tám skill này hỗ trợ Solana; KOL chạy theo từng yêu cầu, LP phân tích pool của token. Dữ liệu thiếu giữ trạng thái chưa xác định, không được coi là an toàn hoặc bằng 0.
 
 ### Token DD Score Advanced · Node.js
 

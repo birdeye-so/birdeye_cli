@@ -98,6 +98,11 @@ export function render(value: unknown, format = "json", short = false) {
     return JSON.stringify(data, null, short ? undefined : 2);
   const d = object(data);
   const body = d.data ?? data;
+  const tokenData = body?.skillAnalysis?.findings?.find((f: Data) => f.kind === "token-data");
+  if (tokenData) {
+    const tables = tokenData.tables.map((t: Data) => [t.title, t.columns.map((c: Data) => c.label).join("\t"), ...t.rows.map((r: Data) => t.columns.map((c: Data) => cell(r[c.key])).join("\t"))].join("\n"));
+    return [tokenData.skill, JSON.stringify(tokenData.summary, null, 2), ...tables, `Coverage: ${d.meta?.coverage}`, ...tokenData.missing, `CU: ${JSON.stringify(d.meta?.cu)}`].join("\n\n");
+  }
   if (body?.kind === "price-surge-v1") {
     const columns = ["rank", "symbol", "address", "price_change_interval_pct", "market_cap", "liquidity", "hydration_status", "risk_flags"];
     const table = (rows: Data[], keys: string[]) => [keys.join("\t"), ...rows.map(row => keys.map(key => cell(row[key])).join("\t"))].join("\n");

@@ -2,6 +2,7 @@
 import {priceSurgeSchema} from "./price-surge/schema.js";
 type Input = Record<string, unknown>;
 const caseFlags = [
+  "launchSort", "statsFrames", "traderWindow", "traderSort", "trackerFrame", "includeExited", "signalThresholdUsd",
   "address", "limit", "scanLimit", "interval", "depth", "duration", "pnlMethod",
   "from", "to", "stage", "source", "minProgress", "minLiquidity", "maxTop10Pct",
   "excludeFreezeable", "baselineLiquidity", "baselineTime", "wallets", "intervals",

@@ -1,6 +1,6 @@
 # Skills and execution
 
-The public model has one resource: **skill**. There are 23 skills, each identified by its existing CLI case ID and described by its purpose, required input, result and usage commands. A multi-step capability is still one skill. See [the glossary](../CONTEXT.md).
+The public model has one resource: **skill**. Current skills are registered in the source catalog and described by purpose, required input, result and usage commands. A multi-step capability is still one skill. See [the glossary](../CONTEXT.md).
 
 ## Ownership
 
@@ -13,6 +13,7 @@ The public model has one resource: **skill**. There are 23 skills, each identifi
 | Shared request fragments | `src/workflows/fragments.ts` |
 | Provider contracts and request accounting | `src/catalog.ts`, `src/runner.ts` and their existing supporting modules |
 | Deterministic scoring | `src/token-dd-*.ts`, `src/skill-metrics.ts` |
+| Normalized token/cohort data reports | `src/token-data-metrics.ts` |
 | Generated installable instructions | `skills/<id>/SKILL.md` |
 | Public description/usage projection | `scripts/lib/skill-runtime.mjs` |
 | Shared categories and guides | `catalog/resources.json` |

@@ -6,6 +6,10 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Eight installable data skills: Launchpad Trending, Token Security, Token Stats, Top Holder Analysis, Top Trader Analysis, LP Analysis, Smart Money Holders and KOL Buy/Sell Signal. Each includes purpose-specific inputs, use cases, Birdeye API references, normalized evidence tables, bounded CU plans and explicit missing-data/pagination limits.
+
+- Standalone `birdeye-api` entrypoint with `/price-surge` and Solana `/token-dd`, caller-supplied Birdeye keys in `X-API-KEY`, per-request server CU ceilings, durable checkpoints and graceful cancellation. Each request uses its caller's key without persisting it or falling back to server credentials; estimates need no key. The research API runs independently of the CLI web interface; clients must migrate the old UI `/price-surge` route to this service.
+
 - Price Surge Screen: an aggregate `/price-surge` internal API, matching `birdeye-cli price-surge` command and installable `skill-price-surge` package. Includes server-side market filters, two-pass risk screening, bounded multi-chain enrichment, source evidence, CU budgets and installation/API documentation.
 
 - Public HTTPS reverse-proxy support for browser storage mode via `--public-url`, while serving only static assets and keeping user workspaces in the browser.
@@ -21,6 +25,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - An isolated tarball installation smoke test covering CLI version/help, offline estimates, bundled knowledge and the local web interface.
 
 ### Changed
+
+- Updated Trade Data and Markets reservations to 12 and 25 CU from current public endpoint documentation. New cohort reports use historical tracker buckets; rolling stats and trader rankings reject historical timestamp inputs.
 
 - Local and browser-only demo skill filters now share Agent API category IDs, titles and public-skill counts; archived workflows are excluded consistently.
 

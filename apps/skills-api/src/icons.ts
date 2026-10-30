@@ -1,5 +1,13 @@
 // Lucide icons served by Iconify's public SVG API.
 const icons: Record<string, string> = {
+  'skill-launchpad-trending': 'rocket',
+  'skill-token-security': 'shield-alert',
+  'skill-token-stats': 'chart-column',
+  'skill-top-holder-analysis': 'users',
+  'skill-top-trader-analysis': 'medal',
+  'skill-lp-analysis': 'droplets',
+  'skill-smart-money-holders': 'wallet',
+  'skill-kol-signal': 'radio',
   'skill-price-surge': 'trending-up',
   'skill-token-dd-score': 'clipboard-check',
   'skill-trending-list': 'flame',

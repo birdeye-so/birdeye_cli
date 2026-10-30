@@ -16,6 +16,8 @@ export type WorkflowDefinition = {
   purpose: string;
   produces: string;
   source: string;
+  guide?: {input: string; instructions: string; exampleFlags?: string; useCases: readonly string[]};
+  fixedSources?: boolean;
   supportedChains?: readonly string[];
   limitations?: readonly string[];
   defaultLimit?: number;
@@ -24,7 +26,7 @@ export type WorkflowDefinition = {
   planNotes?: readonly string[];
   maxCandleIntervals?: number;
   filterSubjects?: (rows: Data[], input: WorkflowInput) => Data[];
-  window: "day" | "duration" | "windowDays";
+  window: "day" | "duration" | "windowDays" | "rolling";
   validate?: (input: WorkflowInput, issue: (message: string) => void) => void;
   plan: (context: PlanContext) => void;
   finalize?: (input: WorkflowInput, steps: Step[]) => void;

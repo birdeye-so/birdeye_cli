@@ -3,6 +3,9 @@ import React from "react";
 // Match the pictograms in the user-selected birdeye-data-skills/deploy console.
 // GMGN's wallet-score reports also use target purpose markers.
 const icons: Record<string, string> = {
+  "skill-launchpad-trending": "🚀", "skill-token-security": "🔐", "skill-token-stats": "📊",
+  "skill-top-holder-analysis": "👥", "skill-top-trader-analysis": "🥇", "skill-lp-analysis": "💧",
+  "skill-smart-money-holders": "💼", "skill-kol-signal": "📡",
   "skill-trending-list": "🔥", "skill-smart-wallets": "💰",
   "skill-token-dd": "🔍", "skill-contract-dd": "🛡️", "skill-rugcheck-audit": "🧪",
   "skill-kline-pattern": "🕯️", "skill-wallet-score": "📊", "skill-wallet-style": "🎭",

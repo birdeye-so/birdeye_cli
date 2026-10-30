@@ -24,8 +24,8 @@ test('each skill installs in isolation with current references and no sibling pa
 test('each public skill has matching installable instructions and no second resource type', async () => {
   const catalog = await createResourceCatalog();
   const packages = await skillPackages();
-  assert.equal(catalog.skills.length, 12);
-  assert.equal(packages.filter(item => !item.legacy).length, 12);
+  assert.equal(catalog.skills.length, 20);
+  assert.equal(packages.filter(item => !item.legacy).length, 20);
   assert.equal(packages.filter(item => item.legacy).length, 4);
   assert.ok(!('workflows' in catalog));
   for (const skill of catalog.skills) {

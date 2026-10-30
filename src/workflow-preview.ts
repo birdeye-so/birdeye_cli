@@ -22,9 +22,9 @@ export function previewCase(input: unknown) {
     steps: plan.steps.map(step => {
       const entry: Entry = catalog[step.operation];
       const schema = z.toJSONSchema(entry.schema);
-      const lockedParams = Object.keys(schema.properties ?? {}).filter(key => ["address", "wallet", "token_address"].includes(key));
+      const lockedParams = Object.keys(schema.properties ?? {}).filter(key => recipe.fixedSources || ["address", "wallet", "token_address"].includes(key));
       const params = {...step.params};
-      if (needsAddress) for (const key of lockedParams) delete params[key];
+      if (needsAddress) for (const key of ["address", "wallet", "token_address"]) delete params[key];
       const requests = step.subjects?.take ?? 1;
       return {...step, params, ...stepGuides[step.operation], method: entry.method ?? "GET", path: entry.path,
         inputSchema: schema, lockedParams, cuPerRequest: step.cost, maxRequests: requests, estimatedCu: requests * step.cost,

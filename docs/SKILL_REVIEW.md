@@ -12,6 +12,9 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 | Skill ID | Mặc định: bước / request / CU | Chế độ khác | Cần review |
 | --- | --- | --- | --- |
 | `skill-price-surge` | 1 / 1 / 50 | Advanced: 3 bước, 21 req, 650 CU; Advanced + security: 4 bước, 31 req, 950 CU | Duyệt các bước và phạm vi dữ liệu trước khi đổi mặc định. |
+| `skill-launchpad-trending` | 1 / 1 / 30 | Full: 2 bước, 4 req, 75 CU | Duyệt các bước và phạm vi dữ liệu trước khi đổi mặc định. |
+| `skill-lp-analysis` | 2 / 4 / 70 | Full: 3 bước, 5 req, 220 CU | Duyệt các bước và phạm vi dữ liệu trước khi đổi mặc định. |
+| `skill-smart-money-holders` | 2 / 2 / 60 | Full: 4 bước, 4 req, 120 CU | Duyệt các bước và phạm vi dữ liệu trước khi đổi mặc định. |
 | `skill-token-dd-score` | 7 / 7 / 181 | Standard DD: 2 bước, 2 req, 51 CU | Advanced mặc định có bảy bước; Standard có hai. OHLC 30 CU còn provisional. Cần duyệt chế độ mặc định và bằng chứng tối thiểu trước khi chấm điểm. |
 | `skill-smart-wallets` | 2 / 4 / 110 | Standard discovery: 3 bước, 7 req, 170 CU; Deep: 5 bước, 13 req, 320 CU | Token → traders → wallet → PnL/positions. Cần duyệt dedup, số wallet tối đa, và Fast/Standard/Deep. Không cộng PnL theo token thành PnL toàn ví. |
 | `skill-contract-dd` | 4 / 4 / 178 | — | Candles có cần đi cùng kiểm tra contract mặc định? skip-kline giảm một bước; giá không chứng minh contract an toàn. |
@@ -44,6 +47,50 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 2. `security` → `token.security` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
 3. `top_traders` → `token.top-traders` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
 4. `holder_profile` → `token.holder-profile` (30 CU/request; lấy tối đa 10 token từ `tokens`, giữ thứ tự provider).
+
+### Token Launchpad Trending — `skill-launchpad-trending`
+
+Định nghĩa: [definition.ts](../src/workflows/skill-launchpad-trending/definition.ts).
+
+**Mặc định: 1 bước / tối đa 1 request / 30 CU trước retry.**
+
+1. `candidates` → `market.meme-list` (30 CU/request).
+
+**Full: 2 bước / tối đa 4 request / 75 CU trước retry.**
+
+1. `candidates` → `market.meme-list` (30 CU/request).
+2. `launch-detail` → `token.meme-detail` (15 CU/request; lấy tối đa 3 token từ `candidates`, giữ thứ tự provider).
+
+### LP Analysis — `skill-lp-analysis`
+
+Định nghĩa: [definition.ts](../src/workflows/skill-lp-analysis/definition.ts).
+
+**Mặc định: 2 bước / tối đa 4 request / 70 CU trước retry.**
+
+1. `markets` → `token.markets` (25 CU/request).
+2. `pairs` → `market.pair-overview` (15 CU/request; lấy tối đa 3 pair từ `markets`, giữ thứ tự provider).
+
+**Full: 3 bước / tối đa 5 request / 220 CU trước retry.**
+
+1. `markets` → `token.markets` (25 CU/request).
+2. `pairs` → `market.pair-overview` (15 CU/request; lấy tối đa 3 pair từ `markets`, giữ thứ tự provider).
+3. `liquidity` → `token.liquidity-history` (150 CU/request).
+
+### Smart Money Holder Analysis — `skill-smart-money-holders`
+
+Định nghĩa: [definition.ts](../src/workflows/skill-smart-money-holders/definition.ts).
+
+**Mặc định: 2 bước / tối đa 2 request / 60 CU trước retry.**
+
+1. `profile` → `token.holder-profile` (30 CU/request).
+2. `positions` → `token.holder-positions` (30 CU/request).
+
+**Full: 4 bước / tối đa 4 request / 120 CU trước retry.**
+
+1. `profile` → `token.holder-profile` (30 CU/request).
+2. `positions` → `token.holder-positions` (30 CU/request).
+3. `timeline` → `token.tags-tracker` (30 CU/request).
+4. `timeline-wallets` → `token.tags-tracker-details` (30 CU/request).
 
 ### Token DD — `skill-token-dd-score`
 
@@ -209,6 +256,11 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 
 ## Trường hợp đơn giản hơn
 
+- `skill-token-security`: 1 bước, 1 request, 30 CU mặc định.
+- `skill-token-stats`: 2 bước, 2 request, 30 CU mặc định.
+- `skill-top-holder-analysis`: 1 bước, 1 request, 30 CU mặc định.
+- `skill-top-trader-analysis`: 1 bước, 1 request, 30 CU mặc định.
+- `skill-kol-signal`: 1 bước, 1 request, 30 CU mặc định.
 - `skill-trending-list`: 1 bước, 1 request, 50 CU mặc định.
 - `skill-kline-pattern`: 1 bước, 1 request, 100 CU mặc định.
 

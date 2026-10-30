@@ -1,6 +1,7 @@
 import type { Result } from "./runner.js";
 import type { CaseInput } from "./workflows.js";
 import { tokenDdScore } from "./token-dd-score.js";
+import {tokenDataAnalysis} from "./token-data-metrics.js";
 import { decimal, type Data } from "./shared.js";
 
 const number = (v: unknown): number | null => { const d = decimal(v); const n = d?.toNumber(); return n !== undefined && Number.isFinite(n) ? n : null; };
@@ -126,6 +127,8 @@ export function rankWallets(items: Data[]): Data[] {
 }
 
 export function skillAnalysis(input: CaseInput, sources: Result[]) {
+  const tokenData = tokenDataAnalysis(input, sources);
+  if (tokenData) return tokenData;
   if(input.kind === "skill-token-dd-score") return {reference:"skills/token-duediligence/doc.md",formulaVersion:"token-dd-reconstructed-v1",findings:[tokenDdScore(input,sources)]};
   const find=(op:string,wallet?:string,duration?:string)=>sources.find(s=>s.meta.operation===op&&(!wallet||s.meta.params.wallet===wallet)&&(!duration||s.meta.params.duration===duration));
   const findings:Data[]=[];

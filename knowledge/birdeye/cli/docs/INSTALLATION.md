@@ -31,6 +31,8 @@ birdeye-cli --format interface --bind 127.0.0.1:8787
 
 Open `http://127.0.0.1:8787` and keep the terminal running. Press `Ctrl+C` to stop. Global installation creates the `birdeye-cli` executable; use it directly, rather than `npm run birdeye-cli`.
 
+To run the independent research API, run `birdeye-api --port 8788 --max-cu 320`. From a built checkout, use `npm run api:start -- --port 8788 --max-cu 320`. It serves Price Surge and Solana Token DD without starting the web interface. Each live client request supplies the user's Birdeye key in `X-API-KEY`; the API needs no server key or separate internal token. Read the [standalone API setup and request examples](workflows/internal-api.md) for credentials, supported chains and limits.
+
 ## Supported setup
 
 Use Node.js >=22.16.0 and npm on macOS or Linux. WSL is the documented Windows route; native Windows has not been validated. The CI matrix checks the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS. Check the workflow results for the commit you install.
@@ -74,7 +76,7 @@ birdeye-cli --version
 birdeye-cli --help
 ```
 
-npm installs runtime dependencies and creates the `birdeye-cli` and `token-dd-score` executables. No build tools are needed by the tarball recipient. Do not substitute `npm install -g birdeye-cli`: registry distribution is not configured for this project yet.
+npm installs runtime dependencies and creates the `birdeye-cli`, `birdeye-api` and `token-dd-score` executables. No build tools are needed by the tarball recipient. Do not substitute `npm install -g birdeye-cli`: registry distribution is not configured for this project yet.
 
 ## Configure and verify
 
@@ -103,7 +105,7 @@ Use this flow to give your AI agent Birdeye capabilities: choose a skill, instal
 | `skill-wallet-analysis` | Wallet holdings, performance and activity | Use skill-wallet-analysis to plan analysis of `GNRgBxkRFnyLYUTX8DSs3SM3Wm4jYSHQn6JQQVXapoRc`, keeping 7d and 30d PnL separate. Estimate only. |
 | `skill-token-dd-score` | Token DD Score, evidence coverage and saved-run re-scoring | Use skill-token-dd-score to estimate an advanced PUMP review. Explain the checks and missing evidence. Do not fetch yet. |
 
-The catalog has 12 current skills; four older instruction packages remain for compatibility. Price Surge supports Solana, BSC, Base, Ethereum and Robinhood. The other 11 current skills are Solana-only. See the [complete chain-support and limitations matrix](workflows/skill-support.md) before selecting a skill. Skills perform research, not trading or continuous monitoring.
+The catalog has 20 current skills; four older instruction packages remain for compatibility. Price Surge supports Solana, BSC, Base, Ethereum and Robinhood. The other 19 current skills are Solana-only. See the [complete chain-support and limitations matrix](workflows/skill-support.md) before selecting a skill. Skills perform research, not trading or continuous monitoring.
 
 ### 2. Install the instructions
 

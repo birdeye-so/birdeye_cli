@@ -11,7 +11,9 @@ import {planPriceSurge, runPriceSurge} from "../src/price-surge/api.js";
 import {surgeIntervals} from "../src/price-surge/schema.js";
 import {planCase} from "../src/workflows.js";
 import {runCase} from "../src/analysis.js";
-import {startInterface} from "../src/interface/server.js";
+import {startInternalApi} from "../src/internal-api/server.js";
+import {ResearchService} from "../src/internal-api/service.js";
+import {RunStore} from "../src/run-store.js";
 import {inProcessFetch} from "./http-helper.js";
 import {project, render} from "../src/output.js";
 import {caseCliArgs} from "../src/cli-preview.js";
@@ -193,13 +195,13 @@ test("malformed or unavailable feeds are partial, and cancellation prevents furt
 });
 
 test("single HTTP endpoint authenticates, plans free, returns full results, and persists history", async () => {
-  const ledger = new Ledger(":memory:"), dir = mkdtempSync(join(tmpdir(), "surge-api-")); let calls = 0;
-  const app = await startInterface({ledger, dir, listen: false, config: {birdeyeApiKey: "fixture", ai: {defaultProfile: "research", profiles: {}}}, runnerFactory: () => new Runner(ledger, "fixture", {fetch: async () => {calls++; return Response.json({success: true, data: {items: [clean()]}});}})});
+  const ledger = new Ledger(":memory:"); let calls = 0;
+  const service = new ResearchService({ledger, runnerFactory: apiKey => new Runner(ledger, apiKey, {fetch: async () => {calls++; return Response.json({success: true, data: {items: [clean()]}});}})});
+  const app = await startInternalApi({service, listen: false});
   const request = inProcessFetch(app.handler, app.url);
   try {
     assert.equal((await request(app.url + "/price-surge", {method: "POST", headers: {"Content-Type": "application/json"}, body: "{}"})).status, 401);
-    const login = await request(app.url + "/api/connect", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({code: app.connectCode})});
-    const headers = {"Content-Type": "application/json", Cookie: login.headers.get("set-cookie")!.split(";")[0]};
+    const headers = {"Content-Type": "application/json", "X-API-KEY": "fixture"};
     const post = (data: unknown) => request(app.url + "/price-surge", {method: "POST", headers, body: JSON.stringify(data)});
     const preview = await post({estimate_cu: true, mode: "advanced", with_security: true, top: 3});
     assert.equal(preview.status, 200); assert.equal((await preview.json()).estimatedCu, 320); assert.equal(calls, 0);
@@ -207,10 +209,10 @@ test("single HTTP endpoint authenticates, plans free, returns full results, and 
     assert.equal(calls, 0);
     const response = await post({max_cu: 50}); assert.equal(response.status, 200);
     const out = await response.json(); assert.equal(out.data.kind, "price-surge-v1"); assert.equal(out.data.n_rows, 1); assert.equal(calls, 1);
-    const saved = await (await request(app.url + `/api/runs/${out.meta.runId}`, {headers})).json();
-    assert.equal(saved.result.data.raw_response.success, true);
+    const saved = new RunStore(ledger).get(out.meta.runId);
+    assert.equal(saved.result!.data.raw_response.success, true);
     const partial = await (await post({max_cu: 0})).json(); assert.equal(partial.meta.coverage, "partial"); assert.equal(calls, 1);
-  } finally {await app.close(); ledger.close(); rmSync(dir, {recursive: true, force: true});}
+  } finally {await app.close(); ledger.close();}
 });
 
 test("CLI and case alias preview the same service without credentials or persistent writes", () => {

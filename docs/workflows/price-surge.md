@@ -75,28 +75,28 @@ Inverted bands, invalid numbers, unknown parameters and unsupported chains fail 
 
 ## Internal HTTP API
 
-Start the existing local service:
+Start the standalone API service (after building/installing the package):
 
 ```bash
-birdeye-cli --format interface --bind 127.0.0.1:8787
+birdeye-api --port 8788 --max-cu 320
 ```
 
-The single aggregate endpoint is `POST /price-surge`. It accepts the inputs above plus `estimate_cu` (boolean, default false) and `max_cu` (nonnegative integer or null). A live request waits for the result and returns all collected data and computed metrics. It also saves the run in the existing history. The endpoint shares the local service's connection-code authentication, Host/Origin checks, session budget and single-active-run limit.
+The aggregate endpoint is `POST /price-surge`. It accepts the inputs above plus `estimate_cu` (boolean, default false) and `max_cu` (nonnegative integer or null). A live request waits for the result, returns all collected data and computed metrics, and saves the run in SQLite history. The standalone process also serves `POST /token-dd` for Solana Token DD. Each live request uses the caller's Birdeye key from `X-API-KEY`; keys are not stored in history or reused for another request. One live run is allowed per API process, independent of the CLI web interface. Server `--max-cu` is a per-request ceiling; callers may lower it but cannot remove it with null or a larger budget.
 
-Authenticate using the code printed by the local server, then reuse the cookie:
+Configure the user's `BIRDEYE_API_KEY` locally on the **client**, then send it in the header. The wrapper does not load server credentials or require a separate internal token:
 
 ```bash
-curl -c /tmp/birdeye-session.cookies http://127.0.0.1:8787/api/connect \
-  -H 'Content-Type: application/json' --data '{"code":"LOCAL_CONNECTION_CODE"}'
-
-curl -b /tmp/birdeye-session.cookies http://127.0.0.1:8787/price-surge \
+curl http://127.0.0.1:8788/price-surge \
+  -H "X-API-KEY: $BIRDEYE_API_KEY" \
   -H 'Content-Type: application/json' \
   --data '{"chain":"solana","mode":"advanced","top":3,"with_security":true,"min_market_cap":50000,"max_market_cap":5000000,"max_cu":320}'
 ```
 
-Add `"estimate_cu":true` to obtain a free plan from the same endpoint. No upstream endpoint selection is exposed by this aggregate API. The existing raw data commands remain available independently.
+Add `"estimate_cu":true` to obtain a free plan from the same endpoint without an API key or upstream call. No upstream endpoint selection is exposed by this aggregate API. The existing raw data commands remain available independently.
 
-Success returns `{schemaVersion:1,data:{kind:"price-surge-v1",...},meta:{...}}`. Inspect `meta.coverage`: an upstream failure or exhausted budget produces `partial`, retaining completed evidence and describing unperformed calls in `data.missing`. HTTP 200 can therefore carry a partial result. Invalid requests return 400, missing sessions 401, denied origins 403 and concurrent runs 409. CLI partial runs exit with code 5. Retries reserve additional CU; a budget prevents sending any attempt that would exceed the cap. Cancelling the HTTP connection stops further work; sent requests can still consume CU.
+Success returns `{schemaVersion:1,data:{kind:"price-surge-v1",...},meta:{...}}`. Inspect `meta.coverage`: an upstream failure, rejected Birdeye key or exhausted budget produces `partial`, retaining completed evidence and describing unperformed calls in `data.missing`. HTTP 200 can therefore carry a partial result. Invalid requests return 400, missing/malformed live-request `X-API-KEY` headers 401, browser origins 403 and concurrent live runs 409. CLI partial runs exit with code 5. Retries use the same caller key and reserve additional CU; a budget prevents sending any attempt that would exceed the cap. Cancelling the HTTP connection stops further work; sent requests can still consume CU.
+
+From source, use `npm run api:start` or `node dist/internal-api/index.js`; `npm run api:dev` builds first. Default bind is `127.0.0.1:8788`; `GET /health` is free. `--config-dir` selects storage. The service accepts server-to-server clients, not browser CORS. The CLI interface on port 8787 no longer serves `/price-surge`; its cookies do not authenticate this API.
 
 For an in-process consumer, import `planPriceSurge` and `runPriceSurge` from `dist/price-surge/api.js`. Construct the existing `Runner` with a ledger and credentials, create a ledger run, then call `runPriceSurge(runner, runId, params, signal)`. The CLI calls this service in-process, so it does not require a background HTTP server.
 
