@@ -40,7 +40,7 @@ function fixture(url:URL,init?:RequestInit){
   // The reference client's _be() explicitly supports this unwrapped response.
   if(path==="/smart-money/v1/token/list")return Response.json([{token}]);
   else if(path.endsWith("token_overview"))data={address:token,liquidity:1000};
-  else if(path.endsWith("token_security"))data={freezeable:false,mintable:false,top10HolderPercent:.1};
+  else if(path.endsWith("token_security"))data={freezeable:null,freezeAuthority:null,ownerAddress:null,top10HolderPercent:.1};
   else if(path.endsWith("pnl/summary"))data={summary:summary(url.searchParams.get("duration")==="90d"?9000:3000)};
   else if(path.endsWith("pnl/details")){assert.equal(init?.method,"POST");data={summary:summary(),tokens:positions};}
   else if(path.endsWith("tx/first-funded")){assert.equal(init?.method,"POST");assert.deepEqual(JSON.parse(String(init?.body)),{wallets:[wallet]});data={[wallet]:{block_unix_time:at-86400}};}

@@ -36,7 +36,7 @@ export const skillCatalog = {
   "portfolio.net-worth-history": {
     path: "/wallet/v2/net-worth", cost: 50,
     description: "Wallet net-worth snapshots; deposits and withdrawals affect this series",
-    schema: z.object({wallet: address, time: z.string().regex(/^\d+$/), type: z.enum(["1h", "1d"]).default("1d"), count: z.number().int().min(1).max(90).default(30), direction: z.enum(["back", "forward"]).default("back"), sort_type: direction.default("desc")}).strict(),
+    schema: z.object({wallet: address, time: z.string().regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/, "Use YYYY-MM-DD HH:mm:ss in UTC").refine(value => z.iso.datetime().safeParse(value.replace(" ", "T") + "Z").success, "Use a valid UTC date and time"), type: z.enum(["1h", "1d"]).default("1d"), count: z.number().int().min(1).max(90).default(30), direction: z.enum(["back", "forward"]).default("back"), sort_type: direction.default("desc")}).strict(),
     dataSchema: z.object({history: list}).passthrough(),
   },
   "portfolio.transactions": {

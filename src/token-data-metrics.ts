@@ -1,6 +1,7 @@
 import type {Result} from "./runner.js";
 import type {CaseInput} from "./workflows/schema.js";
 import {decimal, object, type Data} from "./shared.js";
+import {securityControls} from "./security-controls.js";
 
 const ids = new Set(["skill-launchpad-trending", "skill-token-security", "skill-token-stats", "skill-top-holder-analysis", "skill-top-trader-analysis", "skill-lp-analysis", "skill-smart-money-holders", "skill-kol-signal"]);
 const num = (v: unknown): number | null => {const d = decimal(v), n = d?.toNumber(); return n !== undefined && Number.isFinite(n) ? n : null;};
@@ -43,13 +44,13 @@ export function tokenDataAnalysis(input: CaseInput, sources: Result[]) {
 
   if (input.kind === "skill-token-security") {
     const s = find("token.security"), d = object(s?.data);
-    const authorityActive = (key: string) => !Object.hasOwn(d, key) ? null : d[key] === null || (key === "freezeAuthority" && d[key] === "11111111111111111111111111111111") ? false : text(d[key]) ? true : null;
+    const controls = securityControls(s);
     const fee = object(d.transferFeeData), current = object(fee.currentTransferFee);
     const bps = nonnegative(fee.transferFeeBasisPoints ?? current.transferFeeBasisPoints);
     const feePct = d.transferFeeEnable === false ? 0 : bps !== null && bps <= 10000 ? bps / 100 : null;
     const checks = [
-      ["Mint authority active", bool(d.mintable) ?? bool(d.isMintable) ?? authorityActive("ownerAddress"), "Explicit mint flag or present ownerAddress; absent remains unknown"],
-      ["Freeze authority active", bool(d.freezeable) ?? authorityActive("freezeAuthority"), "Explicit freeze flag or present freezeAuthority"],
+      ["Mint authority active", controls.mint.value, controls.mint.basis],
+      ["Freeze authority active", controls.freeze.value, controls.freeze.basis],
       ["Mutable metadata", bool(d.mutableMetadata), "mutableMetadata"],
       ["Non-transferable", bool(d.nonTransferable), "nonTransferable"],
       ["Transfer fee · %", feePct, "Explicit current basis points / 100; opaque schedules remain unknown"],

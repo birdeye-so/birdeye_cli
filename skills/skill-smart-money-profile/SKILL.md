@@ -45,7 +45,7 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
 
-- Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time range are separate inputs; do not merge incompatible scopes.
+- Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time cursor are separate inputs; do not merge incompatible scopes.
 - Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.
 - Net-worth changes include deposits and withdrawals; neither those changes nor the smart-money label establish trading ROI or future returns. First funding is provenance only.
 

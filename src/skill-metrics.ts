@@ -1,4 +1,5 @@
 import type { Result } from "./runner.js";
+import {securityControls} from "./security-controls.js";
 import type { CaseInput } from "./workflows.js";
 import { tokenDdScore } from "./token-dd-score.js";
 import {tokenDataAnalysis} from "./token-data-metrics.js";
@@ -159,8 +160,8 @@ export function skillAnalysis(input: CaseInput, sources: Result[]) {
     findings.push({kind:"wallet-leaderboard",formulaVersion:"reference-ranking-corrected-v1",rows:ranked,missing:ranked.filter(r=>r.rank===null).map(r=>`Incomplete comparison: ${r.wallet}`),basis:"Higher PnL yields higher percentile; ties share average rank. Relative ranking among fully observed supplied wallets, not an absolute alpha score."});
   }
   if(["skill-token-dd","skill-contract-dd","skill-rugcheck-audit"].includes(input.kind)) {
-    const sec=find("token.security");
-    findings.push({kind:"security-evidence",compositeSafetyScore:null,freezeable:sec?.data?.freezeable??null,mintable:sec?.data?.mintable??null,top10AccountShare:sec?.data?.top10HolderPercent??null,sourceIds:sec?[sec.meta.requestId]:[],missing:["Honeypot simulation and LP-lock verification are not provided by these steps."],basis:"Unknown controls are not passed checks; no reference Safe label or inferred rug verdict."});
+    const sec=find("token.security"), controls=securityControls(sec);
+    findings.push({kind:"security-evidence",compositeSafetyScore:null,freezeable:controls.freeze.value,mintable:controls.mint.value,mintBasis:controls.mint.basis,freezeBasis:controls.freeze.basis,top10AccountShare:sec?.data?.top10HolderPercent??null,sourceIds:sec?[sec.meta.requestId]:[],missing:[...(controls.mint.value===null?["Mint authority unavailable"]:[]),...(controls.freeze.value===null?["Freeze authority unavailable"]:[]),"Honeypot simulation and LP-lock verification are not provided by these steps."],basis:"Solana null authority means inactive; missing or malformed authority remains unknown. Explicit booleans take precedence. No reference Safe label or inferred rug verdict."});
   }
   const liq=find("token.liquidity-history");
   if(liq){const data=rows(liq).map(r=>({t:number(r.unix_time),v:decimal(r.liquidity_usd)})).filter(r=>r.t!==null&&r.v!==null).sort((a,b)=>a.t!-b.t!);const first=data[0]?.v,last=data.at(-1)?.v;

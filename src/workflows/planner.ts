@@ -34,6 +34,12 @@ export function planCase(input: unknown, at = Math.floor(Date.now() / 1000)): Ca
         throw new AppError("INVALID_INPUT", `Step ${id}: ${key} comes from the workflow subject or an earlier step. Change the workflow address instead.`);
     }
     // Validate even dependent parameters during preflight with a valid placeholder address.
+    // A cursor override switches direction instead of retaining the opposite default.
+    if (operation === "portfolio.trades") {
+      params = {...params};
+      if (overrides.after_time !== undefined) delete params.before_time;
+      if (overrides.before_time !== undefined) delete params.after_time;
+    }
     let normalized: Data;
     let cost: number;
     try {

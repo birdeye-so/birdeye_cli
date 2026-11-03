@@ -9,7 +9,7 @@ birdeye-cli case smart-money-profile --limit 3 --max-cu 250 --short
 birdeye-cli case smart-money-profile --address "$WALLET" --max-cu 100 --short
 ```
 
-Discovery lấy trader ranking 30d theo realized PnL (25 CU), chọn tối đa k ví rồi holdings (20) + summary 7d (20) + summary 30d (20) + một trang trades (10) cho mỗi ví. Base **25 + 70k**, mặc định **235 CU**. Với address chỉ **70 CU**. Full thêm PnL details **30 CU/ví**; duration cho trades/details mặc định 30d, hai summary luôn là 7d/30d.
+Discovery lấy trader ranking 30d theo realized PnL (25 CU), chọn tối đa k ví rồi holdings (20) + summary 7d (20) + summary 30d (20) + một trang trades (10) cho mỗi ví. Base **25 + 70k**, mặc định **235 CU**. Với address chỉ **70 CU**. Full thêm PnL details **30 CU/ví**; duration cho details mặc định 30d, hai summary luôn là 7d/30d. Trades chỉ gửi `before_time=to`, có thể chứa giao dịch cũ hơn `from`; đây không phải dữ liệu đầy đủ trong window. Step override có thể chuyển sang `after_time`, nhưng không được gửi cả hai mốc.
 
 Cùng `pnl_method`, `position_scope=duration_only`; không coi 7d/30d là hai mẫu độc lập. Wallet ranking dựa hiệu suất khác rich list; cũng không tự chứng nhận nhãn `smart_trader`. Profile giữ scope, sample size nếu có, unknown và backfill warnings. Không ghép lần mua đầu/lần bán đầu để đo holding time khi thiếu lot history.
 

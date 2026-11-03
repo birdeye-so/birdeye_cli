@@ -476,7 +476,7 @@
       "description": "Inspect a Solana token's contract controls and reported security flags. Use for a focused checklist before deeper token research.",
       "usage": {
         "input": "A Solana token address. Supported chains in this CLI: solana.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Runs one security request. Treat reported flags as provider observations. Missing or null evidence remains unknown; this does not audit source code, simulate a sale or independently verify LP locks.\n\nUse cases:\n- Check whether mint, freeze or metadata controls remain active.\n- Inspect reported transfer restrictions without paying for a complete DD report.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Security payloads vary by token; absent fields remain unknown. No composite safety score or automatic trading verdict is produced.\n- Provider-reported honeypot and LP-lock values are not independent simulation or lock verification. Transfer fees are interpreted only with explicit units.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Runs one security request. Treat reported flags as provider observations. On Solana, explicit null ownerAddress/freezeAuthority means the authority is inactive; missing or malformed authority remains unknown. Other null evidence stays unknown. This does not audit source code, simulate a sale or independently verify LP locks.\n\nUse cases:\n- Check whether mint, freeze or metadata controls remain active.\n- Inspect reported transfer restrictions without paying for a complete DD report.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Security payloads vary by token; absent fields remain unknown. No composite safety score or automatic trading verdict is produced.\n- Provider-reported honeypot and LP-lock values are not independent simulation or lock verification. Transfer fees are interpreted only with explicit units.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-token-security --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-token-security --address <SOLANA_ADDRESS> --short",
         "result": "Security observations with authority evidence, transfer-fee fields, provider-reported honeypot/LP status where available, and unknown checks.",
@@ -3561,7 +3561,7 @@
       "description": "Combine short and monthly performance with position, trade and net-worth history for one wallet.",
       "usage": {
         "input": "A Solana wallet address. Supported chains in this CLI: solana.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time range are separate inputs; do not merge incompatible scopes.\n- Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.\n- Net-worth changes include deposits and withdrawals; neither those changes nor the smart-money label establish trading ROI or future returns. First funding is provenance only.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time cursor are separate inputs; do not merge incompatible scopes.\n- Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.\n- Net-worth changes include deposits and withdrawals; neither those changes nor the smart-money label establish trading ROI or future returns. First funding is provenance only.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-smart-money-profile --address <SOLANA_ADDRESS> --short --estimate-cu",
         "run_command": "birdeye-cli case skill-smart-money-profile --address <SOLANA_ADDRESS> --short",
         "result": "7d/30d PnL, position details, holdings, swaps and net-worth snapshots. Balance changes include cash flows and are not trading ROI.",
@@ -3784,7 +3784,6 @@
                 "operation": "portfolio.trades",
                 "params": {
                   "address": "So11111111111111111111111111111111111111112",
-                  "after_time": 1790985600,
                   "before_time": 1793577600,
                   "tx_type": "swap",
                   "ui_amount_mode": "raw",
@@ -3798,7 +3797,7 @@
                 "operation": "portfolio.net-worth-history",
                 "params": {
                   "wallet": "So11111111111111111111111111111111111111112",
-                  "time": "1793577600",
+                  "time": "2026-11-02 00:00:00",
                   "type": "1d",
                   "count": 30,
                   "direction": "back",
@@ -3812,7 +3811,8 @@
             "pricingVersion": "bds-2026-10-28-token-data-v1",
             "notes": [
               "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
-              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "By default, trades fetch one page before to; from is not a lower bound for this endpoint. The page may include older trades and is not complete window coverage."
             ]
           }
         }

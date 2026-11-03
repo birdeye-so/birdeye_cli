@@ -46,6 +46,9 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Fixed
 
+- Smart Money Profile and legacy wallet workflows now use one trade time cursor instead of the invalid two-bound request. Net-worth history sends and validates UTC `YYYY-MM-DD HH:mm:ss` values instead of Unix strings.
+- Token Security Check, Token DD, Contract DD and RugCheck Audit now share Solana authority normalization: explicit null authorities mean inactive, missing/malformed values remain unknown, and mint evidence falls back to `ownerAddress` instead of requiring an absent `mintable` field. Reports disclose the interpretation basis.
+
 - Landing and embedded documentation use a green design system with neutral charcoal surfaces, replacing the incorrectly inherited blue console palette.
 - Workflow import tests no longer require an untracked `birdeye-data-skills` checkout.
 - The lockfile includes esbuild packages for all supported platforms, so `npm ci` succeeds from a clean checkout.

@@ -19,7 +19,7 @@ A Solana token address.
 
 ## Use
 
-Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Runs one security request. Treat reported flags as provider observations. Missing or null evidence remains unknown; this does not audit source code, simulate a sale or independently verify LP locks.
+Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Runs one security request. Treat reported flags as provider observations. On Solana, explicit null ownerAddress/freezeAuthority means the authority is inactive; missing or malformed authority remains unknown. Other null evidence stays unknown. This does not audit source code, simulate a sale or independently verify LP locks.
 
 Use cases:
 - Check whether mint, freeze or metadata controls remain active.

@@ -13,6 +13,7 @@ export default defineWorkflow({
   produces: "Holdings, two PnL snapshots and recent trades per wallet. Provider performance is not a copy-trading return estimate.",
   source: "docs/workflows/workflow-smart-money-profile.md",
   window: "duration",
+  planNotes: ["By default, trades fetch one page before to; from is not a lower bound for this endpoint. The page may include older trades and is not complete window coverage."],
   plan(context) {
     const {input: a, add, notes} = context;
     const {scope} = fragments(context);
@@ -28,7 +29,7 @@ export default defineWorkflow({
       add("pnl7", "portfolio.pnl-summary", {...pnl, duration: "7d"}, subjects, "wallet");
       add("pnl30", "portfolio.pnl-summary", {...pnl, duration: "30d"}, subjects, "wallet");
       notes.push("PnL comparison windows may overlap; read each source's duration and accounting method. Copy-trade ROI is unavailable without execution assumptions and complete trade history.");
-    add("trades", "portfolio.trades", {...(a.address ? {address: a.address} : {}), after_time: a.from, before_time: a.to, limit: 100}, subjects);
+    add("trades", "portfolio.trades", {...(a.address ? {address: a.address} : {}), before_time: a.to, limit: 100}, subjects);
     if (full) add("pnl-details", "portfolio.pnl-details", {...pnl, limit: 100}, subjects, "wallet");
     
   },

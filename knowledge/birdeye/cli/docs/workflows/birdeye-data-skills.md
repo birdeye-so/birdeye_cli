@@ -48,6 +48,10 @@ Use `case --help` for flags. Wallet Analysis accepts `--intervals 7d,30d`; leade
 
 In UI, select a group and skill, read Purpose/What you get, then configure the relevant inputs. Workflow overview shows method/path, information, purpose, subject dependencies, per-request CU and editable API parameters. Leaderboard steps identify their individual wallet. Edits are schema-validated; invalid input disables execution. Changing recipe settings resets step edits. Source switching clears incompatible platform/sort settings. Preview and run share normalized input and fixed observation time.
 
+Smart Money Profile requests swaps with `before_time=to` only. The API accepts exactly one of `before_time` or `after_time`, so this page may include trades older than `from`; it is not complete coverage of the chosen period. A step override can switch to `after_time`. Net-worth history sends `time` as `YYYY-MM-DD HH:mm:ss` in UTC, converted from `to`.
+
+Token Security Check, Token DD, Contract DD and RugCheck Audit share authority interpretation. On Solana, `ownerAddress` supplies mint authority evidence when no explicit mint boolean is available. Explicit null `ownerAddress` or `freezeAuthority` means inactive; the all-ones freeze authority also means inactive. Missing or malformed authority stays unknown. Explicit boolean flags take precedence, and each result states its basis.
+
 ## Derived results and deliberate differences
 
 Results contain `data.skillAnalysis.findings` with formula version, source IDs, measurements, missing inputs and calculation basis. UI renders scores, components, styles and wallet rankings, with full evidence available in a disclosure and JSON export. Existing Sources and CU displays remain available.

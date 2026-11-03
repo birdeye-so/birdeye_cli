@@ -118,8 +118,8 @@ export const extendedCatalog = {
   },
   "portfolio.trades": {
     path: "/trader/txs/seek_by_time", cost: 10, paginated: true,
-    description: "One page of wallet trades in a bounded time range; not transfer history",
-    schema: z.object({ address, after_time: timestamp, before_time: timestamp, tx_type: z.enum(["swap", "add", "remove", "all"]).default("swap"), ui_amount_mode: uiMode, ...page(100) }).strict().refine(validPage).refine(p => p.after_time < p.before_time, "after_time must precede before_time"), dataSchema: envelopeList(),
+    description: "One page of wallet trades before or after one time cursor; not transfer history",
+    schema: z.object({ address, after_time: timestamp.optional(), before_time: timestamp.optional(), tx_type: z.enum(["swap", "add", "remove", "all"]).default("swap"), ui_amount_mode: uiMode, ...page(100) }).strict().refine(validPage).refine(p => (p.after_time !== undefined) !== (p.before_time !== undefined), "Provide exactly one of before_time or after_time"), dataSchema: envelopeList(),
   },
   "market.trader-ranking": {
     path: "/trader/gainers-losers", cost: 25, paginated: true,
