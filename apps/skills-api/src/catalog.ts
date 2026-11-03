@@ -3,10 +3,16 @@ import { z } from 'zod';
 
 const slug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/);
 const schema = z.object({
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
   categories: z.array(z.object({id: slug, title: z.string(), description: z.string()})),
   skills: z.array(z.object({id: slug, title: z.string(), category: slug, description: z.string(),
     usage: z.object({input: z.string(), instructions: z.string(), preview_command: z.string(), run_command: z.string(), result: z.string(), install_command: z.string()}).strict(),
+    detail: z.object({
+      core_capabilities: z.array(z.string().min(1)).min(1),
+      just_say_to_your_agent: z.array(z.string().min(1)).min(1),
+      cli_parameters: z.array(z.object({param: z.string().regex(/^--[a-z0-9-]+$/), required: z.boolean(), values: z.string().min(1), default: z.json()}).strict()).min(1),
+      sample_output: z.object({format: z.literal('json'), kind: z.literal('estimate'), description: z.string().min(1), command: z.string().min(1), output: z.record(z.string(), z.json())}).strict(),
+    }).strict(),
   }).strict()),
 }).strict().superRefine((catalog, context) => {
   const categories = new Set(catalog.categories.map(item => item.id));

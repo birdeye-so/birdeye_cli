@@ -38,11 +38,12 @@ export function openSkillStats(path = process.env.SKILL_STATS_DB_PATH || resolve
       list: () => db.prepare('SELECT skill_id, view_count, download_count FROM skill_stats').all() as Counts[],
       increment(skillId: string, action: SkillAction) {
         // No read/modify/write race: insert and increment are one transaction.
-        db.prepare(`INSERT INTO skill_stats (skill_id, view_count, download_count) VALUES (?, ?, ?)
+        return db.prepare(`INSERT INTO skill_stats (skill_id, view_count, download_count) VALUES (?, ?, ?)
           ON CONFLICT(skill_id) DO UPDATE SET
             view_count = skill_stats.view_count + excluded.view_count,
             download_count = skill_stats.download_count + excluded.download_count
-        `).run(skillId, action === 'view' ? 1 : 0, action === 'download' ? 1 : 0);
+          RETURNING skill_id, view_count, download_count
+        `).get(skillId, action === 'view' ? 1 : 0, action === 'download' ? 1 : 0) as Counts;
       },
       close: () => db.close(),
     };

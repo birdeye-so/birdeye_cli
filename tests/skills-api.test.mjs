@@ -7,17 +7,44 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { createResourceCatalog } from '../scripts/lib/catalog.mjs';
+import {loadSkillRuntime} from '../scripts/lib/skill-runtime.mjs';
+import {skillDetails} from '../scripts/lib/skill-details.mjs';
 import { DatabaseSync } from 'node:sqlite';
 
-test('bundled API catalog exposes the current skills and usage only', async () => {
+test('bundled API catalog exposes current skills with complete detail content', async () => {
   const current = await createResourceCatalog();
   const bundled = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
   assert.deepEqual(bundled.categories, current.categories);
-  assert.equal(bundled.schemaVersion, 3);
-  assert.deepEqual(bundled.skills, current.skills.map(({source, ...skill}) => skill));
+  assert.equal(bundled.schemaVersion, 4);
+  assert.deepEqual(bundled.skills.map(({detail, ...skill}) => skill), current.skills.map(({source, ...skill}) => skill));
   assert.equal(bundled.skills.length, 20);
   assert.ok(!('workflows' in bundled));
   assert.ok(bundled.skills.every(skill => skill.usage.run_command && !('steps' in skill) && !('related_skill_ids' in skill)));
+  const runtime = await loadSkillRuntime();
+  const definitions = new Map(runtime.workflowCatalog().map(item => [item.kind, item]));
+  for (const {id, detail} of bundled.skills) {
+    assert.deepEqual(detail, JSON.parse(JSON.stringify(skillDetails(definitions.get(id), runtime))), `Stale detail: ${id}`);
+    assert.ok(detail.core_capabilities.length > 0, id);
+    assert.ok(detail.just_say_to_your_agent.every(prompt => prompt.includes(id)), id);
+    assert.ok(detail.cli_parameters.length > 0, id);
+    assert.equal(new Set(detail.cli_parameters.map(row => row.param)).size, detail.cli_parameters.length, id);
+    for (const row of detail.cli_parameters) {
+      assert.equal(typeof row.required, 'boolean');
+      assert.ok(row.values && Object.hasOwn(row, 'default'));
+    }
+    assert.equal(detail.sample_output.kind, 'estimate');
+    assert.match(detail.sample_output.command, /--estimate-cu/);
+    assert.ok(detail.sample_output.output.estimatedCu > 0, id);
+  }
+  const params = id => new Map(bundled.skills.find(skill => skill.id === id).detail.cli_parameters.map(row => [row.param, row]));
+  assert.equal(params('skill-token-dd-score').get('--dd-mode').default, 'advanced');
+  assert.equal(params('skill-token-dd-score').get('--top-n').default, 50);
+  assert.equal(params('skill-token-stats').has('--from'), false);
+  assert.equal(params('skill-token-security').has('--step-overrides'), false);
+  assert.equal(params('skill-wallet-style').get('--duration').values, '7d | 30d');
+  assert.equal(params('skill-smart-money-leaderboard').get('--wallets').required, true);
+  assert.equal(params('skill-price-surge').get('--limit').default, 10);
+  assert.equal(params('skill-price-surge').get('--mode').default, 'standard');
 });
 
 async function bundle(entry, outfile) {
@@ -50,7 +77,13 @@ test('skill API filters catalog, persists independent counters, and rejects inva
     assert.deepEqual(filtered.map(skill => skill.id), initial.filter(skill => skill.category === 'token').map(skill => skill.id));
     assert.equal((await get('?category=unknown')).status, 400);
     assert.deepEqual((await (await get('?category=guides')).json()).data.list, []);
-    assert.deepEqual(await (await post(view, {skill_id: id})).json(), {code: 0, reason: '', message: 'success', data: null});
+    const viewed = await (await post(view, {skill_id: id})).json();
+    assert.equal(viewed.code, 0);
+    assert.equal(viewed.data.skill_id, id);
+    assert.equal(viewed.data.view_count, 1);
+    assert.equal(viewed.data.download_count, 0);
+    assert.ok(viewed.data.core_capabilities.length);
+    assert.ok(initial.every(skill => !('detail' in skill) && !('sample_output' in skill)));
     assert.equal((await post(download, {skill_id: id})).status, 200);
     assert.equal((await post(stat, {skill_id: id, action: 'view'})).status, 200);
     for (const body of [null, {}, {skill_id: id, action: 'delete'}, {skill_id: 10001, action: 'view'}, {skill_id: id, action: 'view', view_count: 99}]) {
@@ -190,6 +223,22 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'birdeye-token'})).status, 404);
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'skill-token-dd-score'})).status, 200);
     assert.match(skill.usage.install_command, /--skill skill-token-dd-score /);
+    const catalog = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
+    for (const expected of catalog.skills) {
+      const response = await post('/agent/api/skills/view', {skill_id: expected.id});
+      assert.equal(response.status, 200);
+      assert.match(response.headers.get('cache-control'), /no-store/);
+      const {data} = await response.json();
+      for (const [key, value] of Object.entries(expected.detail)) assert.deepEqual(data[key], value);
+      assert.equal(data.skill_id, expected.id);
+      assert.deepEqual(data.usage, expected.usage);
+      assert.equal(data.demo_path, `/${expected.id}`);
+      assert.equal((await fetch(new URL(data.demo_path, base))).status, 200);
+    }
+    for (const [path, payload] of [['download', {}], ['stat', {action: 'view'}]]) {
+      assert.deepEqual(await (await post(`/agent/api/skills/${path}`, {skill_id: skill.skill_id, ...payload})).json(),
+        {code: 0, reason: '', message: 'success', data: null});
+    }
   } finally {
     if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
     if (previousCatalog === undefined) delete process.env.SKILL_CATALOG_PATH; else process.env.SKILL_CATALOG_PATH = previousCatalog;

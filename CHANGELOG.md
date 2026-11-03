@@ -26,6 +26,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Skills API `/agent/api/skills/view` now returns detail content for all 20 current skills: core capabilities, agent prompts, CLI parameter tables, demo paths and reproducible offline cost-preview samples, together with atomically updated view/download counts. Catalog schema v4 adds the detail data; deploy the matching service and catalog together. Skill-list, download and stat response shapes remain unchanged.
+
 - Updated Trade Data and Markets reservations to 12 and 25 CU from current public endpoint documentation. New cohort reports use historical tracker buckets; rolling stats and trader rankings reject historical timestamp inputs.
 
 - Local and browser-only demo skill filters now share Agent API category IDs, titles and public-skill counts; archived workflows are excluded consistently.

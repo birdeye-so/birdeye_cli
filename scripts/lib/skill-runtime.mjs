@@ -3,7 +3,10 @@ import {resolve, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export async function loadSkillRuntime() {
-  const bundle = await build({stdin: {contents: 'export {workflowCatalog, planCase} from "./src/workflows.ts";', resolveDir: root}, bundle: true, write: false, platform: 'node', format: 'esm', logLevel: 'silent'});
+  const bundle = await build({stdin: {contents: `export {workflowCatalog, planCase} from "./src/workflows.ts";
+    export {workflowInputSchema} from "./src/workflows/input.ts";
+    export {priceSurgeSchema} from "./src/price-surge/schema.ts";
+    export {planPriceSurge} from "./src/price-surge/api.ts";`, resolveDir: root}, bundle: true, write: false, platform: 'node', format: 'esm', logLevel: 'silent'});
   return import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`);
 }
 export const sharedSkillLimitations = "Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.";

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "categories": [
     {
       "id": "discover",
@@ -35,6 +35,242 @@
         "run_command": "birdeye-cli price-surge --chain solana --interval 1h --min-market-cap 50000 --max-market-cap 5000000 --short",
         "result": "Ranked candidates, every exclusion reason, bounded advanced evidence, raw source data and CU usage. Unknown risk fields stay null.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-price-surge --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Find surging tokens within a market-cap band and screen liquidity, trading and optional security risks.",
+          "Ranked candidates, every exclusion reason, bounded advanced evidence, raw source data and CU usage. Unknown risk fields stay null."
+        ],
+        "just_say_to_your_agent": [
+          "Use Price Surge Screen (skill-price-surge) to help me: Find surging tokens within a market-cap band and screen liquidity, trading and optional security risks. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana | bsc | base | ethereum | robinhood",
+            "default": "solana"
+          },
+          {
+            "param": "--interval",
+            "required": false,
+            "values": "1m | 5m | 30m | 1h | 2h | 4h | 8h | 24h | 7d | 30d",
+            "default": "1h"
+          },
+          {
+            "param": "--mode",
+            "required": false,
+            "values": "standard | advanced",
+            "default": "standard"
+          },
+          {
+            "param": "--min-price-change",
+            "required": false,
+            "values": "number",
+            "default": 50
+          },
+          {
+            "param": "--min-market-cap",
+            "required": false,
+            "values": "number, >= 0",
+            "default": null
+          },
+          {
+            "param": "--max-market-cap",
+            "required": false,
+            "values": "number, >= 0",
+            "default": null
+          },
+          {
+            "param": "--min-liquidity",
+            "required": false,
+            "values": "number, >= 0",
+            "default": 10000
+          },
+          {
+            "param": "--max-liquidity",
+            "required": false,
+            "values": "number, >= 0",
+            "default": null
+          },
+          {
+            "param": "--min-volume",
+            "required": false,
+            "values": "number, >= 0",
+            "default": 5000
+          },
+          {
+            "param": "--min-trade-count",
+            "required": false,
+            "values": "integer, >= 0, <= 9007199254740991",
+            "default": null
+          },
+          {
+            "param": "--min-holders",
+            "required": false,
+            "values": "integer, >= 0, <= 9007199254740991",
+            "default": null
+          },
+          {
+            "param": "--platform",
+            "required": false,
+            "values": "Text",
+            "default": null
+          },
+          {
+            "param": "--sort-by",
+            "required": false,
+            "values": "price_change | volume | market_cap | liquidity | trade_count | holder",
+            "default": "price_change"
+          },
+          {
+            "param": "--sort-type",
+            "required": false,
+            "values": "asc | desc",
+            "default": "desc"
+          },
+          {
+            "param": "--limit",
+            "required": false,
+            "values": "integer, >= 1, <= 100",
+            "default": 10
+          },
+          {
+            "param": "--offset",
+            "required": false,
+            "values": "integer, >= 0, <= 10000",
+            "default": 0
+          },
+          {
+            "param": "--top",
+            "required": false,
+            "values": "integer, >= 0, <= 100",
+            "default": 10
+          },
+          {
+            "param": "--with-security",
+            "required": false,
+            "values": "Flag; requires --mode advanced",
+            "default": false
+          },
+          {
+            "param": "--no-auto-filter",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--no-holder-health",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--max-liq-mcap-ratio",
+            "required": false,
+            "values": "number, >= 0; minimum liquidity / market cap despite legacy flag name",
+            "default": 0.005
+          },
+          {
+            "param": "--max-trades-per-wallet",
+            "required": false,
+            "values": "number, >= 0",
+            "default": 150
+          },
+          {
+            "param": "--max-dev-hold-pct",
+            "required": false,
+            "values": "number, >= 0, <= 100",
+            "default": null
+          },
+          {
+            "param": "--max-top10-pct",
+            "required": false,
+            "values": "number, >= 0, <= 100",
+            "default": null
+          },
+          {
+            "param": "--min-kol-buyers",
+            "required": false,
+            "values": "integer, >= 0, <= 9007199254740991",
+            "default": null
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli price-surge --estimate-cu --format json",
+          "output": {
+            "kind": "skill-price-surge",
+            "params": {
+              "chain": "solana",
+              "interval": "1h",
+              "mode": "standard",
+              "min_price_change": 50,
+              "min_liquidity": 10000,
+              "min_volume": 5000,
+              "sort_by": "price_change",
+              "sort_type": "desc",
+              "limit": 10,
+              "offset": 0,
+              "top": 10,
+              "with_security": false,
+              "no_auto_filter": false,
+              "no_holder_health": false,
+              "max_liq_mcap_ratio": 0.005,
+              "max_trades_per_wallet": 150
+            },
+            "steps": [
+              {
+                "id": "tokens",
+                "operation": "market.token-list",
+                "params": {
+                  "sort_by": "price_change_1h_percent",
+                  "sort_type": "desc",
+                  "min_liquidity": 10000,
+                  "min_volume_1h_usd": 5000,
+                  "min_price_change_1h_percent": 50,
+                  "limit": 10,
+                  "offset": 0
+                },
+                "cost": 50
+              }
+            ],
+            "notes": [
+              "One token-list page; exclusions are not backfilled. Hydration covers at most min(top, limit) first-pass survivors in provider order.",
+              "CU estimates exclude retries and are not confirmed billing. Proxies are screening signals, not proof of a rug or wash trading.",
+              "Unknown fields never become zero or a passed security check. Unhydrated rows have no advanced risk assessment."
+            ],
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "estimatedCu": 50,
+            "maxRequests": 1
+          }
+        }
       }
     },
     {
@@ -49,6 +285,188 @@
         "run_command": "birdeye-cli case skill-launchpad-trending --source pump_dot_fun --stage near-graduation --min-progress 80 --scan-limit 10 --short",
         "result": "A ranked launchpad page with launch stage, progress, market data and observation sources; full depth adds metadata for a bounded shortlist.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-launchpad-trending --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Discover Solana launchpad tokens by trading activity, liquidity and launch stage. Use for newly created, near-graduation or graduated token shortlists.",
+          "A ranked launchpad page with launch stage, progress, market data and observation sources; full depth adds metadata for a bounded shortlist."
+        ],
+        "just_say_to_your_agent": [
+          "Use Token Launchpad Trending (skill-launchpad-trending) to help me: Find Pump.fun tokens nearing graduation, ranked by 24h USD volume. Preview CU before running.",
+          "Use Token Launchpad Trending (skill-launchpad-trending) to help me: Compare newly created and graduated launchpad tokens without conflating creation with listing. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--source",
+            "required": false,
+            "values": "all | pump_dot_fun | moonshot | raydium_launchlab | meteora_dynamic_bonding_curve",
+            "default": "all"
+          },
+          {
+            "param": "--stage",
+            "required": false,
+            "values": "newly-listed | newly-created | near-graduation | graduated",
+            "default": "newly-created"
+          },
+          {
+            "param": "--min-progress",
+            "required": false,
+            "values": "number, > 0, < 100; required when --stage near-graduation",
+            "default": null
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--launch-sort",
+            "required": false,
+            "values": "volume_24h_usd | liquidity | market_cap | creation_time | graduated_time | progress_percent",
+            "default": "volume_24h_usd"
+          },
+          {
+            "param": "--min-liquidity",
+            "required": false,
+            "values": "number, >= 0",
+            "default": null
+          },
+          {
+            "param": "--depth",
+            "required": false,
+            "values": "core | full",
+            "default": "core"
+          },
+          {
+            "param": "--limit",
+            "required": false,
+            "values": "integer, >= 1, <= 5",
+            "default": 3
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 1 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-launchpad-trending --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-launchpad-trending",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-launchpad-trending",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "candidates",
+                "operation": "market.meme-list",
+                "params": {
+                  "source": "all",
+                  "sort_by": "volume_24h_usd",
+                  "sort_type": "desc",
+                  "graduated": false,
+                  "min_creation_time": 1793491200,
+                  "max_creation_time": 1793577600,
+                  "limit": 50,
+                  "offset": 0
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Ranks describe the fetched launch page; newly-listed rows are additionally filtered by their liquidityAddedAt timestamp."
+            ]
+          }
+        }
       }
     },
     {
@@ -63,6 +481,127 @@
         "run_command": "birdeye-cli case skill-token-security --address <SOLANA_ADDRESS> --short",
         "result": "Security observations with authority evidence, transfer-fee fields, provider-reported honeypot/LP status where available, and unknown checks.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-security --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Inspect a Solana token's contract controls and reported security flags. Use for a focused checklist before deeper token research.",
+          "Security observations with authority evidence, transfer-fee fields, provider-reported honeypot/LP status where available, and unknown checks."
+        ],
+        "just_say_to_your_agent": [
+          "Use Token Security Check (skill-token-security) to help me: Check whether mint, freeze or metadata controls remain active. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use Token Security Check (skill-token-security) to help me: Inspect reported transfer restrictions without paying for a complete DD report. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-token-security --address So11111111111111111111111111111111111111112 --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-token-security",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-token-security",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "security",
+                "operation": "token.security",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -77,6 +616,147 @@
         "run_command": "birdeye-cli case skill-token-stats --address <SOLANA_ADDRESS> --stats-frames 1h,24h --short",
         "result": "A token snapshot plus per-window USD volume, price change, trades and active wallets, preserving units and missing fields.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-stats --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Summarize a Solana token's valuation, liquidity, holders and buying/selling activity. Use for a market snapshot across supported rolling windows.",
+          "A token snapshot plus per-window USD volume, price change, trades and active wallets, preserving units and missing fields."
+        ],
+        "just_say_to_your_agent": [
+          "Use Token Stats (skill-token-stats) to help me: Compare a token's last hour of activity with its last 24 hours. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use Token Stats (skill-token-stats) to help me: Check market cap, FDV and liquidity before choosing a deeper analysis. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--stats-frames",
+            "required": false,
+            "values": "Comma-separated 1m | 5m | 30m | 1h | 2h | 4h | 8h | 24h (1–8 items)",
+            "default": [
+              "1h",
+              "24h"
+            ]
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-token-stats --address So11111111111111111111111111111111111111112 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-token-stats",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-token-stats",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3
+            },
+            "steps": [
+              {
+                "id": "overview",
+                "operation": "token.overview",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 18
+              },
+              {
+                "id": "activity",
+                "operation": "token.trade-data",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "frames": [
+                    "1h",
+                    "24h"
+                  ],
+                  "ui_amount_mode": "raw"
+                },
+                "cost": 12
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 2,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -91,6 +771,145 @@
         "run_command": "birdeye-cli case skill-top-holder-analysis --address <SOLANA_ADDRESS> --top-n 10 --short",
         "result": "Top wallet holdings, provider-reported supply shares, top-1/top-10 concentration when covered, and optional cohort context.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-top-holder-analysis --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Inspect the largest holders of a Solana token and their share of supply. Use to investigate ownership concentration and labeled holder groups.",
+          "Top wallet holdings, provider-reported supply shares, top-1/top-10 concentration when covered, and optional cohort context."
+        ],
+        "just_say_to_your_agent": [
+          "Use Top Holder Analysis (skill-top-holder-analysis) to help me: Find the largest holders and how much supply the top ten control. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use Top Holder Analysis (skill-top-holder-analysis) to help me: Add labeled cohort context when investigating concentrated ownership. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--top-n",
+            "required": false,
+            "values": "integer, >= 10, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--depth",
+            "required": false,
+            "values": "core | full",
+            "default": "core"
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-top-holder-analysis --address So11111111111111111111111111111111111111112 --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-top-holder-analysis",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-top-holder-analysis",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "distribution",
+                "operation": "token.holder-distribution",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "address_type": "wallet",
+                  "mode": "top",
+                  "top_n": 50,
+                  "include_list": true,
+                  "limit": 50,
+                  "offset": 0
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -105,6 +924,150 @@
         "run_command": "birdeye-cli case skill-top-trader-analysis --address <SOLANA_ADDRESS> --trader-window 24h --trader-sort realized_pnl --scan-limit 10 --short",
         "result": "A ranked trader page with buys, sells, token-specific realized/unrealized PnL, current holding fields and source-defined window.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-top-trader-analysis --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Rank a Solana token's traders by USD volume, trade count, PnL or remaining holdings. Use to inspect which wallets drove activity in a chosen window.",
+          "A ranked trader page with buys, sells, token-specific realized/unrealized PnL, current holding fields and source-defined window."
+        ],
+        "just_say_to_your_agent": [
+          "Use Top Trader Analysis (skill-top-trader-analysis) to help me: Find the most profitable traders of one token over 24h. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use Top Trader Analysis (skill-top-trader-analysis) to help me: Compare active traders with wallets that still hold a position. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--trader-window",
+            "required": false,
+            "values": "30m | 1h | 2h | 4h | 6h | 8h | 12h | 24h | 2d | 3d | 7d | 14d | 30d | 60d | 90d | all_time",
+            "default": "24h"
+          },
+          {
+            "param": "--trader-sort",
+            "required": false,
+            "values": "volume_usd | trade | total_pnl | realized_pnl | unrealized_pnl | hold_volume",
+            "default": "volume_usd"
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50; effective page capped at 10",
+            "default": 50
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-top-trader-analysis --address So11111111111111111111111111111111111111112 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-top-trader-analysis",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-top-trader-analysis",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3
+            },
+            "steps": [
+              {
+                "id": "traders",
+                "operation": "token.top-traders",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "time_frame": "24h",
+                  "sort_by": "volume_usd",
+                  "sort_type": "desc",
+                  "ui_amount_mode": "raw",
+                  "get_holders_networth": false,
+                  "limit": 10,
+                  "offset": 0
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -119,6 +1082,177 @@
         "run_command": "birdeye-cli case skill-lp-analysis --address <SOLANA_ADDRESS> --scan-limit 10 --limit 3 --short",
         "result": "Pool liquidity and activity, shares within the fetched pool page, bounded pair details and optional token-level liquidity history.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-lp-analysis --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Analyze a Solana token's liquidity pools, DEX activity and liquidity history. Use to locate thin liquidity or concentration across observed pools.",
+          "Pool liquidity and activity, shares within the fetched pool page, bounded pair details and optional token-level liquidity history."
+        ],
+        "just_say_to_your_agent": [
+          "Use LP Analysis (skill-lp-analysis) to help me: Identify which pools hold most of a token's observed liquidity. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use LP Analysis (skill-lp-analysis) to help me: Compare current pool activity with token-level liquidity changes. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50; effective page capped at 20",
+            "default": 50
+          },
+          {
+            "param": "--limit",
+            "required": false,
+            "values": "integer, >= 1, <= 5",
+            "default": 3
+          },
+          {
+            "param": "--depth",
+            "required": false,
+            "values": "core | full",
+            "default": "core"
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 1 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-lp-analysis --address So11111111111111111111111111111111111111112 --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-lp-analysis",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-lp-analysis",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "markets",
+                "operation": "token.markets",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "sort_by": "liquidity",
+                  "sort_type": "desc",
+                  "limit": 20,
+                  "offset": 0
+                },
+                "cost": 25
+              },
+              {
+                "id": "pairs",
+                "operation": "market.pair-overview",
+                "params": {
+                  "ui_amount_mode": "raw"
+                },
+                "cost": 15,
+                "subjects": {
+                  "from": [
+                    "markets"
+                  ],
+                  "kind": "pair",
+                  "take": 3
+                },
+                "subjectKey": "address"
+              }
+            ],
+            "estimatedCu": 70,
+            "maxRequests": 4,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -133,6 +1267,183 @@
         "run_command": "birdeye-cli case skill-smart-money-holders --address <SOLANA_ADDRESS> --scan-limit 10 --short",
         "result": "Smart-trader cohort holdings and a bounded wallet-position page; full depth adds bucketed activity and sampled wallet evidence.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-smart-money-holders --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Inspect Birdeye-labeled smart traders holding a Solana token. Use to examine their supply exposure and optionally their observed buying and selling over time.",
+          "Smart-trader cohort holdings and a bounded wallet-position page; full depth adds bucketed activity and sampled wallet evidence."
+        ],
+        "just_say_to_your_agent": [
+          "Use Smart Money Holder Analysis (skill-smart-money-holders) to help me: Find smart-trader wallets still holding a token and their supply exposure. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use Smart Money Holder Analysis (skill-smart-money-holders) to help me: Inspect a bounded activity window separately from current positions. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--include-exited",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--depth",
+            "required": false,
+            "values": "core | full",
+            "default": "core"
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 1 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--tracker-frame",
+            "required": false,
+            "values": "1m | 5m | 15m | 30m | 1h | 4h | 1D",
+            "default": "1h"
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-smart-money-holders --address So11111111111111111111111111111111111111112 --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-smart-money-holders",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-smart-money-holders",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "profile",
+                "operation": "token.holder-profile",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "interval": "1h",
+                  "ui_amount_mode": "raw",
+                  "include_zero_balance": false
+                },
+                "cost": 30
+              },
+              {
+                "id": "positions",
+                "operation": "token.holder-positions",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "labels": [
+                    "smart_trader"
+                  ],
+                  "sort_by": "amount",
+                  "order_type": "desc",
+                  "ui_amount_mode": "raw",
+                  "include_zero_balance": false,
+                  "limit": 50,
+                  "offset": 0
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 60,
+            "maxRequests": 2,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -147,6 +1458,171 @@
         "run_command": "birdeye-cli case skill-kol-signal --address <SOLANA_ADDRESS> --depth full --tracker-frame 1h --short",
         "result": "KOL buy/sell USD totals and net flow from returned buckets, an explained dominance label, and optional sampled wallet-level activity.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-kol-signal --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Summarize observed buying and selling by Birdeye-labeled KOL wallets for a Solana token. Use to compare cohort buy/sell pressure within a bounded time window.",
+          "KOL buy/sell USD totals and net flow from returned buckets, an explained dominance label, and optional sampled wallet-level activity."
+        ],
+        "just_say_to_your_agent": [
+          "Use KOL Buy/Sell Signal (skill-kol-signal) to help me: See whether observed KOL buying or selling dominated over the last day. Use token <SOLANA_ADDRESS>. Preview CU before running.",
+          "Use KOL Buy/Sell Signal (skill-kol-signal) to help me: Investigate which sampled KOL wallets traded in a historical time window. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 1 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--tracker-frame",
+            "required": false,
+            "values": "1m | 5m | 15m | 30m | 1h | 4h | 1D",
+            "default": "1h"
+          },
+          {
+            "param": "--signal-threshold-usd",
+            "required": false,
+            "values": "number, >= 0",
+            "default": 0
+          },
+          {
+            "param": "--depth",
+            "required": false,
+            "values": "core | full",
+            "default": "core"
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-kol-signal --address So11111111111111111111111111111111111111112 --from 1793491200 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-kol-signal",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-kol-signal",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1793491200
+            },
+            "steps": [
+              {
+                "id": "timeline",
+                "operation": "token.tags-tracker",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "time_from": 1793491200,
+                  "time_to": 1793577600,
+                  "time_frame": "1h",
+                  "tags": [
+                    "kol"
+                  ],
+                  "top_10_holder": false,
+                  "include_tag_combinations": false
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 30,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders."
+            ]
+          }
+        }
       }
     },
     {
@@ -161,6 +1637,269 @@
         "run_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short",
         "result": "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-token-dd-score --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.",
+          "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU."
+        ],
+        "just_say_to_your_agent": [
+          "Use Token DD (skill-token-dd-score) to help me: Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address; optional with --rescore",
+            "default": null
+          },
+          {
+            "param": "--dd-mode",
+            "required": false,
+            "values": "standard | advanced",
+            "default": "advanced"
+          },
+          {
+            "param": "--top-n",
+            "required": false,
+            "values": "integer, >= 10, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--liq-resolution",
+            "required": false,
+            "values": "1m | 5m | 15m | 30m | 1h | 4h | 1D",
+            "default": "15m"
+          },
+          {
+            "param": "--liq-candles",
+            "required": false,
+            "values": "integer, >= 1, <= 100",
+            "default": 96
+          },
+          {
+            "param": "--window-days",
+            "required": false,
+            "values": "integer, >= 1, <= 30",
+            "default": 7
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 7 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--rescore",
+            "required": false,
+            "values": "Saved run ID, full JSON path or base64:JSON; zero API calls; cannot combine with --estimate-cu",
+            "default": null
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-token-dd-score --address So11111111111111111111111111111111111111112 --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-token-dd-score",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-token-dd-score",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "overview",
+                "operation": "token.overview",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "includes": "money_flow",
+                  "frames": [
+                    "1m",
+                    "5m",
+                    "15m",
+                    "30m",
+                    "1h",
+                    "2h",
+                    "4h",
+                    "24h"
+                  ]
+                },
+                "cost": 21
+              },
+              {
+                "id": "security",
+                "operation": "token.security",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 30
+              },
+              {
+                "id": "distribution",
+                "operation": "token.holder-distribution",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "address_type": "wallet",
+                  "mode": "top",
+                  "top_n": 50,
+                  "include_list": true,
+                  "limit": 50,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "profile",
+                "operation": "token.holder-profile",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "interval": "1h",
+                  "ui_amount_mode": "raw",
+                  "include_zero_balance": false
+                },
+                "cost": 30
+              },
+              {
+                "id": "holders",
+                "operation": "token.holders",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "offset": 0,
+                  "mode": "wallet",
+                  "get_holder_infos": true
+                },
+                "cost": 30
+              },
+              {
+                "id": "flow",
+                "operation": "token.money-flow",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "wallet_tags": [
+                    "smart_money",
+                    "whales",
+                    "kol"
+                  ],
+                  "frames": [
+                    "5m",
+                    "1h",
+                    "4h",
+                    "24h"
+                  ]
+                },
+                "cost": 10
+              },
+              {
+                "id": "liquidity",
+                "operation": "token.liquidity-ohlc",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "resolution": "15m",
+                  "time": 1793577600,
+                  "direction": "back",
+                  "count": 96
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 181,
+            "maxRequests": 7,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Reconstructed from the supplied Token DD Score specification. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "Reconstructed from the supplied Token DD Score specification, not original Python source. Default weights only; undefined pace, LST and canonical-mint checks are not invented. Scores across modes or different coverage are not comparable. OHLC pricing is provisional."
+            ]
+          }
+        }
       }
     },
     {
@@ -175,6 +1914,159 @@
         "run_command": "birdeye-cli case skill-trending-list --short",
         "result": "A ranked token page. Choose V3 token list or native trending; sorting options follow the selected API.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-trending-list --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Discover tokens by activity, liquidity or market size, optionally within a launch platform.",
+          "A ranked token page. Choose V3 token list or native trending; sorting options follow the selected API."
+        ],
+        "just_say_to_your_agent": [
+          "Use Trending List (skill-trending-list) to help me: Discover tokens by activity, liquidity or market size, optionally within a launch platform. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--list-source",
+            "required": false,
+            "values": "v3-list | trending",
+            "default": "v3-list"
+          },
+          {
+            "param": "--sort-by",
+            "required": false,
+            "values": "volume | liquidity | market_cap | holder | trade_count | rank",
+            "default": "volume"
+          },
+          {
+            "param": "--platform",
+            "required": false,
+            "values": "Text",
+            "default": null
+          },
+          {
+            "param": "--interval",
+            "required": false,
+            "values": "1h | 4h | 24h",
+            "default": "24h"
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-trending-list --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-trending-list",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-trending-list",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "tokens",
+                "operation": "market.token-list",
+                "params": {
+                  "sort_by": "volume_24h_usd",
+                  "sort_type": "desc",
+                  "limit": 50,
+                  "offset": 0
+                },
+                "cost": 50
+              }
+            ],
+            "estimatedCu": 50,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     },
     {
@@ -189,6 +2081,184 @@
         "run_command": "birdeye-cli case skill-smart-wallets --short",
         "result": "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-smart-wallets --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.",
+          "Token → top traders → deduplicated wallets. Standard adds PnL; deep adds holdings and per-token PnL. No overlapping token-level PnL is summed."
+        ],
+        "just_say_to_your_agent": [
+          "Use Smart Wallets (skill-smart-wallets) to help me: Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--skill-depth",
+            "required": false,
+            "values": "fast | standard | deep",
+            "default": "fast"
+          },
+          {
+            "param": "--scan-limit",
+            "required": false,
+            "values": "integer, >= 1, <= 50",
+            "default": 50
+          },
+          {
+            "param": "--limit",
+            "required": false,
+            "values": "integer, >= 1, <= 5",
+            "default": 3
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "24h | 7d | 30d | 90d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-smart-wallets --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-smart-wallets",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-smart-wallets",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "smart-tokens",
+                "operation": "market.smart-money",
+                "params": {
+                  "interval": "1d",
+                  "trader_style": "all",
+                  "sort_by": "smart_traders_no",
+                  "sort_type": "desc",
+                  "limit": 20,
+                  "offset": 0
+                },
+                "cost": 20
+              },
+              {
+                "id": "traders",
+                "operation": "token.top-traders",
+                "params": {
+                  "time_frame": "30d",
+                  "sort_by": "realized_pnl",
+                  "sort_type": "desc",
+                  "ui_amount_mode": "raw",
+                  "get_holders_networth": false,
+                  "limit": 10,
+                  "offset": 0
+                },
+                "cost": 30,
+                "subjects": {
+                  "from": [
+                    "smart-tokens"
+                  ],
+                  "kind": "token",
+                  "take": 3
+                },
+                "subjectKey": "address"
+              }
+            ],
+            "estimatedCu": 110,
+            "maxRequests": 4,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "Wallets are deduplicated in provider order across selected token pages. Per-token top-trader totals are not a wallet-wide win rate or PnL."
+            ]
+          }
+        }
       }
     },
     {
@@ -203,6 +2273,197 @@
         "run_command": "birdeye-cli case skill-contract-dd --address <SOLANA_ADDRESS> --short",
         "result": "Security checklist, holder distribution and optional candlestick analysis. Unknown controls stay unknown; price action cannot establish contract safety.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-contract-dd --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Review contract controls, ownership concentration and price behavior together.",
+          "Security checklist, holder distribution and optional candlestick analysis. Unknown controls stay unknown; price action cannot establish contract safety."
+        ],
+        "just_say_to_your_agent": [
+          "Use Contract DD (skill-contract-dd) to help me: Review contract controls, ownership concentration and price behavior together. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--skip-kline",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--resolution",
+            "required": false,
+            "values": "1m | 5m | 15m | 30m | 1H | 4H | 1D",
+            "default": "15m"
+          },
+          {
+            "param": "--window-days",
+            "required": false,
+            "values": "integer, >= 1, <= 30",
+            "default": 7
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 7 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-contract-dd --address So11111111111111111111111111111111111111112 --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-contract-dd",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-contract-dd",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "overview",
+                "operation": "token.overview",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 18
+              },
+              {
+                "id": "security",
+                "operation": "token.security",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 30
+              },
+              {
+                "id": "distribution",
+                "operation": "token.holder-distribution",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "address_type": "wallet",
+                  "mode": "top",
+                  "top_n": 10,
+                  "include_list": true,
+                  "limit": 10,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "candles",
+                "operation": "market.ohlcv",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "type": "15m",
+                  "time_from": 1792972800,
+                  "time_to": 1793577600
+                },
+                "cost": 100
+              }
+            ],
+            "estimatedCu": 178,
+            "maxRequests": 4,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "No Safe tier or composite safety score is produced: absent mint, honeypot or LP-lock evidence must not be treated as a passed check."
+            ]
+          }
+        }
       }
     },
     {
@@ -217,6 +2478,194 @@
         "run_command": "birdeye-cli case skill-rugcheck-audit --address <SOLANA_ADDRESS> --short",
         "result": "Birdeye observations, holder groups and historical liquidity snapshots. This is not a RugCheck.org integration; unavailable honeypot/LP-lock checks are explicit.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-rugcheck-audit --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Review contract, holder and actual liquidity-history evidence for potential risk.",
+          "Birdeye observations, holder groups and historical liquidity snapshots. This is not a RugCheck.org integration; unavailable honeypot/LP-lock checks are explicit."
+        ],
+        "just_say_to_your_agent": [
+          "Use RugCheck Audit (skill-rugcheck-audit) to help me: Review contract, holder and actual liquidity-history evidence for potential risk. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--window-days",
+            "required": false,
+            "values": "integer, >= 1, <= 30",
+            "default": 7
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 7 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-rugcheck-audit --address So11111111111111111111111111111111111111112 --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-rugcheck-audit",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-rugcheck-audit",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "overview",
+                "operation": "token.overview",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 18
+              },
+              {
+                "id": "security",
+                "operation": "token.security",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 30
+              },
+              {
+                "id": "holders",
+                "operation": "token.holders",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "limit": 20,
+                  "offset": 0,
+                  "mode": "wallet"
+                },
+                "cost": 30
+              },
+              {
+                "id": "profile",
+                "operation": "token.holder-profile",
+                "params": {
+                  "token_address": "So11111111111111111111111111111111111111112",
+                  "interval": "1h",
+                  "ui_amount_mode": "raw",
+                  "include_zero_balance": false
+                },
+                "cost": 30
+              },
+              {
+                "id": "liquidity",
+                "operation": "token.liquidity-history",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "resolution": "4h",
+                  "time": 1793577600,
+                  "direction": "back",
+                  "count": 42
+                },
+                "cost": 150
+              }
+            ],
+            "estimatedCu": 258,
+            "maxRequests": 5,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "Liquidity history uses measured liquidity_usd snapshots. Price falls are never substituted for liquidity withdrawal; no undocumented risk-history endpoints are probed."
+            ]
+          }
+        }
       }
     },
     {
@@ -231,6 +2680,160 @@
         "run_command": "birdeye-cli case skill-kline-pattern --address <SOLANA_ADDRESS> --short",
         "result": "Pattern, heuristic score and supporting measurements from closed candles. Thin or invalid data produces an unavailable result.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-kline-pattern --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules.",
+          "Pattern, heuristic score and supporting measurements from closed candles. Thin or invalid data produces an unavailable result."
+        ],
+        "just_say_to_your_agent": [
+          "Use Kline Pattern (skill-kline-pattern) to help me: Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules. Use token <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana token address",
+            "default": null
+          },
+          {
+            "param": "--resolution",
+            "required": false,
+            "values": "1m | 5m | 15m | 30m | 1H | 4H | 1D",
+            "default": "15m"
+          },
+          {
+            "param": "--window-days",
+            "required": false,
+            "values": "integer, >= 1, <= 30",
+            "default": 7
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 7 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-kline-pattern --address So11111111111111111111111111111111111111112 --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-kline-pattern",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-kline-pattern",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "candles",
+                "operation": "market.ohlcv",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "type": "15m",
+                  "time_from": 1792972800,
+                  "time_to": 1793577600
+                },
+                "cost": 100
+              }
+            ],
+            "estimatedCu": 100,
+            "maxRequests": 1,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     },
     {
@@ -245,6 +2848,223 @@
         "run_command": "birdeye-cli case skill-wallet-score --address <SOLANA_ADDRESS> --short",
         "result": "A versioned alpha heuristic with component breakdown and missing-data checks. Scores use fetched positions and are not a copy-trading return forecast.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-wallet-score --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows.",
+          "A versioned alpha heuristic with component breakdown and missing-data checks. Scores use fetched positions and are not a copy-trading return forecast."
+        ],
+        "just_say_to_your_agent": [
+          "Use Wallet Score (skill-wallet-score) to help me: Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows. Use wallet <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana wallet address",
+            "default": null
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "30d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--skip-positions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-portfolio",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-first-funded",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-wallet-score --address So11111111111111111111111111111111111111112 --from 1790985600 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-wallet-score",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-wallet-score",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1790985600
+            },
+            "steps": [
+              {
+                "id": "pnl30",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl90",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "90d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl24",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "24h",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-details",
+                "operation": "portfolio.pnl-details",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac",
+                  "sort_by": "last_trade",
+                  "sort_type": "desc",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "holdings",
+                "operation": "portfolio.holdings",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "offset": 0,
+                  "sort_type": "desc"
+                },
+                "cost": 20
+              },
+              {
+                "id": "first-funded",
+                "operation": "portfolio.first-funded",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 40
+              }
+            ],
+            "estimatedCu": 150,
+            "maxRequests": 6,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions.",
+              "Alpha uses fixed 30d/90d windows and a 30d position page. Editing these scopes makes the alpha comparison unavailable. First funding measures provenance, not proven wallet age."
+            ]
+          }
+        }
       }
     },
     {
@@ -259,6 +3079,199 @@
         "run_command": "birdeye-cli case skill-wallet-style --address <SOLANA_ADDRESS> --short",
         "result": "Frequency × PnL classification with sample size and per-token loss share. Transaction and first-funding evidence are optional.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-wallet-style --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Describe how often a wallet trades and how profitable those trades were over a fixed period.",
+          "Frequency × PnL classification with sample size and per-token loss share. Transaction and first-funding evidence are optional."
+        ],
+        "just_say_to_your_agent": [
+          "Use Wallet Style (skill-wallet-style) to help me: Describe how often a wallet trades and how profitable those trades were over a fixed period. Use wallet <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana wallet address",
+            "default": null
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "7d | 30d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--skip-positions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-transactions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-first-funded",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-wallet-style --address So11111111111111111111111111111111111111112 --from 1790985600 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-wallet-style",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-wallet-style",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1790985600
+            },
+            "steps": [
+              {
+                "id": "pnl",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-details",
+                "operation": "portfolio.pnl-details",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac",
+                  "sort_by": "last_trade",
+                  "sort_type": "desc",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "first-funded",
+                "operation": "portfolio.first-funded",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 40
+              },
+              {
+                "id": "transactions",
+                "operation": "portfolio.transactions",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "ui_amount_mode": "raw"
+                },
+                "cost": 50
+              }
+            ],
+            "estimatedCu": 140,
+            "maxRequests": 4,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     },
     {
@@ -273,6 +3286,272 @@
         "run_command": "birdeye-cli case skill-wallet-analysis --address <SOLANA_ADDRESS> --short",
         "result": "Selected PnL windows, per-token PnL, optional holdings, transactions and first funding. Overlapping periods are not added together.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-wallet-analysis --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Compare wallet PnL across several periods and inspect holdings, positions and recent activity.",
+          "Selected PnL windows, per-token PnL, optional holdings, transactions and first funding. Overlapping periods are not added together."
+        ],
+        "just_say_to_your_agent": [
+          "Use Wallet Analysis (skill-wallet-analysis) to help me: Compare wallet PnL across several periods and inspect holdings, positions and recent activity. Use wallet <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana wallet address",
+            "default": null
+          },
+          {
+            "param": "--intervals",
+            "required": false,
+            "values": "Comma-separated 24h | 7d | 30d | 90d | all (1–5 items)",
+            "default": [
+              "24h",
+              "7d",
+              "30d",
+              "90d",
+              "all"
+            ]
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "24h | 7d | 30d | 90d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--skip-positions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-portfolio",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-transactions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-first-funded",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-wallet-analysis --address So11111111111111111111111111111111111111112 --from 1790985600 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-wallet-analysis",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-wallet-analysis",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1790985600
+            },
+            "steps": [
+              {
+                "id": "pnl-24h",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "24h",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-7d",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "7d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-30d",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-90d",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "90d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-all",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "all",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-details",
+                "operation": "portfolio.pnl-details",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac",
+                  "sort_by": "last_trade",
+                  "sort_type": "desc",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "holdings",
+                "operation": "portfolio.holdings",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "offset": 0,
+                  "sort_type": "desc"
+                },
+                "cost": 20
+              },
+              {
+                "id": "first-funded",
+                "operation": "portfolio.first-funded",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 40
+              },
+              {
+                "id": "transactions",
+                "operation": "portfolio.transactions",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "ui_amount_mode": "raw"
+                },
+                "cost": 50
+              }
+            ],
+            "estimatedCu": 240,
+            "maxRequests": 9,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     },
     {
@@ -287,6 +3566,256 @@
         "run_command": "birdeye-cli case skill-smart-money-profile --address <SOLANA_ADDRESS> --short",
         "result": "7d/30d PnL, position details, holdings, swaps and net-worth snapshots. Balance changes include cash flows and are not trading ROI.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-smart-money-profile --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Combine short and monthly performance with position, trade and net-worth history for one wallet.",
+          "7d/30d PnL, position details, holdings, swaps and net-worth snapshots. Balance changes include cash flows and are not trading ROI."
+        ],
+        "just_say_to_your_agent": [
+          "Use Smart Money Profile (skill-smart-money-profile) to help me: Combine short and monthly performance with position, trade and net-worth history for one wallet. Use wallet <SOLANA_ADDRESS>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--address",
+            "required": true,
+            "values": "Solana wallet address",
+            "default": null
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "24h | 7d | 30d | 90d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--from",
+            "required": false,
+            "values": "Unix seconds; provide together with --to",
+            "default": "--to minus 30 days by default"
+          },
+          {
+            "param": "--to",
+            "required": false,
+            "values": "Unix seconds; provide together with --from",
+            "default": "Current time"
+          },
+          {
+            "param": "--skip-positions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-portfolio",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-transactions",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--skip-first-funded",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-smart-money-profile --address So11111111111111111111111111111111111111112 --from 1790985600 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-smart-money-profile",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-smart-money-profile",
+              "address": "So11111111111111111111111111111111111111112",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1790985600
+            },
+            "steps": [
+              {
+                "id": "pnl7",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "7d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl30",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "pnl-details",
+                "operation": "portfolio.pnl-details",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac",
+                  "sort_by": "last_trade",
+                  "sort_type": "desc",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 30
+              },
+              {
+                "id": "holdings",
+                "operation": "portfolio.holdings",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "limit": 100,
+                  "offset": 0,
+                  "sort_type": "desc"
+                },
+                "cost": 20
+              },
+              {
+                "id": "first-funded",
+                "operation": "portfolio.first-funded",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112"
+                },
+                "cost": 40
+              },
+              {
+                "id": "trades",
+                "operation": "portfolio.trades",
+                "params": {
+                  "address": "So11111111111111111111111111111111111111112",
+                  "after_time": 1790985600,
+                  "before_time": 1793577600,
+                  "tx_type": "swap",
+                  "ui_amount_mode": "raw",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 10
+              },
+              {
+                "id": "net-worth-history",
+                "operation": "portfolio.net-worth-history",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "time": "1793577600",
+                  "type": "1d",
+                  "count": 30,
+                  "direction": "back",
+                  "sort_type": "desc"
+                },
+                "cost": 50
+              }
+            ],
+            "estimatedCu": 190,
+            "maxRequests": 7,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     },
     {
@@ -301,6 +3830,176 @@
         "run_command": "birdeye-cli case skill-smart-money-leaderboard --wallets <WALLET_1,WALLET_2> --short",
         "result": "7d/30d performance and per-token evidence per wallet, ranked with higher PnL scoring higher. Missing metrics remain unranked.",
         "install_command": "npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-smart-money-leaderboard --global"
+      },
+      "detail": {
+        "core_capabilities": [
+          "Compare an explicit list of wallets using consistent PnL windows and accounting.",
+          "7d/30d performance and per-token evidence per wallet, ranked with higher PnL scoring higher. Missing metrics remain unranked."
+        ],
+        "just_say_to_your_agent": [
+          "Use Smart Money Leaderboard (skill-smart-money-leaderboard) to help me: Compare an explicit list of wallets using consistent PnL windows and accounting. Use wallets <WALLET_1,WALLET_2>. Preview CU before running."
+        ],
+        "cli_parameters": [
+          {
+            "param": "--wallets",
+            "required": true,
+            "values": "1–10 comma-separated Solana wallet addresses",
+            "default": null
+          },
+          {
+            "param": "--duration",
+            "required": false,
+            "values": "24h | 7d | 30d | 90d",
+            "default": "30d"
+          },
+          {
+            "param": "--pnl-method",
+            "required": false,
+            "values": "wac | net_cash",
+            "default": "wac"
+          },
+          {
+            "param": "--step-overrides",
+            "required": false,
+            "values": "JSON object keyed by step ID; parameters validated by each endpoint",
+            "default": {}
+          },
+          {
+            "param": "--chain",
+            "required": false,
+            "values": "solana",
+            "default": "solana"
+          },
+          {
+            "param": "--format",
+            "required": false,
+            "values": "json | table | interface | plain | ui",
+            "default": "json"
+          },
+          {
+            "param": "--short",
+            "required": false,
+            "values": "Flag",
+            "default": false
+          },
+          {
+            "param": "--estimate-cu",
+            "required": false,
+            "values": "Flag; preview without API calls",
+            "default": false
+          },
+          {
+            "param": "--max-cu",
+            "required": false,
+            "values": "Nonnegative integer CU budget",
+            "default": null
+          }
+        ],
+        "sample_output": {
+          "format": "json",
+          "kind": "estimate",
+          "description": "Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.",
+          "command": "birdeye-cli case skill-smart-money-leaderboard --wallets So11111111111111111111111111111111111111112 --from 1792972800 --to 1793577600 --estimate-cu --format json",
+          "output": {
+            "kind": "skill-smart-money-leaderboard",
+            "input": {
+              "launchSort": "volume_24h_usd",
+              "statsFrames": [
+                "1h",
+                "24h"
+              ],
+              "traderWindow": "24h",
+              "traderSort": "volume_usd",
+              "trackerFrame": "1h",
+              "includeExited": false,
+              "signalThresholdUsd": 0,
+              "kind": "skill-smart-money-leaderboard",
+              "scanLimit": 50,
+              "interval": "24h",
+              "depth": "core",
+              "duration": "30d",
+              "pnlMethod": "wac",
+              "stage": "newly-created",
+              "source": "all",
+              "excludeFreezeable": false,
+              "stepOverrides": {},
+              "wallets": [
+                "So11111111111111111111111111111111111111112"
+              ],
+              "intervals": [
+                "24h",
+                "7d",
+                "30d",
+                "90d",
+                "all"
+              ],
+              "skillDepth": "fast",
+              "ddMode": "advanced",
+              "topN": 50,
+              "liqResolution": "15m",
+              "liqCandles": 96,
+              "listSource": "v3-list",
+              "sortBy": "volume",
+              "resolution": "15m",
+              "windowDays": 7,
+              "include": [],
+              "skipKline": false,
+              "skipPortfolio": false,
+              "skipFirstFunded": false,
+              "skipTransactions": false,
+              "skipPositions": false,
+              "limit": 3,
+              "to": 1793577600,
+              "from": 1792972800
+            },
+            "steps": [
+              {
+                "id": "wallet-1-7d",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "7d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "wallet-1-30d",
+                "operation": "portfolio.pnl-summary",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac"
+                },
+                "cost": 20
+              },
+              {
+                "id": "wallet-1-positions",
+                "operation": "portfolio.pnl-details",
+                "params": {
+                  "wallet": "So11111111111111111111111111111111111111112",
+                  "duration": "30d",
+                  "position_scope": "duration_only",
+                  "pnl_method": "wac",
+                  "sort_by": "last_trade",
+                  "sort_type": "desc",
+                  "limit": 100,
+                  "offset": 0
+                },
+                "cost": 30
+              }
+            ],
+            "estimatedCu": 70,
+            "maxRequests": 3,
+            "pricingVersion": "bds-2026-10-28-token-data-v1",
+            "notes": [
+              "Estimates exclude retries; each extra page is another request. Dynamic branches are bounded by limit. Runs never place orders.",
+              "Adapted from TheNang2710/birdeye-data-skills. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."
+            ]
+          }
+        }
       }
     }
   ]

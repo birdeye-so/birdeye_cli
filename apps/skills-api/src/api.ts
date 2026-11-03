@@ -26,7 +26,7 @@ export async function listSkills(request: Request) {
     const store = openSkillStats();
     try {
       const counts = new Map(store.list().map(item => [item.skill_id, item]));
-      const list = catalog.skills.filter(skill => category === null || skill.category === category).map(skill => ({
+      const list = catalog.skills.filter(skill => category === null || skill.category === category).map(({detail, ...skill}) => ({
         ...skill, skill_id: skill.id, demo_path: `/${skill.id}`, icon_url: skillIconUrl(skill.id),
         view_count: counts.get(skill.id)?.view_count ?? 0,
         download_count: counts.get(skill.id)?.download_count ?? 0,
@@ -49,11 +49,19 @@ export async function recordSkillAction(request: Request, action?: SkillAction) 
   }
   try {
     const catalog = await readCatalog();
-    if (!catalog.skills.some(skill => skill.id === input.skill_id)) {
+    const skill = catalog.skills.find(skill => skill.id === input.skill_id);
+    if (!skill) {
       return response(404, 'SKILL_NOT_FOUND', 'Unknown skill_id.');
     }
     const store = openSkillStats();
-    try { store.increment(input.skill_id, input.action); }
+    try {
+      const counts = store.increment(input.skill_id, input.action);
+      if (action === 'view') {
+        const {detail, ...summary} = skill;
+        return response(200, '', 'success', {...summary, ...detail, ...counts,
+          demo_path: `/${skill.id}`, icon_url: skillIconUrl(skill.id)});
+      }
+    }
     finally { store.close(); }
     return response(200, '', 'success');
   } catch { return unavailable(); }
