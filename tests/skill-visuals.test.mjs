@@ -16,11 +16,25 @@ test('eight data reports render evidence tables, units and missing values from e
   assert.match(html,/Source coverage and pagination/,kind);
   assert.doesNotMatch(html,/NaN|undefined|\[object Object\]/,kind);
  }
- assert.match(render(dataReports['skill-token-security']),/N\/A/);
+ assert.match(render(dataReports['skill-token-security']),/Unknown/);
  const pools=render(dataReports['skill-lp-analysis']);
  assert.match(pools,/Fetched-page share/);
  assert.doesNotMatch(pools,/href="https:\/\/birdeye.so\/solana\/token\//,'Pool addresses must not link to a token page');
  assert.match(render(dataReports['skill-kol-signal']),/Incomplete evidence/);
+});
+test('token-data summaries preserve unknown controls, zero activity and exact wallet balances',()=>{
+ const missing=structuredClone(dataReports['skill-token-security']);
+ missing.analysis.findings[0].tables[0].rows.forEach(r=>{r.value=null;});
+ const security=render(missing);
+ assert.match(security,/Unknown/);assert.doesNotMatch(security,/>Inactive<|>Safe</);
+ assert.match(render(dataReports['skill-top-holder-analysis']),/100,000,000,000,000,000,001/);
+ assert.match(render(dataReports['skill-top-trader-analysis']),/−\$4.00/);
+ for(const report of Object.values(dataReports)){
+  const empty=structuredClone(report),finding=empty.analysis.findings[0];
+  Object.assign(finding,{summary:{},tables:[],sourceIds:[],pagination:[],missing:['No source data available']});
+  const html=render(empty);
+  assert.match(html,/Incomplete evidence/);assert.doesNotMatch(html,/NaN|undefined|\$0.00|>Inactive</);
+ }
 });
 test('all eleven other skills show their data-specific visual report',()=>{
  const expected={ 'skill-trending-list':'Market watchlist','skill-smart-wallets':'Discovery path','skill-token-dd':'Contract controls','skill-contract-dd':'Closing price','skill-rugcheck-audit':'Liquidity history','skill-kline-pattern':'Closing price','skill-wallet-score':'Score breakdown','skill-wallet-style':'Trading profile','skill-wallet-analysis':'PnL by period','skill-smart-money-profile':'Net-worth history','skill-smart-money-leaderboard':'Wallet leaderboard'};

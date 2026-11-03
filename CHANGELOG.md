@@ -26,6 +26,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Eight token-data skill demos now open with task-specific summaries: launch screening, security controls, rolling activity, holder/trader comparisons, pool liquidity and cohort flow. Search, sorting, selection and timeline inspection replace the initial wall of tables; complete evidence remains available in disclosures, with missing values and scope limits preserved.
+
 - Skills API `/agent/api/skills/view` now returns detail content for all 20 current skills: core capabilities, agent prompts, CLI parameter tables, demo paths and reproducible offline cost-preview samples, together with atomically updated view/download counts. Catalog schema v4 adds the detail data; deploy the matching service and catalog together. Skill-list, download and stat response shapes remain unchanged.
 
 - Updated Trade Data and Markets reservations to 12 and 25 CU from current public endpoint documentation. New cohort reports use historical tracker buckets; rolling stats and trader rankings reject historical timestamp inputs.

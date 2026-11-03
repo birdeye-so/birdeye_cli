@@ -40,6 +40,7 @@
     "prepack": "npm run build",
     "knowledge:sync": "node scripts/sync-knowledge.mjs",
     "test:demos:browser": "node tests/demo-ui-browser.mjs",
+    "test:token-data:browser": "node tests/token-data-ui-browser.mjs",
     "check:changelog": "node scripts/check-changelog.mjs",
     "test:package": "npm run build && node scripts/package-smoke.mjs",
     "landing:install": "npm --prefix apps/landing ci",
