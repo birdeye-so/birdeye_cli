@@ -75,7 +75,7 @@ test('skill API filters catalog, persists independent counters, and rejects inva
     assert.ok(initial.every(skill => skill.view_count === 0 && skill.download_count === 0));
     const id = initial[0].skill_id;
     const filtered = (await (await get('?category=token')).json()).data.list;
-    assert.deepEqual(filtered.map(skill => skill.id), initial.filter(skill => skill.category === 'token').map(skill => skill.id));
+    assert.deepEqual(filtered, initial.filter(skill => skill.category === 'token'));
     assert.equal((await get('?category=unknown')).status, 400);
     assert.deepEqual((await (await get('?category=guides')).json()).data.list, []);
     const viewed = await (await post(view, {skill_id: id})).json();
@@ -84,7 +84,8 @@ test('skill API filters catalog, persists independent counters, and rejects inva
     assert.equal(viewed.data.view_count, 1);
     assert.equal(viewed.data.download_count, 0);
     assert.ok(viewed.data.core_capabilities.length);
-    assert.ok(initial.every(skill => !('detail' in skill) && !('sample_output' in skill)));
+    assert.deepEqual(viewed.data, {...initial.find(skill => skill.skill_id === id), view_count: 1});
+    assert.ok(initial.every(skill => !('detail' in skill) && skill.core_capabilities.length && skill.just_say_to_your_agent.length && skill.cli_parameters.length && skill.sample_output.kind === 'estimate'));
     assert.equal((await post(download, {skill_id: id})).status, 200);
     assert.equal((await post(stat, {skill_id: id, action: 'view'})).status, 200);
     for (const body of [null, {}, {skill_id: id, action: 'delete'}, {skill_id: 10001, action: 'view'}, {skill_id: id, action: 'view', view_count: 99}]) {
@@ -235,6 +236,9 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       assert.deepEqual(data.usage, expected.usage);
       assert.equal(data.demo_path, `/${expected.id}`);
       assert.equal((await fetch(new URL(data.demo_path, base))).status, 200);
+      const listed = (await (await fetch(base + '/agent/api/skills')).json()).data.list;
+      assert.deepEqual(listed.find(skill => skill.skill_id === expected.id), data, `List must include the complete view data for ${expected.id}`);
+      assert.deepEqual((await (await fetch(base + '/agent/api/skills')).json()).data.list, listed, 'Repeated GET must not change counters');
     }
     const downloaded = await (await post('/agent/api/skills/download', {skill_id: skill.skill_id})).json();
     assert.equal(downloaded.code, 0);

@@ -28,6 +28,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- GET `/agent/api/skills` now returns complete view data for every skill, including capabilities, agent prompts, CLI parameters and sample output, so frontends can cache the list for detail navigation. Category filters preserve the full objects and GET does not increment view/download counters.
+
 - Skill list, view and download responses now share canonical `skill_id`, `demo_path` and advertised aliases with both demo hosts. View/download/stat accept short IDs and Price Surge spelling aliases and count them under the existing canonical ID; download now returns the skill summary and installation instructions in `data`.
 
 - Eight token-data skill demos now open with task-specific summaries: launch screening, security controls, rolling activity, holder/trader comparisons, pool liquidity and cohort flow. Search, sorting, selection and timeline inspection replace the initial wall of tables; complete evidence remains available in disclosures, with missing values and scope limits preserved.
