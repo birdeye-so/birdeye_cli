@@ -296,7 +296,16 @@ function App() {
     }
     await refresh();
   }
-  function chooseWorkflow(next: string) { setKind(next); setSkillOptions({}); setDuration("30d"); setScanLimit(next.startsWith("skill-") ? 20 : 50); setRun(null); viewedRun.current=null; setChatMessages([]); setLiveData(true); setResultFormat("ui"); setView("research"); setMode("case"); }
+  function chooseWorkflow(next: string, updateUrl = true) {
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (url.pathname !== `/${next}`) {
+        url.pathname = `/${next}`;
+        window.history.pushState(null, "", url);
+      }
+    }
+    setKind(next); setSkillOptions({}); setDuration("30d"); setScanLimit(next.startsWith("skill-") ? 20 : 50); setRun(null); viewedRun.current=null; setChatMessages([]); setLiveData(true); setResultFormat("ui"); setView("research"); setMode("case");
+  }
   const selectedCase = status?.cases?.find((c:Data) => c.kind === kind);
   const referenceSkill = kind.startsWith("skill-");
   const walletCase = selectedCase?.subject === "wallet" || ["wallet-exposure", "wallet-analysis", "smart-money-profile", "daily-brief"].includes(kind);
@@ -398,7 +407,7 @@ function App() {
         const linkedSkill = skillForPath<Data & {kind: string; family: string}>(window.location.pathname, s.cases);
         if (linkedSkill) {
           setSkillGroup(linkedSkill.category);
-          chooseWorkflow(linkedSkill.kind);
+          chooseWorkflow(linkedSkill.kind, false);
           return;
         }
         const initial = await api("/initial", {});
@@ -407,6 +416,21 @@ function App() {
       .catch((e) => setError(e.message));
     return () => stream.current?.close();
   }, []);
+  useEffect(() => {
+    if (!status?.cases) return;
+    const restoreSkill = () => {
+      const linkedSkill = skillForPath<Data & {kind: string; family: string}>(window.location.pathname, status.cases);
+      if (linkedSkill) {
+        setSkillGroup(linkedSkill.category);
+        chooseWorkflow(linkedSkill.kind, false);
+      } else if (["/", "/index.html"].includes(window.location.pathname)) {
+        setSkillGroup("all");
+        chooseWorkflow("skill-trending-list", false);
+      }
+    };
+    window.addEventListener("popstate", restoreSkill);
+    return () => window.removeEventListener("popstate", restoreSkill);
+  }, [status?.cases]);
   useEffect(() => {
     if (!status) return;
     const p = status.config.ai.profiles[status.activeAiProfile];

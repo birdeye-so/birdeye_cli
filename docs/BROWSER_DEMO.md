@@ -14,7 +14,7 @@ node dist/index.js --format interface --storage browser --bind 127.0.0.1:8787
 
 The preview serves static assets only and does not open configuration, history or usage SQLite databases. It accepts loopback binds. Select the skill, input and CU budget in the browser; automatic CLI input runs and shared session budgets are not supported in this mode.
 
-Open a skill directly with `/<skill-id>`, for example `http://127.0.0.1:8787/skill-price-surge` or `/skill-kol-signal`. After opening or unlocking the browser workspace, the demo selects that skill without running provider requests. The same paths work through the public reverse proxy. Short IDs such as `/price-surge` redirect to the full ID; `/price-surge-screen` and `/prige-surge-screen` also redirect to `/skill-price-surge`. Unknown skill paths return 404.
+Open a skill directly with `/<skill-id>`, for example `http://127.0.0.1:8787/skill-price-surge` or `/skill-kol-signal`. After opening or unlocking the browser workspace, the demo selects that skill without running provider requests. The same paths work through the public reverse proxy. Short IDs such as `/price-surge` redirect to the full ID; `/price-surge-screen`, `/skill-price-surge-screen`, `/prige-surge`, `/skill-prige-surge`, `/prige-surge-screen` and `/skill-prige-surge-screen` also redirect to `/skill-price-surge`. The Skills API uses the same aliases; its list, view and download responses return the canonical `skill_id`, `demo_path` and accepted `aliases`. Unknown skill paths return 404. Selecting a skill in the UI (including automatic selection when switching categories) updates the URL without reloading the workspace. Browser Back/Forward restores the selected skill, and reload opens the skill shown in the URL.
 
 For the existing SQLite workspace, omit `--storage browser` or use `--storage sqlite`.
 
@@ -40,7 +40,7 @@ location / {
 }
 ```
 
-Keep existing specific locations such as `/agent/` pointed at the Skills API service. The UI process itself exposes no `/api` workspace endpoints. The proxy may preserve the configured public Host or use the loopback upstream Host. Arbitrary Host/Origin values are rejected; forwarded headers do not grant access. Use a dedicated origin when possible: other applications on the same origin can access its browser storage.
+Keep existing specific locations such as `/agent/` pointed at the Skills API service. Start that service with `npm run skills-api:start -- --demo-host https://support-api.owland.xyz/` so list/view/download return absolute `demo_url` values pointing at this demo. The UI process itself exposes no `/api` workspace endpoints. The proxy may preserve the configured public Host or use the loopback upstream Host. Arbitrary Host/Origin values are rejected; forwarded headers do not grant access. Use a dedicated origin when possible: other applications on the same origin can access its browser storage.
 
 ## Deploy as a static website
 

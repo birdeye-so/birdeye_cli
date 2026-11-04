@@ -42,7 +42,14 @@ export async function startBrowserInterface(bind="127.0.0.1:3000", publicUrlInpu
       res.writeHead(200,{"Content-Type":asset[1]});res.end(body);
     }catch{res.writeHead(500);res.end("Browser build unavailable. Run npm run build.");}
   });
-  await new Promise<void>((resolve,reject)=>{server.once("error",reject);server.listen(Number(match[2]),match[1],()=>resolve());});
+  try {
+    await new Promise<void>((resolve,reject)=>{server.once("error",reject);server.listen(Number(match[2]),match[1],()=>resolve());});
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "EADDRINUSE") {
+      throw new AppError("ADDRESS_IN_USE", `Preview address ${bind} is already in use. Stop the existing preview or choose another port with --bind.`);
+    }
+    throw error;
+  }
   const address=server.address();
   const port=typeof address==="object"&&address?address.port:Number(match[2]);
   const listenUrl=`http://${match[1]}:${port}`;

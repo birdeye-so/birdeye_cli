@@ -6,24 +6,27 @@ Standalone Node.js service exposing one skill catalog: skills with descriptions 
 # From the repository root
 npm --prefix apps/skills-api ci
 npm run skills-api:build
-npm run skills-api:start
+npm run skills-api:start -- --demo-host https://support-api.owland.xyz/
 ```
 
-To deploy this directory independently, run `npm ci`, `npm run build`, then `npm start` inside it. The bundled catalog is ready to use. Regeneration requires the source checkout.
+To deploy this directory independently, run `npm ci`, `npm run build`, then `npm start` inside it. The bundled catalog is ready to use. Pass the demo origin with `npm start -- --demo-host https://support-api.owland.xyz/` (or `node dist/index.js --demo-host https://support-api.owland.xyz/`). Regeneration requires the source checkout.
 
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
 | `SKILL_API_HOST` | `127.0.0.1` | Bind address; use `0.0.0.0` for all interfaces |
 | `SKILL_API_PORT` | `3002` | HTTP port |
+| `SKILL_DEMO_HOST` | Local HTTP listener origin | Origin used for `demo_url`; overridden by `--demo-host` |
 | `SKILL_API_CORS_ORIGINS` | `*` | Allowed browser origins, comma-separated |
 | `SKILL_CATALOG_PATH` | Bundled `catalog.json` | Optional absolute path to a schema-v4 catalog |
 | `SKILL_STATS_DB_PATH` | `.birdeye/skill-stats.sqlite` | Persistent SQLite path |
+
+`--demo-host` accepts an HTTP(S) origin with an optional trailing `/`; it rejects credentials, paths, query strings and fragments. Each response uses `demo_url = normalized demo_host + demo_path`. CLI values override `SKILL_DEMO_HOST`; without either setting, links point to the local HTTP listener. Set the public HTTPS origin explicitly behind a reverse proxy. This option belongs to the Skills API process that generates JSON; the separate browser preview on port 8787 uses `--public-url` to allow its public Host/Origin.
 
 Use an absolute persistent path for SQLite and keep its WAL/SHM files on the same local volume. The directory is created automatically. The service validates catalog/storage before listening and closes gracefully on SIGINT/SIGTERM.
 
 ## Endpoints
 
-Reverse proxies must forward `/agent/*`, `/<skill_id>`, `/main.js` and `/main.css` to this service.
+Forward `/agent/*` to this service. Demo paths (`/<skill_id>` and supported aliases), `/main.js` and `/main.css` can go either to this service or to the browser preview on port 8787. Keep HTML and assets on the same demo host; both hosts use the same skill identity rules.
 
 | Method | Path | Input |
 | --- | --- | --- |
@@ -37,17 +40,25 @@ Reverse proxies must forward `/agent/*`, `/<skill_id>`, `/main.js` and `/main.cs
 
 GET returns `{"code":0,"reason":"","message":"success","data":{"list":[...]}}`. Each item has:
 
-- `id`, `skill_id`, `title`, `category`, `description`, `icon_url`, `demo_path`;
+- `id`, `skill_id`, `title`, `category`, `description`, `icon_url`, `demo_path`, `demo_url`, `aliases`;
 - `usage.input`, `usage.instructions`, `usage.result`;
 - `usage.preview_command`, `usage.run_command`, `usage.install_command`;
 - `view_count`, `download_count`.
+
+`skill_id` and `id` always contain the canonical ID; `demo_path` is always `/<skill_id>` in **list, view and download** responses. All current skills accept their short ID without `skill-` in API requests and demo URLs. `aliases` lists these accepted alternatives. Price Surge Screen uses `skill-price-surge`; its compatibility aliases also include `price-surge-screen`, `skill-price-surge-screen`, `prige-surge`, `skill-prige-surge`, `prige-surge-screen` and `skill-prige-surge-screen`. Alias requests resolve to the canonical skill and increment the same counters; demo aliases redirect to the canonical path. Use the returned canonical ID and path when generating new links.
+
+For example, the identity fields returned for Price Surge Screen are:
+
+```json
+{"id":"skill-price-surge","skill_id":"skill-price-surge","demo_path":"/skill-price-surge","demo_url":"https://support-api.owland.xyz/skill-price-surge"}
+```
 
 `icon_url` is an absolute public SVG URL from [Lucide](https://lucide.dev/icons/) via the [Iconify SVG API](https://iconify.design/docs/api/svg.html), e.g. `https://api.iconify.design/lucide/flame.svg?color=%232563eb`. Frontends can use it directly in an image element.
 
 ```js
 const apiOrigin = 'https://support-api.owland.xyz';
 const iconSrc = skill.icon_url;
-const demoUrl = apiOrigin + skill.demo_path; // e.g. /skill-token-dd-score
+const demoUrl = skill.demo_url; // configured demo host + /skill-token-dd-score
 const {data} = await fetch(apiOrigin + '/agent/api/categories').then(r => r.json());
 // data.list: [{id: "token", title: "Token research", description: "...", skill_count: 4}, ...]
 // Filter with GET /agent/api/skills?category=<id>; omit category for All.
@@ -64,7 +75,7 @@ POST requires `Content-Type: application/json` and accepts at most 8 KiB. `/view
 | Core Capabilities | `core_capabilities` | Array of capability descriptions |
 | Just say to your Agent | `just_say_to_your_agent` | Array of prompts with input placeholders |
 | CLI parameters | `cli_parameters` | Array of `{param, required, values, default}` rows |
-| Demo link | `demo_path` | Same-origin path, e.g. `/skill-token-dd-score` |
+| Demo link | `demo_url`, `demo_path` | Absolute URL using `--demo-host`, plus canonical path |
 | Sample output | `sample_output` | `{format, kind, description, command, output}` |
 
 The detail object also contains all fields from the skill list (`id`, `skill_id`, title, category, description, usage, icon and counters). These additional detail fields are returned only by `/view`; the list response remains unchanged. `required` is a boolean. Conditional requirements are explained in `values`; `default` preserves its JSON type (including arrays and booleans), uses text for computed defaults, and is `null` when unset. For example, `--max-cu` defaults to `null` (unlimited). Values and defaults are generated from the CLI schemas with skill-specific restrictions.
@@ -77,13 +88,13 @@ const {data: detail} = await fetch(apiOrigin + '/agent/api/skills/view', {
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({skill_id: 'skill-token-dd-score'}),
 }).then(r => r.json());
-const demoLink = new URL(detail.demo_path, apiOrigin).href;
+const demoLink = detail.demo_url;
 // detail.cli_parameters includes:
 // {param: "--dd-mode", required: false, values: "standard | advanced", default: "advanced"}
 const sampleJson = JSON.stringify(detail.sample_output.output, null, 2);
 ```
 
-`/download` and `/stat` return `{"code":0,"reason":"","message":"success","data":null}` after committing, including `/stat` with `action: "view"`. A download POST records a download click; it does not transfer a file or prove successful installation. GET never changes counters. This service does not run the displayed commands.
+`/download` now returns the canonical skill summary in `data`, including `skill_id`, `demo_path`, `demo_url`, `aliases`, `usage` (with `install_command`) and updated counters. `/stat` keeps returning `{"code":0,"reason":"","message":"success","data":null}` after committing, including `/stat` with `action: "view"`. A download POST records a download click; it does not transfer a file or prove successful installation. GET never changes counters. This service does not run the displayed commands.
 
 ```bash
 curl 'http://localhost:3002/agent/api/skills?category=token'
@@ -97,7 +108,7 @@ Invalid categories/payloads return 400, unknown skill IDs 404, unsupported conte
 
 ## Catalog updates and review
 
-Skill definitions own the canonical metadata and execution. Run `npm run catalog:sync` to regenerate instructions, both public snapshots, and [the maintainer review](../../docs/SKILL_REVIEW.md). `npm run skills-api:sync` regenerates this API snapshot only, including the required instruction packages. The root `skills-api:build` command also synchronizes.
+Skill definitions own the canonical metadata and execution. Run `npm run catalog:sync` to regenerate instructions, both public snapshots, and [the maintainer review](../../docs/SKILL_REVIEW.md). `npm run skills-api:sync` regenerates this API snapshot only, including the required instruction packages. The root `skills-api:build` command also synchronizes the standalone copy of `src/skill-identity.ts`. Edit identity rules in that source file, then sync; tests reject a stale API copy.
 
 The API reads its snapshot per request, so atomic replacement updates a running server. Deploy v4 catalog and matching code together; v3 custom snapshots must be regenerated to include detail content. Custom catalogs must follow the same schema. Skill-list entries omit step graphs; the detail's sample output includes its cost-preview plan. Complex-case questions stay in the maintainer review.
 
@@ -119,7 +130,7 @@ Counts represent accepted events, not unique visitors. Each successful POST adds
 
 ## Direct demo links
 
-`https://support-api.owland.xyz/skill-token-dd-score` opens Token DD. All current catalog IDs have a route; retired or unknown IDs return 404. Links select the skill after the browser workspace is opened/unlocked. Opening a link never starts research or increments view/download counters.
+`https://support-api.owland.xyz/skill-token-dd-score` opens Token DD. All current catalog IDs and their advertised aliases have a route on this server and the browser preview on port 8787; retired or unknown IDs return 404. Links select the skill after the browser workspace is opened/unlocked. Opening a link never starts research or increments view/download counters.
 
 The repository-root `npm run skills-api:build` bundles the browser demo into `apps/skills-api/public/` as well as compiling the API. Include that directory when deploying the standalone service. `SKILL_DEMO_DIR` can point to an alternate absolute directory containing the browser build (`index.html`, `main.js`, `main.css`). Missing assets return 503. Public hosting must use HTTPS for the browser workspace.
 

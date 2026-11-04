@@ -58,7 +58,7 @@
     "landing:demo": "npm run landing:sync && node scripts/build-landing-demo.mjs",
     "skills-api:sync": "node scripts/sync-skills-api-catalog.mjs",
     "skills-api:build": "npm run skills-api:sync && npm --prefix apps/skills-api run build && node scripts/build-browser.mjs apps/skills-api/public",
-    "skills-api:start": "npm --prefix apps/skills-api start",
+    "skills-api:start": "npm --prefix apps/skills-api start --",
     "test:skills-api": "node --test tests/skills-api.test.mjs",
     "skills:sync": "node scripts/sync-skill-packages.mjs",
     "skills:check": "node scripts/sync-skill-packages.mjs --check",

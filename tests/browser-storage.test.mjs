@@ -96,3 +96,22 @@ test("browser preview opens current skill links and canonicalizes aliases withou
    assert.equal((await fetch(app.listenUrl+"/skill-price-surge",{method:"POST"})).status,404);
  }finally{await app.close();}
 });
+
+test("browser preview reports an occupied port with actionable CLI output",async()=>{
+ const {startBrowserInterface}=await import("../dist/interface/browser-server.js");
+ const app=await startBrowserInterface("127.0.0.1:0");
+ const bind=new URL(app.listenUrl).host;
+ try{
+   await assert.rejects(startBrowserInterface(bind),{code:"ADDRESS_IN_USE",message:new RegExp(`already in use.*--bind`,"i")});
+   const child=spawn(process.execPath,["dist/index.js","--format","interface","--storage","browser","--bind",bind],{stdio:["ignore","pipe","pipe"]});
+   let output="";
+   child.stdout.on("data",chunk=>{output+=chunk;});
+   child.stderr.on("data",chunk=>{output+=chunk;});
+   const code=await new Promise((resolve,reject)=>{child.once("error",reject);child.once("close",resolve);});
+   assert.equal(code,1);
+   const result=JSON.parse(output.split("\n").find(line=>line.startsWith('{"error":')));
+   assert.equal(result.error.code,"ADDRESS_IN_USE");
+   assert.ok(result.error.message.includes(bind));
+   assert.match(result.error.message,/--bind/);
+ }finally{await app.close();}
+});

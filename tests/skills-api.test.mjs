@@ -16,6 +16,7 @@ test('bundled API catalog exposes current skills with complete detail content', 
   const bundled = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
   assert.deepEqual(bundled.categories, current.categories);
   assert.equal(bundled.schemaVersion, 4);
+  assert.equal(await readFile('apps/skills-api/src/skill-identity.ts', 'utf8'), '// Generated from src/skill-identity.ts by skills-api:sync. Do not edit.\n' + await readFile('src/skill-identity.ts', 'utf8'));
   assert.deepEqual(bundled.skills.map(({detail, ...skill}) => skill), current.skills.map(({source, ...skill}) => skill));
   assert.equal(bundled.skills.length, 20);
   assert.ok(!('workflows' in bundled));
@@ -235,10 +236,14 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       assert.equal(data.demo_path, `/${expected.id}`);
       assert.equal((await fetch(new URL(data.demo_path, base))).status, 200);
     }
-    for (const [path, payload] of [['download', {}], ['stat', {action: 'view'}]]) {
-      assert.deepEqual(await (await post(`/agent/api/skills/${path}`, {skill_id: skill.skill_id, ...payload})).json(),
-        {code: 0, reason: '', message: 'success', data: null});
-    }
+    const downloaded = await (await post('/agent/api/skills/download', {skill_id: skill.skill_id})).json();
+    assert.equal(downloaded.code, 0);
+    assert.equal(downloaded.data.skill_id, skill.skill_id);
+    assert.equal(downloaded.data.demo_path, `/${skill.skill_id}`);
+    assert.deepEqual(downloaded.data.usage, skill.usage);
+    assert.equal('sample_output' in downloaded.data, false);
+    assert.deepEqual(await (await post('/agent/api/skills/stat', {skill_id: skill.skill_id, action: 'view'})).json(),
+      {code: 0, reason: '', message: 'success', data: null});
   } finally {
     if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
     if (previousCatalog === undefined) delete process.env.SKILL_CATALOG_PATH; else process.env.SKILL_CATALOG_PATH = previousCatalog;
@@ -270,4 +275,132 @@ test('deployed counters remain intact and a local typed-counter migration is app
       }
     }
   } finally {await rm(directory, {recursive: true, force: true});}
+});
+
+test('API and both demo hosts share canonical identities for all current skills and aliases', async () => {
+  const directory = await mkdtemp(resolve(tmpdir(), 'skill-identities-'));
+  const previousDb = process.env.SKILL_STATS_DB_PATH;
+  const previousCatalog = process.env.SKILL_CATALOG_PATH;
+  process.env.SKILL_STATS_DB_PATH = resolve(directory, 'stats.sqlite');
+  process.env.SKILL_CATALOG_PATH = resolve('apps/skills-api/catalog.json');
+  let server, preview;
+  try {
+    const {createSkillServer} = await bundle('apps/skills-api/src/server.ts', resolve(directory, 'server.mjs'));
+    const {startBrowserInterface} = await import('../dist/interface/browser-server.js');
+    await writeFile(resolve(directory, 'index.html'), '<!doctype html><div id="root"></div>');
+    server = createSkillServer({demoDirectory: directory, demoHost: 'https://support-api.owland.xyz/'});
+    await new Promise(done => server.listen(0, '127.0.0.1', done));
+    const origin = `http://127.0.0.1:${server.address().port}`;
+    preview = await startBrowserInterface('127.0.0.1:0');
+    const catalog = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
+    const post = (action, id) => fetch(`${origin}/agent/api/skills/${action}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({skill_id: id})});
+    for (const skill of catalog.skills) {
+      const aliases = [skill.id.slice(6), ...(skill.id === 'skill-price-surge' ? ['price-surge-screen', 'skill-price-surge-screen', 'prige-surge', 'skill-prige-surge', 'prige-surge-screen', 'skill-prige-surge-screen'] : [])];
+      for (const id of [...aliases, skill.id]) {
+        for (const action of ['view', 'download']) {
+          const response = await post(action, id);
+          assert.equal(response.status, 200, `${action}: ${id}`);
+          const {data} = await response.json();
+          assert.equal(data.skill_id, skill.id);
+          assert.equal(data.id, skill.id);
+          assert.equal(data.demo_path, `/${skill.id}`);
+          assert.equal(data.demo_url, `https://support-api.owland.xyz/${skill.id}`);
+          assert.deepEqual(data.aliases, aliases);
+          assert.equal(data.usage.install_command, skill.usage.install_command);
+        }
+        for (const host of [origin, preview.listenUrl]) {
+          const response = await fetch(`${host}/${id}?from=api`, {redirect: 'manual'});
+          assert.equal(response.status, id === skill.id ? 200 : 302, `${host}/${id}`);
+          if (id !== skill.id) assert.equal(response.headers.get('location'), `/${skill.id}?from=api`);
+        }
+      }
+      const list = (await (await fetch(origin + '/agent/api/skills')).json()).data.list;
+      assert.equal(list.length, 20);
+      const counted = list.find(item => item.skill_id === skill.id);
+      assert.equal(counted.id, skill.id);
+      assert.equal(counted.demo_path, `/${skill.id}`);
+      assert.equal(counted.demo_url, `https://support-api.owland.xyz/${skill.id}`);
+      assert.equal(counted.view_count, aliases.length + 1);
+      assert.equal(counted.download_count, aliases.length + 1);
+      assert.deepEqual(counted.aliases, aliases);
+    }
+    for (const action of ['view', 'download']) assert.equal((await post(action, 'skill-not-real')).status, 404);
+    const stat = await fetch(origin + '/agent/api/skills/stat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({skill_id: 'skill-prige-surge', action: 'view'})});
+    assert.equal(stat.status, 200);
+    const list = (await (await fetch(origin + '/agent/api/skills')).json()).data.list;
+    assert.equal(list.find(item => item.skill_id === 'skill-price-surge').view_count, 9);
+  } finally {
+    if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
+    await preview?.close();
+    if (previousCatalog === undefined) delete process.env.SKILL_CATALOG_PATH; else process.env.SKILL_CATALOG_PATH = previousCatalog;
+    if (previousDb === undefined) delete process.env.SKILL_STATS_DB_PATH; else process.env.SKILL_STATS_DB_PATH = previousDb;
+    await rm(directory, {recursive: true, force: true});
+  }
+});
+
+test('demo host configuration normalizes origins, overrides environment and ignores request headers', async () => {
+  const directory = await mkdtemp(resolve(tmpdir(), 'demo-host-'));
+  const previous = Object.fromEntries(['SKILL_DEMO_HOST', 'SKILL_CATALOG_PATH', 'SKILL_STATS_DB_PATH'].map(key => [key, process.env[key]]));
+  process.env.SKILL_CATALOG_PATH = resolve('apps/skills-api/catalog.json');
+  process.env.SKILL_STATS_DB_PATH = resolve(directory, 'stats.sqlite');
+  try {
+    const {createSkillServer} = await bundle('apps/skills-api/src/server.ts', resolve(directory, 'server.mjs'));
+    for (const invalid of ['', 'example.com', 'ftp://example.com', 'https://user:pass@example.com', 'https://example.com/demo', 'https://example.com/?query=1', 'https://example.com/#demo'])
+      assert.throws(() => createSkillServer({demoHost: invalid}), /demo-host must be an HTTP\(S\) origin/);
+    process.env.SKILL_DEMO_HOST = 'https://from-env.example/';
+    for (const [options, expected] of [[{}, 'https://from-env.example'], [{demoHost: 'https://override.example:8443/'}, 'https://override.example:8443'], [{demoHost: 'http://localhost:8787'}, 'http://localhost:8787']]) {
+      const server = createSkillServer(options);
+      await new Promise(done => server.listen(0, '127.0.0.1', done));
+      try {
+        const response = await fetch(`http://127.0.0.1:${server.address().port}/agent/api/skills`, {headers: {Host: 'untrusted.example', 'X-Forwarded-Host': 'untrusted.example', 'X-Forwarded-Proto': 'http'}});
+        const list = (await response.json()).data.list;
+        assert.equal(list.length, 20);
+        for (const skill of list) assert.equal(skill.demo_url, expected + skill.demo_path);
+      } finally {await new Promise(done => {server.close(done); server.closeAllConnections();});}
+    }
+    delete process.env.SKILL_DEMO_HOST;
+    const server = createSkillServer();
+    await new Promise(done => server.listen(0, '127.0.0.1', done));
+    try {
+      const origin = `http://127.0.0.1:${server.address().port}`;
+      const list = (await (await fetch(origin + '/agent/api/skills', {headers: {Host: 'untrusted.example'}})).json()).data.list;
+      for (const skill of list) assert.equal(skill.demo_url, origin + skill.demo_path);
+    } finally {await new Promise(done => {server.close(done); server.closeAllConnections();});}
+  } finally {
+    for (const [key, value] of Object.entries(previous)) {if (value === undefined) delete process.env[key]; else process.env[key] = value;}
+    await rm(directory, {recursive: true, force: true});
+  }
+});
+
+test('Skills API executable accepts --demo-host and returns its URL in list, view and download', async () => {
+  const {createServer} = await import('node:net');
+  const probe = createServer();
+  await new Promise(done => probe.listen(0, '127.0.0.1', done));
+  const port = probe.address().port;
+  await new Promise(done => probe.close(done));
+  const directory = await mkdtemp(resolve(tmpdir(), 'demo-host-cli-'));
+  const child = spawn(process.execPath, ['apps/skills-api/dist/index.js', '--demo-host', 'https://support-api.owland.xyz/'], {
+    env: {...process.env, SKILL_API_HOST: '127.0.0.1', SKILL_API_PORT: String(port), SKILL_CATALOG_PATH: resolve('apps/skills-api/catalog.json'), SKILL_STATS_DB_PATH: resolve(directory, 'stats.sqlite'), SKILL_DEMO_HOST: 'https://overridden.example'},
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const stopped = new Promise(done => child.once('close', done));
+  try {
+    await new Promise((done, fail) => {
+      let output = '';
+      const timer = setTimeout(() => fail(new Error('Skills API startup timeout')), 10000);
+      child.stdout.on('data', chunk => {output += chunk; if (output.includes('Skills API listening')) {clearTimeout(timer); done();}});
+      child.once('error', error => {clearTimeout(timer); fail(error);});
+      child.once('exit', code => {clearTimeout(timer); fail(new Error(`Skills API exited: ${code}`));});
+    });
+    const origin = `http://127.0.0.1:${port}`;
+    const list = (await (await fetch(origin + '/agent/api/skills')).json()).data.list;
+    assert.ok(list.every(skill => skill.demo_url === 'https://support-api.owland.xyz' + skill.demo_path));
+    for (const action of ['view', 'download']) {
+      const response = await fetch(`${origin}/agent/api/skills/${action}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({skill_id: 'skill-prige-surge-screen'})});
+      assert.equal(response.status, 200);
+      const {data} = await response.json();
+      assert.equal(data.skill_id, 'skill-price-surge');
+      assert.equal(data.demo_url, 'https://support-api.owland.xyz/skill-price-surge');
+    }
+  } finally {child.kill('SIGTERM'); await stopped; await rm(directory, {recursive: true, force: true});}
 });

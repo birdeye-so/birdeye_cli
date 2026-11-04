@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import {skillIconUrl} from './icons.js';
 import { readCatalog } from './catalog.js';
+import {resolveSkillId, skillIdentity} from './skill-identity.js';
+import {normalizeDemoHost} from './demo-host.js';
 import { openSkillStats, type SkillAction } from './store.js';
 
 const headers = {'Cache-Control': 'no-store, max-age=0'};
@@ -15,8 +17,12 @@ function response(status: number, reason: string, message: string, data: unknown
 function unavailable() {
   return response(503, 'SERVICE_UNAVAILABLE', 'Skill catalog or statistics are temporarily unavailable.');
 }
+function demoIdentity(id: string, request: Request, demoHost?: string) {
+  const identity = skillIdentity(id);
+  return {...identity, demo_url: normalizeDemoHost(demoHost ?? new URL(request.url).origin) + identity.demo_path};
+}
 
-export async function listSkills(request: Request) {
+export async function listSkills(request: Request, demoHost?: string) {
   try {
     const category = new URL(request.url).searchParams.get('category');
     const catalog = await readCatalog();
@@ -27,7 +33,7 @@ export async function listSkills(request: Request) {
     try {
       const counts = new Map(store.list().map(item => [item.skill_id, item]));
       const list = catalog.skills.filter(skill => category === null || skill.category === category).map(({detail, ...skill}) => ({
-        ...skill, skill_id: skill.id, demo_path: `/${skill.id}`, icon_url: skillIconUrl(skill.id),
+        ...skill, ...demoIdentity(skill.id, request, demoHost), icon_url: skillIconUrl(skill.id),
         view_count: counts.get(skill.id)?.view_count ?? 0,
         download_count: counts.get(skill.id)?.download_count ?? 0,
       }));
@@ -36,7 +42,7 @@ export async function listSkills(request: Request) {
   } catch { return unavailable(); }
 }
 
-export async function recordSkillAction(request: Request, action?: SkillAction) {
+export async function recordSkillAction(request: Request, action?: SkillAction, demoHost?: string) {
   if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
     return response(415, 'UNSUPPORTED_MEDIA_TYPE', 'Use Content-Type: application/json.');
   }
@@ -49,17 +55,18 @@ export async function recordSkillAction(request: Request, action?: SkillAction) 
   }
   try {
     const catalog = await readCatalog();
-    const skill = catalog.skills.find(skill => skill.id === input.skill_id);
+    const id = resolveSkillId(input.skill_id, catalog.skills.map(skill => skill.id));
+    const skill = catalog.skills.find(skill => skill.id === id);
     if (!skill) {
       return response(404, 'SKILL_NOT_FOUND', 'Unknown skill_id.');
     }
     const store = openSkillStats();
     try {
-      const counts = store.increment(input.skill_id, input.action);
-      if (action === 'view') {
+      const counts = store.increment(skill.id, input.action);
+      if (action === 'view' || action === 'download') {
         const {detail, ...summary} = skill;
-        return response(200, '', 'success', {...summary, ...detail, ...counts,
-          demo_path: `/${skill.id}`, icon_url: skillIconUrl(skill.id)});
+        return response(200, '', 'success', {...summary, ...(action === 'view' ? detail : {}), ...counts,
+          ...demoIdentity(skill.id, request, demoHost), icon_url: skillIconUrl(skill.id)});
       }
     }
     finally { store.close(); }

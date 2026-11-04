@@ -3,13 +3,17 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {readCatalog} from './catalog.js';
+import {resolveSkillId} from './skill-identity.js';
+import {normalizeDemoHost} from './demo-host.js';
 import { listSkills, recordSkillAction, listCategories } from './api.js';
 
 function error(status: number, reason: string, message: string) {
   return Response.json({code: status, reason, message, data: null}, {status});
 }
 
-export function createSkillServer(options: {corsOrigins?: string[]; demoDirectory?: string} = {}) {
+export function createSkillServer(options: {corsOrigins?: string[]; demoDirectory?: string; demoHost?: string} = {}) {
+  const configuredDemoHost = options.demoHost ?? process.env.SKILL_DEMO_HOST;
+  const demoHost = configuredDemoHost === undefined ? undefined : normalizeDemoHost(configuredDemoHost);
   const origins = options.corsOrigins ?? (process.env.SKILL_API_CORS_ORIGINS || '*').split(',').map(value => value.trim()).filter(Boolean);
   const demoDirectory = options.demoDirectory || process.env.SKILL_DEMO_DIR || fileURLToPath(new URL('../public/', import.meta.url));
   const assets: Record<string, [string, string]> = {
@@ -34,16 +38,25 @@ export function createSkillServer(options: {corsOrigins?: string[]; demoDirector
         return;
       }
       const url = new URL(req.url || '/', 'http://localhost');
+      const localAddress = req.socket.localAddress || '127.0.0.1';
+      const localHost = localAddress.includes(':') ? `[${localAddress}]` : localAddress;
+      const responseDemoHost = demoHost ?? `http://${localHost}:${req.socket.localPort}`;
       const path = url.pathname;
       let asset = assets[path];
-      if (!asset && /^\/[a-z0-9][a-z0-9-]*$/.test(path)) {
+      let canonicalPath: string | undefined;
+      const skillPath = /^\/([a-z0-9][a-z0-9-]*)\/?$/.exec(path);
+      if (!asset && skillPath) {
         const catalog = await readCatalog();
-        if (catalog.skills.some(skill => path === `/${skill.id}`)) asset = ['index.html', 'text/html; charset=utf-8'];
+        const id = resolveSkillId(skillPath[1], catalog.skills.map(skill => skill.id));
+        if (id) {asset = ['index.html', 'text/html; charset=utf-8']; canonicalPath = `/${id}`;}
       }
       if (asset) {
         if (req.method !== 'GET' && req.method !== 'HEAD') {
           res.setHeader('Allow', 'GET, HEAD');
           await send(error(405, 'METHOD_NOT_ALLOWED', 'Method not allowed.')); return;
+        }
+        if (canonicalPath && path !== canonicalPath) {
+          res.writeHead(302, {Location: canonicalPath + url.search}); res.end(); return;
         }
         try {
           const body = await readFile(resolve(demoDirectory, asset[0]));
@@ -68,7 +81,7 @@ export function createSkillServer(options: {corsOrigins?: string[]; demoDirector
       }
       if (path === '/agent/health') {await send(Response.json({status: 'ok'})); return;}
       if (path === '/agent/api/categories') {await send(await listCategories()); return;}
-      if (method === 'GET') {await send(await listSkills(new Request(url))); return;}
+      if (method === 'GET') {await send(await listSkills(new Request(url), responseDemoHost)); return;}
       const chunks: Buffer[] = [];
       let size = 0;
       for await (const chunk of req) {
@@ -78,7 +91,7 @@ export function createSkillServer(options: {corsOrigins?: string[]; demoDirector
       }
       const request = new Request(url, {method: 'POST', headers: {'content-type': req.headers['content-type'] || ''}, body: Buffer.concat(chunks)});
       const action = path.endsWith('/view') ? 'view' : path.endsWith('/download') ? 'download' : undefined;
-      await send(await recordSkillAction(request, action));
+      await send(await recordSkillAction(request, action, responseDemoHost));
     } catch {
       if (!res.headersSent) await send(error(500, 'INTERNAL_ERROR', 'An unexpected error occurred.'));
       else res.end();

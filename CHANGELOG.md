@@ -6,6 +6,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Skills API list/view/download responses include `demo_url`, built from the canonical path and the origin configured with `--demo-host` or `SKILL_DEMO_HOST`. Trailing slashes are normalized; the default is the local API listener origin.
+
 - Eight installable data skills: Launchpad Trending, Token Security, Token Stats, Top Holder Analysis, Top Trader Analysis, LP Analysis, Smart Money Holders and KOL Buy/Sell Signal. Each includes purpose-specific inputs, use cases, Birdeye API references, normalized evidence tables, bounded CU plans and explicit missing-data/pagination limits.
 
 - Standalone `birdeye-api` entrypoint with `/price-surge` and Solana `/token-dd`, caller-supplied Birdeye keys in `X-API-KEY`, per-request server CU ceilings, durable checkpoints and graceful cancellation. Each request uses its caller's key without persisting it or falling back to server credentials; estimates need no key. The research API runs independently of the CLI web interface; clients must migrate the old UI `/price-surge` route to this service.
@@ -25,6 +27,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - An isolated tarball installation smoke test covering CLI version/help, offline estimates, bundled knowledge and the local web interface.
 
 ### Changed
+
+- Skill list, view and download responses now share canonical `skill_id`, `demo_path` and advertised aliases with both demo hosts. View/download/stat accept short IDs and Price Surge spelling aliases and count them under the existing canonical ID; download now returns the skill summary and installation instructions in `data`.
 
 - Eight token-data skill demos now open with task-specific summaries: launch screening, security controls, rolling activity, holder/trader comparisons, pool liquidity and cohort flow. Search, sorting, selection and timeline inspection replace the initial wall of tables; complete evidence remains available in disclosures, with missing values and scope limits preserved.
 
@@ -47,6 +51,10 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - CI now covers the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS.
 
 ### Fixed
+
+- Browser preview startup now reports `ADDRESS_IN_USE` with the occupied bind address and recovery instructions instead of a generic `INTERNAL_ERROR` when another process already uses the port.
+
+- Selecting a skill or switching to a category with a different selected skill now updates the demo URL. Browser Back/Forward restores the skill and its category without reloading the workspace or creating duplicate history entries.
 
 - Demo preview on port 8787 now opens current skills directly via `/<skill-id>` in browser and SQLite modes. Short skill IDs and Price Surge Screen aliases redirect to the canonical skill URL, preserving query parameters; unknown routes remain 404.
 
