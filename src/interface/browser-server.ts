@@ -1,6 +1,8 @@
 import {createServer} from "node:http";
 import {readFile} from "node:fs/promises";
 import {AppError} from "../shared.js";
+import {workflowCatalog} from "../workflows/registry.js";
+import {skillForPath} from "../skill-routes.js";
 export async function startBrowserInterface(bind="127.0.0.1:3000", publicUrlInput?:string) {
   const match=/^(127\.0\.0\.1|localhost):([0-9]+)$/.exec(bind);
   if(!match || Number(match[2])>65535)throw new AppError("INVALID_BIND","Browser preview supports localhost or 127.0.0.1. Deploy dist/browser to an HTTPS static host for public access.");
@@ -28,7 +30,12 @@ export async function startBrowserInterface(bind="127.0.0.1:3000", publicUrlInpu
     if(!allowedHosts.has(req.headers.host||"") || (req.headers.origin && !allowedOrigins.has(req.headers.origin))){
       res.writeHead(403);res.end("Origin is not allowed");return;
     }
-    const path=new URL(req.url||"/","http://localhost").pathname,asset=assets[path];
+    const url=new URL(req.url||"/","http://localhost"),path=url.pathname;
+    const skill=skillForPath(path,workflowCatalog());
+    if(req.method==="GET" && skill && path!==`/${skill.kind}`){
+      res.writeHead(302,{Location:`/${skill.kind}${url.search}`});res.end();return;
+    }
+    const asset=assets[path] ?? (skill ? assets["/"] : undefined);
     if(req.method!=="GET"||!asset){res.writeHead(404);res.end("Not found");return;}
     try{
       const body=await readFile(new URL("../browser/"+asset[0],import.meta.url));

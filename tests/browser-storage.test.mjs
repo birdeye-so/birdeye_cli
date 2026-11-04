@@ -61,7 +61,7 @@ test("browser public URL supports a loopback HTTPS proxy without trusting arbitr
  });
  try{
    assert.equal(app.url,"https://demo.example");
-   for(const path of ["/","/main.js","/main.css"]){
+   for(const path of ["/","/main.js","/main.css", "/skill-price-surge"]){
      const response=await proxy(path,{Host:"demo.example",Origin:"https://demo.example"});
      assert.equal(response.status,200);
      assert.equal(response.headers.get("x-frame-options"),"DENY");
@@ -71,5 +71,28 @@ test("browser public URL supports a loopback HTTPS proxy without trusting arbitr
    assert.equal((await proxy("/",{Host:"demo.example:444"})).status,403);
    assert.equal((await proxy("/",{Host:"demo.example",Origin:"https://evil.example"})).status,403);
    assert.equal((await proxy("/api/settings",{Host:"demo.example"},"POST")).status,404);
+ }finally{await app.close();}
+});
+
+
+test("browser preview opens current skill links and canonicalizes aliases without exposing unknown routes",async()=>{
+ const {startBrowserInterface}=await import("../dist/interface/browser-server.js");
+ const {workflowCatalog}=await import("../dist/workflows/registry.js");
+ const app=await startBrowserInterface("127.0.0.1:0");
+ try{
+   for(const skill of workflowCatalog().filter(item=>item.family==="data-skills")){
+     const response=await fetch(app.listenUrl+"/"+skill.kind);
+     assert.equal(response.status,200,skill.kind);
+     assert.match(response.headers.get("content-type"),/text\/html/);
+     assert.match(await response.text(),/id="root"/);
+   }
+   for(const path of ["/price-surge", "/price-surge-screen", "/prige-surge-screen", "/skill-price-surge/"]){
+     const response=await fetch(app.listenUrl+path+"?from=demo",{redirect:"manual"});
+     assert.equal(response.status,302,path);
+     assert.equal(response.headers.get("location"),"/skill-price-surge?from=demo");
+   }
+   for(const path of ["/unknown-skill","/skill-token-dd","/api/status","/skill-price-surge/extra"])
+     assert.equal((await fetch(app.listenUrl+path)).status,404,path);
+   assert.equal((await fetch(app.listenUrl+"/skill-price-surge",{method:"POST"})).status,404);
  }finally{await app.close();}
 });

@@ -48,6 +48,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Fixed
 
+- Demo preview on port 8787 now opens current skills directly via `/<skill-id>` in browser and SQLite modes. Short skill IDs and Price Surge Screen aliases redirect to the canonical skill URL, preserving query parameters; unknown routes remain 404.
+
 - Smart Money Profile and legacy wallet workflows now use one trade time cursor instead of the invalid two-bound request. Net-worth history sends and validates UTC `YYYY-MM-DD HH:mm:ss` values instead of Unix strings.
 - Token Security Check, Token DD, Contract DD and RugCheck Audit now share Solana authority normalization: explicit null authorities mean inactive, missing/malformed values remain unknown, and mint evidence falls back to `ownerAddress` instead of requiring an absent `mintable` field. Reports disclose the interpretation basis.
 

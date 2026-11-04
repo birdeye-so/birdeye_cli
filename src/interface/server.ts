@@ -31,6 +31,7 @@ import { previewCase } from "../workflow-preview.js";
 import {WorkflowImports,planImported,runImported,importRuntimeSchema} from "../workflow-import.js";
 import {githubDocuments,sourceDocument} from "../workflow-sources.js";
 import {demoCatalog,demoInputSchema,planDemo,runDemo} from "../demos.js";
+import {skillForPath} from "../skill-routes.js";
 
 const operationSchema = z
   .object({
@@ -684,7 +685,13 @@ export async function startInterface(options: ServerOptions) {
         "/main.js": ["main.js", "text/javascript"],
         "/main.css": ["main.css", "text/css"],
       };
-      const asset = assets[path];
+      const skill = skillForPath(path, workflowCatalog());
+      if (skill && path !== `/${skill.kind}`) {
+        res.writeHead(302, {Location: `/${skill.kind}${new URL(req.url || "/", origin).search}`});
+        res.end();
+        return;
+      }
+      const asset = assets[path] ?? (skill ? assets["/"] : undefined);
       if (!asset) {
         json(res, 404, { error: { message: "Not found." } });
         return;

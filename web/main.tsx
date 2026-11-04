@@ -1,4 +1,5 @@
 import {skillCategories,skillsInCategory} from "./skill-categories";
+import {skillForPath} from "../src/skill-routes";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BigNumber } from "bignumber.js";
@@ -394,7 +395,7 @@ function App() {
           await watch(s.activeRunId);
           return;
         }
-        const linkedSkill = s.cases.find((item: Data) => item.family === "data-skills" && window.location.pathname === `/${item.kind}`);
+        const linkedSkill = skillForPath<Data & {kind: string; family: string}>(window.location.pathname, s.cases);
         if (linkedSkill) {
           setSkillGroup(linkedSkill.category);
           chooseWorkflow(linkedSkill.kind);

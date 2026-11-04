@@ -74,6 +74,15 @@ test("localhost can open an interface bound to 127.0.0.1", async () => {
     const page = await fetch(localUrl);
     assert.equal(page.status, 200, await page.clone().text());
     assert.match(page.headers.get("content-type") || "", /text\/html/);
+    for (const path of ["/skill-price-surge", "/skill-kol-signal"]) {
+      const linked = await fetch(localUrl + path);
+      assert.equal(linked.status, 200, path);
+      assert.match(linked.headers.get("content-type") || "", /text\/html/);
+    }
+    const alias = await fetch(localUrl + "/prige-surge-screen?from=demo");
+    assert.equal(alias.status, 302);
+    assert.equal(alias.headers.get("location"), "/skill-price-surge?from=demo");
+    assert.equal((await fetch(localUrl + "/unknown-skill")).status, 404);
     const login = await fetch(localUrl + "/api/connect", {
       method: "POST",
       headers: { "Content-Type": "application/json", Origin: localUrl },

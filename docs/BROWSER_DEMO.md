@@ -14,6 +14,8 @@ node dist/index.js --format interface --storage browser --bind 127.0.0.1:8787
 
 The preview serves static assets only and does not open configuration, history or usage SQLite databases. It accepts loopback binds. Select the skill, input and CU budget in the browser; automatic CLI input runs and shared session budgets are not supported in this mode.
 
+Open a skill directly with `/<skill-id>`, for example `http://127.0.0.1:8787/skill-price-surge` or `/skill-kol-signal`. After opening or unlocking the browser workspace, the demo selects that skill without running provider requests. The same paths work through the public reverse proxy. Short IDs such as `/price-surge` redirect to the full ID; `/price-surge-screen` and `/prige-surge-screen` also redirect to `/skill-price-surge`. Unknown skill paths return 404.
+
 For the existing SQLite workspace, omit `--storage browser` or use `--storage sqlite`.
 
 ## Serve behind a public HTTPS reverse proxy
@@ -46,6 +48,8 @@ Keep existing specific locations such as `/agent/` pointed at the Skills API ser
 npm run build:browser
 # Publish the contents of dist/browser to an HTTPS static host.
 ```
+
+For direct skill links on a static host, configure a rewrite from each supported `/<skill-id>` to `/index.html`, and redirect trailing slashes to the path without a slash so relative JS/CSS assets resolve correctly. The built-in preview server handles these routes automatically.
 
 Host this on a **dedicated origin**, separate from apps that run third-party scripts or accept user HTML. Paths on the same origin share the same browser security context. Do not embed the demo in an iframe. The output contains no keys, server routes, SQLite, analytics or remote scripts.
 
