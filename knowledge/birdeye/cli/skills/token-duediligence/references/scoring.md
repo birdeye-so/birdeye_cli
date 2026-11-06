@@ -1,4 +1,4 @@
-# Token Due-Diligence · Node.js reconstruction
+# Token Due-Diligence Score · Node.js reconstruction
 
 Implementation: the CLI scoring module, version `token-dd-reconstructed-v1`. Entrypoint: the installed `token-dd-score` command. Requires Node >=22.16 and a built CLI. No Python runtime or duplicated scoring implementation.
 

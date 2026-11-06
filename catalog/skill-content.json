@@ -309,7 +309,7 @@
         "format": "text",
         "kind": "illustrative",
         "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
-        "output": "PUMP (pumpCm…Dfn) · Token Due-Diligence (advanced)\nScore 79.0 / 100 · Rating B · FAIR\nsecurity   holders   activity   liquidity   smart money\n   100        86        60         87            40\nLiquidity drawdown 2.5% · no hard blocks"
+        "output": "PUMP (pumpCm…Dfn) · Token Due-Diligence Score (advanced)\nScore 79.0 / 100 · Rating B · FAIR\nsecurity   holders   activity   liquidity   smart money\n   100        86        60         87            40\nLiquidity drawdown 2.5% · no hard blocks"
       }
     },
     "skill-contract-dd": {
@@ -326,7 +326,7 @@
       "just_say_to_your_agent": [
         "Check the contract controls and holder concentration of <TOKEN_ADDRESS>",
         "Is <TOKEN_ADDRESS> freezeable?",
-        "Run Contract Due-Diligence on <TOKEN_ADDRESS> without the price chart, to save CU"
+        "Run Contract Due-Diligence Score on <TOKEN_ADDRESS> without the price chart, to save CU"
       ],
       "supported_chains": [
         "solana"
@@ -340,7 +340,7 @@
         "format": "text",
         "kind": "illustrative",
         "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
-        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · Contract Due-Diligence\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nPrice pattern (15m, 7d): bounce_off_lows · trend flat · drawdown 25.1%\nHoneypot and LP lock: not available · no safety score"
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · Contract Due-Diligence Score\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nPrice pattern (15m, 7d): bounce_off_lows · trend flat · drawdown 25.1%\nHoneypot and LP lock: not available · no safety score"
       }
     },
     "skill-rugcheck-audit": {

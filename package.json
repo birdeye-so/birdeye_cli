@@ -65,7 +65,8 @@
     "catalog:sync": "npm run skills:sync && npm run landing:sync && npm run skills-api:sync && npm run skills:review",
     "skills:review": "node scripts/build-skill-review.mjs",
     "build:browser": "node scripts/build-browser.mjs",
-    "test:browser-storage": "node tests/browser-storage-browser.mjs"
+    "test:browser-storage": "node tests/browser-storage-browser.mjs",
+    "test:settings-sync": "node tests/settings-sync-browser.mjs"
   },
   "dependencies": {
     "bignumber.js": "9.3.1",

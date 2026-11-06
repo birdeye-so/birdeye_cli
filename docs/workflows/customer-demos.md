@@ -9,7 +9,7 @@ Các demo chạy trong tab **Demos** và qua lệnh `demo`. Đây là snapshot d
 | Research terminal / `terminal` | Research desk muốn shortlist token để tìm hiểu sâu | Market Opportunities core, discovery 20 hàng, enrich tối đa 3 token | Bảng giá/liquidity/volume và control observations theo token | 145 / 7; `--limit 2` là 105 / 5 |
 | DEX token inspector / `dex-inspector` | DEX muốn trang thông tin token và pool trước khi người dùng đi tới bước quote riêng | Token Research full | Market snapshot, pool page, security observations; raw pair/profile còn trong sources | 130 / 6 |
 | Wallet intelligence / `wallet-intelligence` | Trading platform cần tìm ví trước khi nghiên cứu | Smart Wallets fast → chọn ví → Wallet Analysis 7d/30d | Shortlist khử trùng lặp; PnL/holdings của ví được chọn | Discovery 110 / 4 (limit 3), 80 / 3 (limit 2); analysis 90 / 4 riêng |
-| Security signals / `security-signals` | Token review desk muốn xếp hàng kiểm tra theo ngưỡng | Contract Due-Diligence skill, bỏ nến | 3 rule + 38 metrics/quan sát bổ sung, bảng holder ví; source ID và thời gian | 70 / 3 |
+| Security signals / `security-signals` | Token review desk muốn xếp hàng kiểm tra theo ngưỡng | Contract Due-Diligence Score skill, bỏ nến | 3 rule + 38 metrics/quan sát bổ sung, bảng holder ví; source ID và thời gian | 70 / 3 |
 | Telegram research brief / `telegram-brief` | Community bot muốn trả lời lookup token bằng bản tin ngắn | Token DD skill | Plain-text message + đầy đủ JSON evidence để bot sử dụng | 50 / 3 |
 
 CU là output của catalog hiện tại, trước retries; nhánh phụ thuộc có thể gọi ít hơn nếu thiếu subjects. **Không phải báo giá billing hiện hành**: nghiên cứu ngày 2026-10-16 ghi nhận Security live 30 CU so với catalog 25; Wallet PnL summary live 30 so với catalog 20. Chưa đối chiếu toàn bộ giá nên không cộng ra tổng “live” mới. Xem [phạm vi và giới hạn workflow](migration-audit.md). `--max-cu` giới hạn theo catalog; không phải trần hóa đơn được upstream bảo đảm.
@@ -120,7 +120,7 @@ Backend production cần thêm giới hạn concurrency, timeout/cancel, kích t
 - **Liquidity:** attention khi giá trị quan sát nhỏ hơn minLiquidity; không suy ra có thể khớp giao dịch ở mức liquidity đó.
 - **Concentration:** attention khi top10HolderPercent từ Security API, đổi ratio × 100, vượt maxTop10Pct. Đây là token-account share, không thay bằng wallet share từ bước distribution.
 - **Freezeable:** chỉ boolean `true` là attention; `false` là not-observed. Missing, chuỗi không hợp lệ hoặc tỷ lệ ngoài [0,100] là unknown.
-- Kết luận tổng ưu tiên attention, tiếp theo unknown, cuối cùng no-configured-rule-triggered. Trạng thái cuối chỉ nói ba rule đã không kích hoạt, không phải token an toàn. Contract Due-Diligence vẫn có thể partial vì không có bằng chứng honeypot/LP-lock.
+- Kết luận tổng ưu tiên attention, tiếp theo unknown, cuối cùng no-configured-rule-triggered. Trạng thái cuối chỉ nói ba rule đã không kích hoạt, không phải token an toàn. Contract Due-Diligence Score vẫn có thể partial vì không có bằng chứng honeypot/LP-lock.
 
 Snapshot mới bổ sung bốn nhóm dữ liệu (38 trường) và bảng holder, tái sử dụng ba source hiện có, không tăng request/CU catalog:
 

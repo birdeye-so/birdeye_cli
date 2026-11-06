@@ -35,7 +35,7 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
-- Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligence, Contract DD → Contract Due-Diligence, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
+- Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligence Score, Contract DD → Contract Due-Diligence Score, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
 - Renamed categories: Market Discovery, Token Due Diligence, and Wallet & Smart Money. Category IDs are unchanged.
 - The demo UI shows the same Lucide icons as the Skills API `icon_url`, inlined so no remote images load.
 
@@ -68,6 +68,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - CI now covers the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS.
 
 ### Fixed
+
+- Keys saved in Settings now reach other open tabs and browsers sharing the local workspace when they are shown or focused, instead of requiring a reload. The save confirmation says the keys are active immediately, and focus refreshes keep unsaved AI settings edits.
 
 - Browser preview startup now reports `ADDRESS_IN_USE` with the occupied bind address and recovery instructions instead of a generic `INTERNAL_ERROR` when another process already uses the port.
 

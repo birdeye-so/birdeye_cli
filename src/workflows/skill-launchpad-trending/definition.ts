@@ -12,7 +12,7 @@ export default defineWorkflow({
   validate(a, issue) {
     if (a.stage === "near-graduation" && a.minProgress === undefined) issue("near-graduation requires minProgress");
     if (a.stage === "newly-listed" && (a.source !== "all" || a.minLiquidity !== undefined)) issue("newly-listed requires source all and no minLiquidity; use newly-created for these filters");
-    if (a.excludeFreezeable || a.maxTop10Pct !== undefined) issue("Launchpad discovery does not run security checks; use Token Security Check or Token Due-Diligence");
+    if (a.excludeFreezeable || a.maxTop10Pct !== undefined) issue("Launchpad discovery does not run security checks; use Token Security Check or Token Due-Diligence Score");
   },
   filterSubjects(rows, a) {
     return a.stage === "newly-listed" ? rows.filter(r => {const t = typeof r.liquidityAddedAt === "number" ? r.liquidityAddedAt : Date.parse(r.liquidityAddedAt)/1000; return Number.isFinite(t) && t >= a.from! && t <= a.to!;}) : rows;

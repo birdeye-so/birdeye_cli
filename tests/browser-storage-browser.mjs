@@ -35,7 +35,7 @@ try {
  await page.getByLabel("Base URL",{exact:true}).fill("https://provider.test/v1");
  await page.getByLabel("Model ID").fill("fixture");
  await page.getByRole("button",{name:"Save connections",exact:true}).click();
- await page.getByText("Connections saved.",{exact:false}).waitFor();
+ await page.getByText("Connections saved and active now.",{exact:false}).waitFor();
  assert.equal(await page.locator("#bkey").inputValue(),"");
  const envelope=()=>page.evaluate(async()=> {
    const db=await new Promise((resolve,reject)=>{const r=indexedDB.open("birdeye-browser-vault",1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});

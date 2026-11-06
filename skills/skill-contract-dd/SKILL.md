@@ -5,7 +5,7 @@ description: "Check a Solana token’s contract controls, holder concentration a
 
 <!-- Generated from src/workflows/skill-contract-dd/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
-# Contract Due-Diligence
+# Contract Due-Diligence Score
 
 Requires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.
 

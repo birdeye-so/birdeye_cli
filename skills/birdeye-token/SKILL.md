@@ -17,10 +17,10 @@ Require a Solana contract address. `token search <keyword>` returns candidates; 
 
 Choose the smallest workflow that answers the request:
 
-- Scored due diligence: `case skill-token-dd-score --address <mint> --dd-mode advanced`. Use [Token Due-Diligence](references/scoring.md) for pillar formulas, coverage, provisional CU and zero-call SQLite re-score. This is a separate reconstructed risk heuristic; the existing observation-only Token DD recipe remains available.
+- Scored due diligence: `case skill-token-dd-score --address <mint> --dd-mode advanced`. Use [Token Due-Diligence Score](references/scoring.md) for pillar formulas, coverage, provisional CU and zero-call SQLite re-score. This is a separate reconstructed risk heuristic; the existing observation-only Token DD recipe remains available.
 
-- Reference collection: `case skill-token-dd`, `case skill-contract-dd`, `case skill-rugcheck-audit`, `case skill-kline-pattern`, each with `--address <address>`. See [reference workflows](references/birdeye-data-skills.md) for steps, costs and adaptations. Token DD supports `--include list,advanced_security,risk_history`; Contract Due-Diligence supports `--skip-kline`; candle recipes accept `--resolution` and `--window-days`.
-- Kline scores are versioned heuristics using closed candles. Contract Due-Diligence and Token DD report observations, not the source's unsafe composite or Safe tier. RugCheck Audit uses Birdeye liquidity history, not RugCheck.org or price-derived liquidity; unresolved checks keep the report partial.
+- Reference collection: `case skill-token-dd`, `case skill-contract-dd`, `case skill-rugcheck-audit`, `case skill-kline-pattern`, each with `--address <address>`. See [reference workflows](references/birdeye-data-skills.md) for steps, costs and adaptations. Token DD supports `--include list,advanced_security,risk_history`; Contract Due-Diligence Score supports `--skip-kline`; candle recipes accept `--resolution` and `--window-days`.
+- Kline scores are versioned heuristics using closed candles. Contract Due-Diligence Score and Token DD report observations, not the source's unsafe composite or Safe tier. RugCheck Audit uses Birdeye liquidity history, not RugCheck.org or price-derived liquidity; unresolved checks keep the report partial.
 
 - `case token-due-diligence --address <address>`: identity and security checklist.
 - `case token-research --address <address>`: overview, security and top holders; `--depth full` adds markets, one pair and holder profile.

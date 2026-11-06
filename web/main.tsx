@@ -79,7 +79,7 @@ function Icon({ name, size = 19 }: { name: string; size?: number }) {
 }
 const titleFor: Record<string, string> = {
   "skill-trending-list": "Token Trending", "skill-smart-wallets": "Smart Wallets",
-  "skill-token-dd": "Token DD", "skill-contract-dd": "Contract Due-Diligence", "skill-rugcheck-audit": "RugCheck Audit", "skill-kline-pattern": "Token Kline Pattern",
+  "skill-token-dd": "Token DD", "skill-contract-dd": "Contract Due-Diligence Score", "skill-rugcheck-audit": "RugCheck Audit", "skill-kline-pattern": "Token Kline Pattern",
   "skill-wallet-score": "Wallet Score", "skill-wallet-style": "Wallet Style", "skill-wallet-analysis": "Wallet Analysis", "skill-smart-money-profile": "Smart Money Profile", "skill-smart-money-leaderboard": "Smart Money Leaderboard",
   "token-research": "Token research",
   "market-shortlist": "Market shortlist",
@@ -432,16 +432,24 @@ function App() {
     window.addEventListener("popstate", restoreSkill);
     return () => window.removeEventListener("popstate", restoreSkill);
   }, [status?.cases]);
+  // Other tabs and browsers share the server workspace; pick up their saved keys when this tab is shown or focused.
   useEffect(() => {
-    if (!status) return;
-    const p = status.config.ai.profiles[status.activeAiProfile];
+    const onFocus = () => {if (!document.hidden) void refresh();};
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {window.removeEventListener("focus", onFocus);document.removeEventListener("visibilitychange", onFocus);};
+  }, []);
+  const savedProfile = status ? JSON.stringify(status.config.ai.profiles[status.activeAiProfile] ?? null) : undefined;
+  useEffect(() => {
+    if (savedProfile === undefined) return;
+    const p = JSON.parse(savedProfile);
     setSettings((old) => ({
       ...old,
       baseUrl: p?.baseUrl || "",
       apiFormat: p ? (p.apiFormat || "chat-completions") : "responses",
       model: p?.model || "",
     }));
-  }, [status?.config, status?.activeAiProfile]);
+  }, [savedProfile]);
   async function connect(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -511,7 +519,7 @@ function App() {
       await api("/settings", payload);
       setSettings(old=>({...old,birdeyeApiKey:"",apiKey:""}));
       setSettings((s) => ({ ...s, birdeyeApiKey: "", apiKey: "" }));
-      setSaved(settings.persist && (!browserStorage || status?.configStorage?.persisted) ? "Connections saved. Available after unlocking or restarting." : "Connections applied to this session only.");
+      setSaved(settings.persist && (!browserStorage || status?.configStorage?.persisted) ? `Connections saved and active now. They remain after ${browserStorage ? "locking" : "restarting"}.` : "Connections active now for this session only.");
       setError("");
       await refresh();
     } catch (e: any) {

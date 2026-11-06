@@ -5,7 +5,7 @@ description: "Score any Solana token 0–100 with an A+ to F rating across five 
 
 <!-- Generated from src/workflows/skill-token-dd-score/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
-# Token Due-Diligence
+# Token Due-Diligence Score
 
 Requires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.
 
@@ -19,7 +19,7 @@ A Solana token address.
 
 ## Use
 
-Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token Due-Diligence combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.
+Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token Due-Diligence Score combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.
 
 Use cases:
 - Pre-buy check, grading a shortlist, auto-rating tokens in a bot or wallet.
