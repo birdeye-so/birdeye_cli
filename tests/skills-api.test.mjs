@@ -392,15 +392,15 @@ test('demo host configuration normalizes origins, overrides environment and igno
   }
 });
 
-test('Skills API executable accepts --demo-host and returns its URL in list, view and download', async () => {
+for (const portSource of ['argument', 'environment']) test(`Skills API executable accepts ${portSource} port and --demo-host`, async () => {
   const {createServer} = await import('node:net');
   const probe = createServer();
   await new Promise(done => probe.listen(0, '127.0.0.1', done));
   const port = probe.address().port;
   await new Promise(done => probe.close(done));
   const directory = await mkdtemp(resolve(tmpdir(), 'demo-host-cli-'));
-  const child = spawn(process.execPath, ['apps/skills-api/dist/index.js', '--demo-host', 'https://support-api.owland.xyz/'], {
-    env: {...process.env, SKILL_API_HOST: '127.0.0.1', SKILL_API_PORT: String(port), SKILL_CATALOG_PATH: resolve('apps/skills-api/catalog.json'), SKILL_STATS_DB_PATH: resolve(directory, 'stats.sqlite'), SKILL_DEMO_HOST: 'https://overridden.example'},
+  const child = spawn(process.execPath, ['apps/skills-api/dist/index.js', '--demo-host', 'https://support-api.owland.xyz/', ...(portSource === 'argument' ? ['--port', String(port)] : [])], {
+    env: {...process.env, SKILL_API_HOST: '127.0.0.1', SKILL_API_PORT: portSource === 'argument' ? 'invalid-overridden-value' : String(port), SKILL_CATALOG_PATH: resolve('apps/skills-api/catalog.json'), SKILL_STATS_DB_PATH: resolve(directory, 'stats.sqlite'), SKILL_DEMO_HOST: 'https://overridden.example'},
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const stopped = new Promise(done => child.once('close', done));

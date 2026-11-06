@@ -14,11 +14,13 @@ To deploy this directory independently, run `npm ci`, `npm run build`, then `npm
 | Environment variable | Default | Purpose |
 | --- | --- | --- |
 | `SKILL_API_HOST` | `127.0.0.1` | Bind address; use `0.0.0.0` for all interfaces |
-| `SKILL_API_PORT` | `3002` | HTTP port |
+| `SKILL_API_PORT` | `3003` | HTTP port; overridden by `--port` |
 | `SKILL_DEMO_HOST` | Local HTTP listener origin | Origin used for `demo_url`; overridden by `--demo-host` |
 | `SKILL_API_CORS_ORIGINS` | `*` | Allowed browser origins, comma-separated |
 | `SKILL_CATALOG_PATH` | Bundled `catalog.json` | Optional absolute path to a schema-v4 catalog |
 | `SKILL_STATS_DB_PATH` | `.birdeye/skill-stats.sqlite` | Persistent SQLite path |
+
+Choose a port with `npm run skills-api:start -- --port 3032 --demo-host https://support-api.owland.xyz/`. In this directory, use `npm start -- --port 3032` or `node dist/index.js --port 3032`. Precedence is `--port` → `SKILL_API_PORT` → `3003`; valid ports are integers from 1 to 65535. Existing deployments with `SKILL_API_PORT` keep that configured port. When moving an existing deployment from 3002 to 3003, update its reverse-proxy upstream to the same port.
 
 `--demo-host` accepts an HTTP(S) origin with an optional trailing `/`; it rejects credentials, paths, query strings and fragments. Each response uses `demo_url = normalized demo_host + demo_path`. CLI values override `SKILL_DEMO_HOST`; without either setting, links point to the local HTTP listener. Set the public HTTPS origin explicitly behind a reverse proxy. This option belongs to the Skills API process that generates JSON; the separate browser preview on port 8787 uses `--public-url` to allow its public Host/Origin.
 
@@ -105,10 +107,10 @@ const sampleJson = JSON.stringify(detail.sample_output.output, null, 2);
 `/download` now returns the canonical skill summary in `data`, including `skill_id`, `demo_path`, `demo_url`, `aliases`, `usage` (with `install_command`) and updated counters. `/stat` keeps returning `{"code":0,"reason":"","message":"success","data":null}` after committing, including `/stat` with `action: "view"`. A download POST records a download click; it does not transfer a file or prove successful installation. GET never changes counters. This service does not run the displayed commands.
 
 ```bash
-curl 'http://localhost:3002/agent/api/skills?category=token'
-curl 'http://localhost:3002/agent/api/skills/view' \
+curl 'http://localhost:3003/agent/api/skills?category=token'
+curl 'http://localhost:3003/agent/api/skills/view' \
   -H 'Content-Type: application/json' --data '{"skill_id":"skill-token-dd-score"}'
-curl 'http://localhost:3002/agent/api/skills/download' \
+curl 'http://localhost:3003/agent/api/skills/download' \
   -H 'Content-Type: application/json' --data '{"skill_id":"skill-token-dd-score"}'
 ```
 
