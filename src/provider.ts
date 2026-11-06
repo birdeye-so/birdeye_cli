@@ -9,7 +9,8 @@ export const profileSchema = z
     model: z.string().min(1).max(150),
     apiKeyEnv: z
       .string()
-      .regex(/^[A-Z_][A-Z0-9_]*$/)
+      // Empty explicitly disables environment lookup for UI-created profiles.
+      .regex(/^(?:[A-Z_][A-Z0-9_]*)?$/)
       .default("BIRDEYE_AI_API_KEY"),
     apiKey: z.string().max(4096).optional(),
   })

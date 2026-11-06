@@ -2256,21 +2256,21 @@
       "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-token.md",
       "title": "ohlcv token",
       "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-token",
-      "sha256": "cc7e15583e0bd30bdcfe61f14ffb1b63690ed65b6f810bc8509d7c110332607f",
+      "sha256": "777681f2020102013ce916e9540d102261da4a1127b3216cf100586967f8e53c",
       "sourceSha256": "cc7e15583e0bd30bdcfe61f14ffb1b63690ed65b6f810bc8509d7c110332607f"
     },
     {
       "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/pair.md",
       "title": "Trades - Pair",
       "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/pair",
-      "sha256": "f80e68912031e25092cd94656815af704ae436b83d1c0a9824e0ce35dea0ee72",
+      "sha256": "bf2e92c2f378933e25ecfbdc705284779592c00c2a92ce2ec0dba553b38e2aa1",
       "sourceSha256": "f80e68912031e25092cd94656815af704ae436b83d1c0a9824e0ce35dea0ee72"
     },
     {
       "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-1.md",
       "title": "price",
       "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-1",
-      "sha256": "7bbc9e81fcd388ab99fd0ddd54895e4352def1eabfec31e0dc9e585a75dea0cf",
+      "sha256": "ba0262a0ba1c85b75a97467b079c49e4a1a38a63f6b4e6821a7960d5558c5d1d",
       "sourceSha256": "7bbc9e81fcd388ab99fd0ddd54895e4352def1eabfec31e0dc9e585a75dea0cf"
     },
     {

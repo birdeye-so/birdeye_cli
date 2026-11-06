@@ -4,6 +4,13 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ## [Unreleased]
 
+### Security
+
+- Reject malformed browser-preview request URLs with HTTP 400 without terminating the server.
+- Bind shared-interface environment credentials to startup profile names, variable names and provider origins; UI-created or redirected profiles require explicit credentials.
+- Deduplicate public skill statistics by keyed client IP, skill and action for 24 hours; limit writes to 60 per client per minute and trust forwarded addresses only from configured proxy IPs.
+- Upgrade Zod to 4.6.7 in all packages. Remove credential literals from bundled documentation and sanitize future imports; add source/history, package-content and dependency security gates.
+
 ### Added
 
 - Skills API list/view/download responses include `demo_url`, built from the canonical path and the origin configured with `--demo-host` or `SKILL_DEMO_HOST`. Trailing slashes are normalized; the default is the local API listener origin.

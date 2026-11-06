@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { isPrivatePath } from './public-files.mjs';
+import {credentialFindings} from './lib/credential-scan.mjs';
 
 const root = process.cwd();
 const address = 'So11111111111111111111111111111111111111112';
@@ -45,6 +46,11 @@ try {
   const score = join(prefix, 'bin', 'token-dd-score');
   const api = join(prefix, 'bin', 'birdeye-api');
   assert.ok(existsSync(cli) && existsSync(score) && existsSync(api), 'npm must create all three executable links');
+  for (const path of files) {
+    const contents = readFileSync(join(prefix, 'lib/node_modules', pkg.name, path), 'utf8');
+    const findings = credentialFindings(contents);
+    assert.equal(findings.length, 0, `Credential-shaped literal in packaged file: ${path}`);
+  }
   assert.equal(run(cli, ['--version']).trim(), pkg.version);
   assert.match(run(cli, ['--help']), /Usage: birdeye-cli/);
   assert.match(run(score, ['--help']), /Usage: token-dd-score/);

@@ -235,7 +235,7 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'x'.repeat(9000)})).status, 413);
     const response = await fetch(`${base}/agent/api/skills?category=token`);
     const skill = (await response.json()).data.list.find(item => item.skill_id === 'skill-token-dd-score');
-    assert.equal(skill.view_count, 2);
+    assert.equal(skill.view_count, 1);
     assert.equal(skill.download_count, 1);
     assert.equal((await post('/agent/api/skills/view', {workflow_id: 'skill-token-dd-score'})).status, 400);
     assert.equal((await post('/agent/api/skills/view', {skill_id: 'birdeye-token'})).status, 404);
@@ -308,12 +308,13 @@ test('API and both demo hosts share canonical identities for all current skills 
     const {createSkillServer} = await bundle('apps/skills-api/src/server.ts', resolve(directory, 'server.mjs'));
     const {startBrowserInterface} = await import('../dist/interface/browser-server.js');
     await writeFile(resolve(directory, 'index.html'), '<!doctype html><div id="root"></div>');
-    server = createSkillServer({demoDirectory: directory, demoHost: 'https://support-api.owland.xyz/'});
+    server = createSkillServer({demoDirectory: directory, demoHost: 'https://support-api.owland.xyz/', trustedProxyAddresses: ['127.0.0.1']});
     await new Promise(done => server.listen(0, '127.0.0.1', done));
     const origin = `http://127.0.0.1:${server.address().port}`;
     preview = await startBrowserInterface('127.0.0.1:0');
     const catalog = JSON.parse(await readFile('apps/skills-api/catalog.json', 'utf8'));
-    const post = (action, id) => fetch(`${origin}/agent/api/skills/${action}`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({skill_id: id})});
+    let clientIndex = 1;
+    const post = (action, id) => fetch(`${origin}/agent/api/skills/${action}`, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Forwarded-For': `192.0.2.${clientIndex}`}, body: JSON.stringify({skill_id: id})});
     for (const skill of catalog.skills) {
       const aliases = [skill.id.slice(6), ...(skill.id === 'skill-price-surge' ? ['price-surge-screen', 'skill-price-surge-screen', 'prige-surge', 'skill-prige-surge', 'prige-surge-screen', 'skill-prige-surge-screen'] : [])];
       for (const id of [...aliases, skill.id]) {
@@ -340,15 +341,16 @@ test('API and both demo hosts share canonical identities for all current skills 
       assert.equal(counted.id, skill.id);
       assert.equal(counted.demo_path, `/${skill.id}`);
       assert.equal(counted.demo_url, `https://support-api.owland.xyz/${skill.id}`);
-      assert.equal(counted.view_count, aliases.length + 1);
-      assert.equal(counted.download_count, aliases.length + 1);
+      assert.equal(counted.view_count, 1);
+      assert.equal(counted.download_count, 1);
       assert.deepEqual(counted.aliases, aliases);
+      clientIndex++;
     }
     for (const action of ['view', 'download']) assert.equal((await post(action, 'skill-not-real')).status, 404);
-    const stat = await fetch(origin + '/agent/api/skills/stat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({skill_id: 'skill-prige-surge', action: 'view'})});
+    const stat = await fetch(origin + '/agent/api/skills/stat', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Forwarded-For': '192.0.2.1'}, body: JSON.stringify({skill_id: 'skill-prige-surge', action: 'view'})});
     assert.equal(stat.status, 200);
     const list = (await (await fetch(origin + '/agent/api/skills')).json()).data.list;
-    assert.equal(list.find(item => item.skill_id === 'skill-price-surge').view_count, 9);
+    assert.equal(list.find(item => item.skill_id === 'skill-price-surge').view_count, 1);
   } finally {
     if (server?.listening) await new Promise(done => {server.close(done); server.closeAllConnections();});
     await preview?.close();

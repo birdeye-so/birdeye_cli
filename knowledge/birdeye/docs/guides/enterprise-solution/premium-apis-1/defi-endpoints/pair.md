@@ -48,7 +48,7 @@ X-API-KEY: YOUR_API_KEY
 ```shell
 curl --request GET \
      --url 'https://public-api.birdeye.so/defi/txs/pair?address=842NwDnKYcfMRWAYqsD3hoTWXKKMi28gVABtmaupFcnS&tx_type=swap&sort_type=desc' \
-     --header 'X-API-KEY:c2d6c8d2a892b39c0514'
+     --header 'X-API-KEY:YOUR_API_KEY'
 ```
 
 **Response:** The response includes a list of transaction items involving the specified token pair, each accompanied by transaction details and source information.

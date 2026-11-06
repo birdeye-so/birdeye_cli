@@ -6,12 +6,15 @@ import {readCatalog} from './catalog.js';
 import {resolveSkillId} from './skill-identity.js';
 import {normalizeDemoHost} from './demo-host.js';
 import { listSkills, recordSkillAction, listCategories } from './api.js';
+import {clientIdentity, proxyAddresses, WriteLimiter} from './client-policy.js';
 
 function error(status: number, reason: string, message: string) {
   return Response.json({code: status, reason, message, data: null}, {status});
 }
 
-export function createSkillServer(options: {corsOrigins?: string[]; demoDirectory?: string; demoHost?: string} = {}) {
+export function createSkillServer(options: {corsOrigins?: string[]; demoDirectory?: string; demoHost?: string; trustedProxyAddresses?: string[]} = {}) {
+  const trustedProxies = proxyAddresses(options.trustedProxyAddresses ?? (process.env.SKILL_API_TRUSTED_PROXIES || '').split(',').map(value => value.trim()).filter(Boolean));
+  const limiter = new WriteLimiter();
   const configuredDemoHost = options.demoHost ?? process.env.SKILL_DEMO_HOST;
   const demoHost = configuredDemoHost === undefined ? undefined : normalizeDemoHost(configuredDemoHost);
   const origins = options.corsOrigins ?? (process.env.SKILL_API_CORS_ORIGINS || '*').split(',').map(value => value.trim()).filter(Boolean);
@@ -82,6 +85,13 @@ export function createSkillServer(options: {corsOrigins?: string[]; demoDirector
       if (path === '/agent/health') {await send(Response.json({status: 'ok'})); return;}
       if (path === '/agent/api/categories') {await send(await listCategories()); return;}
       if (method === 'GET') {await send(await listSkills(new Request(url), responseDemoHost)); return;}
+      const client = clientIdentity(req, trustedProxies);
+      const retryAfter = limiter.take(client);
+      if (retryAfter) {
+        res.setHeader('Retry-After', String(retryAfter));
+        req.resume();
+        await send(error(429, 'RATE_LIMITED', 'Too many statistic requests. Retry later.')); return;
+      }
       const chunks: Buffer[] = [];
       let size = 0;
       for await (const chunk of req) {
@@ -91,7 +101,7 @@ export function createSkillServer(options: {corsOrigins?: string[]; demoDirector
       }
       const request = new Request(url, {method: 'POST', headers: {'content-type': req.headers['content-type'] || ''}, body: Buffer.concat(chunks)});
       const action = path.endsWith('/view') ? 'view' : path.endsWith('/download') ? 'download' : undefined;
-      await send(await recordSkillAction(request, action, responseDemoHost));
+      await send(await recordSkillAction(request, action, responseDemoHost, client));
     } catch {
       if (!res.headersSent) await send(error(500, 'INTERNAL_ERROR', 'An unexpected error occurred.'));
       else res.end();

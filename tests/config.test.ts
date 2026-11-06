@@ -125,7 +125,7 @@ test("UI settings persist by default across restarts; session edits and failed w
     assert.equal(reloaded.birdeyeConfigured, true);
     assert.equal(reloaded.ai.profiles.research.configured, true);
     assert.equal(reloaded.ai.profiles.research.apiFormat, "responses");
-    assert.deepEqual(readConfig(dir), config);
+    assert.deepEqual(readConfig(dir), {...config, ai: {...config.ai, profiles: {research: {...config.ai.profiles.research, apiKeyEnv: ""}}}});
     const {apiKey: _, ...profile} = config.ai.profiles.research;
     await request("/api/settings", {profile: {...profile, model: "persisted-edit"}});
     assert.equal(readConfig(dir).ai.profiles.research.apiKey, "fixture-ai-secret");

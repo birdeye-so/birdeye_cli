@@ -42,7 +42,7 @@ export async function listSkills(request: Request, demoHost?: string) {
   } catch { return unavailable(); }
 }
 
-export async function recordSkillAction(request: Request, action?: SkillAction, demoHost?: string) {
+export async function recordSkillAction(request: Request, action?: SkillAction, demoHost?: string, client?: string) {
   if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
     return response(415, 'UNSUPPORTED_MEDIA_TYPE', 'Use Content-Type: application/json.');
   }
@@ -62,7 +62,7 @@ export async function recordSkillAction(request: Request, action?: SkillAction, 
     }
     const store = openSkillStats();
     try {
-      const counts = store.increment(skill.id, input.action);
+      const counts = store.increment(skill.id, input.action, client);
       if (action === 'view' || action === 'download') {
         const {detail, ...summary} = skill;
         return response(200, '', 'success', {...summary, ...(action === 'view' ? detail : {}), ...counts,

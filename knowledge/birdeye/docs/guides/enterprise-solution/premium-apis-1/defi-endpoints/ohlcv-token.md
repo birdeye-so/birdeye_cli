@@ -53,7 +53,7 @@ curl -X 'GET' \
   'https://public-api.birdeye.so/defi/ohlcv?address=So11111111111111111111111111111111111111112&type=15m&time_from=1691997839&time_to=1692266639' \
   -H 'accept: application/json' \
   -H 'x-chain: solana' \
-  -H 'X-API-KEY: 061eef71caa947a3b82c8dbda8bbdf63'
+  -H 'X-API-KEY: YOUR_API_KEY'
 ```
 
 **Example Response:**

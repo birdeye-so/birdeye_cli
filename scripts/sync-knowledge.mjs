@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,dirname,resolve} from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {redactCredentialExamples} from './lib/credential-scan.mjs';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {isPrivatePath} from './public-files.mjs';
@@ -24,6 +25,7 @@ function resolveRefs(value,spec,seen=new Set()) {
 }
 const entries=[];let operationPages=0;
 function add(id,body,source,sourceHash) {
+ body=redactCredentialExamples(body);
  const title=(body.match(/^title:\s*["']?(.+?)["']?\s*$/m)?.[1] || body.match(/^# (.+)$/m)?.[1] || id.split('/').at(-1)).replace(/["']$/,'');
  const output=join(target,id);mkdirSync(dirname(output),{recursive:true});writeFileSync(output,body);
  entries.push({id,title,source,sha256:hash(body),sourceSha256:sourceHash});

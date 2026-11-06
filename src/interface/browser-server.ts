@@ -30,7 +30,15 @@ export async function startBrowserInterface(bind="127.0.0.1:3000", publicUrlInpu
     if(!allowedHosts.has(req.headers.host||"") || (req.headers.origin && !allowedOrigins.has(req.headers.origin))){
       res.writeHead(403);res.end("Origin is not allowed");return;
     }
-    const url=new URL(req.url||"/","http://localhost"),path=url.pathname;
+    let url: URL;
+    try {
+      const target=req.url || "/";
+      if (!target.startsWith("/") || target.startsWith("//")) throw new Error("Invalid request target");
+      url=new URL(target,"http://localhost");
+    } catch {
+      res.writeHead(400);res.end("Invalid request URL");return;
+    }
+    const path=url.pathname;
     const skill=skillForPath(path,workflowCatalog());
     if(req.method==="GET" && skill && path!==`/${skill.kind}`){
       res.writeHead(302,{Location:`/${skill.kind}${url.search}`});res.end();return;

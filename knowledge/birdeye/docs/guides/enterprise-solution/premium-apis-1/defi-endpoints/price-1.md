@@ -50,7 +50,7 @@ curl -X 'GET' \
   --url 'https://public-api.birdeye.so/defi/price?check_liquidity=1000.25&include_liquidity=true&address=So11111111111111111111111111111111111111112' \
   -H 'accept: application/json' \
   -H 'x-chain: solana' \
-  -H 'X-API-KEY: 061eef71caa947a3b82c8dbda8bbdf63'
+  -H 'X-API-KEY: YOUR_API_KEY'
 ```
 
 **Example Response:**

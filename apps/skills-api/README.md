@@ -161,7 +161,11 @@ The public catalog uses `/agent/api/skills` and `/agent/api/categories`. The int
 
 Writes use atomic UPSERT, WAL, FULL synchronous durability and a five-second busy timeout. Multiple processes on one host must share the same database file; independent replicas/files do not share counts. Ephemeral serverless storage and WAL on network filesystems are unsupported.
 
-Counts represent accepted events, not unique visitors. Each successful POST adds one, including retries; there is no deduplication, authentication or bot filtering. A lost response after commit does not imply that retrying is exactly-once.
+HTTP view/download/stat requests are limited to 60 per client IP per minute per process; excess requests return 429 with Retry-After. GET catalog requests remain available. A shared SQLite transaction counts each client IP / skill / action at most once in a rolling 24-hour window, including across restarts and processes. Client addresses are stored only as keyed hashes. Expired records are pruned and the deduplication table is capped at 100,000 entries; when full, new events are served without incrementing counters.
+
+Forwarded headers are ignored by default. Behind a reverse proxy, set `SKILL_API_TRUSTED_PROXIES` to its exact socket IP addresses (comma-separated, for example `127.0.0.1,::1`). The proxy must overwrite or append the real client address to `X-Forwarded-For`. The server walks the chain from the trusted socket toward the first untrusted hop. Without this configuration, clients behind one proxy share its limits and counts.
+
+Counters measure deduplicated client-IP events, not verified downloads or unique people. NAT users share an identity and distributed bots can use multiple IPs. Keep edge rate limits for public deployments; independent database replicas do not share deduplication.
 
 `npm run test:skills-api` covers HTTP routes/CORS, filtering, validation, persistence, compatibility migration and 3,600 increments across six processes.
 

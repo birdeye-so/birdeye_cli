@@ -174,6 +174,10 @@ export async function startInterface(options: ServerOptions) {
     );
   const dir = options.dir || configDir();
   let config = options.config || readConfig(dir);
+  // Only the process owner can authorize environment credentials, via startup
+  // configuration. A Settings session cannot create or move these bindings.
+  const environmentBindings = new Map(Object.entries(config.ai.profiles).map(([name, profile]) =>
+    [name, {origin: new URL(profile.baseUrl).origin, variable: profile.apiKeyEnv}] as const));
   let settingsPersisted = !options.config;
   const autoConnect = loopback && !options.publicUrl && !options.requireCode;
   const connectCode = randomBytes(24).toString("base64url");
@@ -569,6 +573,9 @@ export async function startInterface(options: ServerOptions) {
           if (input.profile) {
             validateProviderUrl(input.profile.baseUrl);
             const prior = updated.ai.profiles[input.profileName];
+            const binding = environmentBindings.get(input.profileName);
+            const apiKeyEnv = binding && binding.origin === new URL(input.profile.baseUrl).origin &&
+              binding.variable === input.profile.apiKeyEnv ? binding.variable : "";
             // A key belonging to a different origin must never follow a profile URL change.
             const preserve =
               prior &&
@@ -578,6 +585,7 @@ export async function startInterface(options: ServerOptions) {
                 : undefined;
             updated.ai.profiles[input.profileName] = {
               ...input.profile,
+              apiKeyEnv,
               apiFormat: input.profile.apiFormat ?? prior?.apiFormat ?? "chat-completions",
               apiKey: input.profile.apiKey || preserve,
             };

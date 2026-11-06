@@ -113,7 +113,7 @@ export function activeProfile(
   return config.ai.profiles[name || config.ai.defaultProfile];
 }
 export function aiKey(profile: Profile) {
-  return process.env[profile.apiKeyEnv] || profile.apiKey || "";
+  return (profile.apiKeyEnv ? process.env[profile.apiKeyEnv] : undefined) || profile.apiKey || "";
 }
 export function safeConfig(config: Config) {
   return {

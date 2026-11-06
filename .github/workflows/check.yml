@@ -26,8 +26,11 @@ jobs:
         run: |
           node scripts/check-changelog.mjs --release
           node scripts/check-public-files.mjs --history
+          node scripts/check-secrets.mjs --history
       - name: Reject internal documents in the source tree
         run: node scripts/check-public-files.mjs
+      - name: Reject credential literals in the source tree
+        run: node scripts/check-secrets.mjs
   check:
     strategy:
       fail-fast: false
@@ -47,6 +50,11 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci
+      - name: Check dependency advisories
+        run: |
+          npm audit --audit-level=high
+          npm audit --prefix apps/skills-api --audit-level=high
+          npm audit --prefix apps/landing --audit-level=high
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:package
