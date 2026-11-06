@@ -1,6 +1,6 @@
 <!-- Generated from skills/token-duediligence/references/scoring.md; edit the source and run npm run skills:sync. -->
 
-# Token DD Score · Node.js reconstruction
+# Token Due-Diligent Score · Node.js reconstruction
 
 Implementation: the CLI scoring module, version `token-dd-reconstructed-v1`. Entrypoint: the installed `token-dd-score` command. Requires Node >=22.16 and a built CLI. No Python runtime or duplicated scoring implementation.
 

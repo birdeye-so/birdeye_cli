@@ -22,12 +22,12 @@ Additional corrections: V3 token discovery supports documented `symbols`; smart-
 
 | Skill | Reviewed request chain | Regression coverage |
 | --- | --- | --- |
-| Trending List | V3 list or native trending | Documented V3 sort/limit fields and data.items; source-specific input validation |
+| Token Trending | V3 list or native trending | Documented V3 sort/limit fields and data.items; source-specific input validation |
 | Smart Wallets | Smart-money list → token traders → optional wallet summary/holdings/positions | Raw/list/data/success variants, selected contract → owner wallet, dedup, fast shortlist, deep execution |
 | Token DD | Overview + security + money flow; optional holders/profile/liquidity | GET/POST methods, raw money-flow array, optional branches |
-| Contract DD | Overview + security + distribution + optional candles | Distribution body shape, candle window, skip-kline |
+| Contract Due-Diligent | Overview + security + distribution + optional candles | Distribution body shape, candle window, skip-kline |
 | RugCheck Audit | Overview + security + holders + profile + liquidity | Snapshot fields, resolution costs, dynamic budgets |
-| Kline Pattern | OHLCV V3 range | Closed candles, at least eight candles, price/candle fields |
+| Token Kline Pattern | OHLCV V3 range | Closed candles, at least eight candles, price/candle fields |
 | Wallet Score | 30d/90d/24h summaries + positions + optional holdings/first-funded | Canonical unique_tokens, fixed scopes, formula inputs and score caps |
 | Wallet Style | Summary + positions + optional first-funded/transactions | Matching duration/method, counts and documented PnL ratios |
 | Wallet Analysis | Requested summaries + positions + optional holdings/funding/transactions | Each period, optional skips, GET/POST contracts |

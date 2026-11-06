@@ -3,17 +3,17 @@
   "categories": [
     {
       "id": "discover",
-      "title": "Market discovery",
+      "title": "Market Discovery",
       "description": "Find tokens and activity worth a closer look."
     },
     {
       "id": "token",
-      "title": "Token research",
+      "title": "Token Due Diligence",
       "description": "Understand security, ownership and liquidity."
     },
     {
       "id": "wallet",
-      "title": "Wallet intelligence",
+      "title": "Wallet & Smart Money",
       "description": "Explore holdings, performance and trading behavior."
     },
     {
@@ -1194,7 +1194,7 @@
     },
     {
       "id": "skill-lp-analysis",
-      "title": "LP Analysis",
+      "title": "Liquidity Pool Analysis",
       "category": "token",
       "description": "Analyze where and how deep a Solana token can be traded — its top pools with venue, liquidity, 24h volume and age, plus total and exit liquidity over time.",
       "usage": {
@@ -1807,12 +1807,12 @@
     },
     {
       "id": "skill-token-dd-score",
-      "title": "Token DD",
+      "title": "Token Due-Diligent Score",
       "category": "token",
       "description": "Score any Solana token 0–100 with an A+ to F rating across five pillars — security, holder concentration, trading activity, liquidity and smart money — showing each pillar’s points and the reason behind every deduction.",
       "usage": {
         "input": "A Solana token address. Supported chains in this CLI: solana.",
-        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.\n\nUse cases:\n- Pre-buy check, grading a shortlist, auto-rating tokens in a bot or wallet.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Standard and Advanced scores are not comparable\n- Checks without data are left out of the score\n- Advanced samples top holders, not every holder\n\n### Execution notes\n\n- Standard uses overview/security only; advanced adds holder, flow and liquidity evidence. Scores from different modes or coverage are not comparable.\n- Advanced distribution covers 10–50 top wallets, holders one page of up to 100, and liquidity 1–100 candles. Labeled cohorts can overlap; these samples are not the full holder population.\n- Liquidity OHLC reserves a provisional 30 CU, not a verified billing upper bound. Missing checks are excluded from scored coverage and cannot establish safety.\n- Only the default reconstructed scoring preset is implemented; canonical-mint/LST checks, pace and alternative presets are unavailable. Local re-scoring cannot fetch missing or wider-window evidence.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
+        "instructions": "Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token Due-Diligent Score combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.\n\nUse cases:\n- Pre-buy check, grading a shortlist, auto-rating tokens in a bot or wallet.\n\n## Supported chains and limitations\n\nSupported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.\n\n- Standard and Advanced scores are not comparable\n- Checks without data are left out of the score\n- Advanced samples top holders, not every holder\n\n### Execution notes\n\n- Standard uses overview/security only; advanced adds holder, flow and liquidity evidence. Scores from different modes or coverage are not comparable.\n- Advanced distribution covers 10–50 top wallets, holders one page of up to 100, and liquidity 1–100 candles. Labeled cohorts can overlap; these samples are not the full holder population.\n- Liquidity OHLC reserves a provisional 30 CU, not a verified billing upper bound. Missing checks are excluded from scored coverage and cannot establish safety.\n- Only the default reconstructed scoring preset is implemented; canonical-mint/LST checks, pace and alternative presets are unavailable. Local re-scoring cannot fetch missing or wider-window evidence.\n\nLive requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.",
         "preview_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short --estimate-cu",
         "run_command": "birdeye-cli case skill-token-dd-score --address <SOLANA_ADDRESS> --dd-mode advanced --short",
         "result": "Five scored pillars, coverage, drawdown gate and an auditable risk rating. Standard uses two calls; advanced uses seven. Saved evidence can be re-scored locally at zero CU.",
@@ -2098,14 +2098,14 @@
             "format": "text",
             "kind": "illustrative",
             "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
-            "output": "PUMP (pumpCm…Dfn) · Token DD (advanced)\nScore 79.0 / 100 · Rating B · FAIR\nsecurity   holders   activity   liquidity   smart money\n   100        86        60         87            40\nLiquidity drawdown 2.5% · no hard blocks"
+            "output": "PUMP (pumpCm…Dfn) · Token Due-Diligent Score (advanced)\nScore 79.0 / 100 · Rating B · FAIR\nsecurity   holders   activity   liquidity   smart money\n   100        86        60         87            40\nLiquidity drawdown 2.5% · no hard blocks"
           }
         }
       }
     },
     {
       "id": "skill-trending-list",
-      "title": "Trending List",
+      "title": "Token Trending",
       "category": "discover",
       "description": "Rank trending Solana tokens by trending rank, volume or liquidity over 1h to 24h, showing price, price and volume change, market cap, FDV and liquidity.",
       "usage": {
@@ -2506,7 +2506,7 @@
     },
     {
       "id": "skill-contract-dd",
-      "title": "Contract DD",
+      "title": "Contract Due-Diligent",
       "category": "token",
       "description": "Check a Solana token’s contract controls, holder concentration and optional candle pattern, with missing controls kept unknown and no overall safety score.",
       "usage": {
@@ -2530,7 +2530,7 @@
         "just_say_to_your_agent": [
           "Check the contract controls and holder concentration of <TOKEN_ADDRESS>",
           "Is <TOKEN_ADDRESS> freezeable?",
-          "Run Contract DD on <TOKEN_ADDRESS> without the price chart, to save CU"
+          "Run Contract Due-Diligent on <TOKEN_ADDRESS> without the price chart, to save CU"
         ],
         "supported_chains": [
           "solana"
@@ -2725,7 +2725,7 @@
             "format": "text",
             "kind": "illustrative",
             "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
-            "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · Contract DD\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nPrice pattern (15m, 7d): bounce_off_lows · trend flat · drawdown 25.1%\nHoneypot and LP lock: not available · no safety score"
+            "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · Contract Due-Diligent\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nPrice pattern (15m, 7d): bounce_off_lows · trend flat · drawdown 25.1%\nHoneypot and LP lock: not available · no safety score"
           }
         }
       }
@@ -2955,7 +2955,7 @@
     },
     {
       "id": "skill-kline-pattern",
-      "title": "Kline Pattern",
+      "title": "Token Kline Pattern",
       "category": "token",
       "description": "Read a Solana token’s candlestick chart at a chosen resolution and window, detect the price pattern, score it 0–100 and mark observed support and resistance levels.",
       "usage": {

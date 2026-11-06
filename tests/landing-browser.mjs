@@ -117,7 +117,7 @@ try {
   await page.getByRole('link', {name: 'Install with npm', exact: true}).click();
   await page.getByRole('heading', {name: 'Install Birdeye CLI and agent skills', exact: true}).waitFor();
   await page.goto(`${origin}/embed#workflow/skill-token-dd-score`);
-  await page.getByRole('heading', {name: 'Token DD', exact: true}).waitFor();
+  await page.getByRole('heading', {name: 'Token Due-Diligent Score', exact: true}).waitFor();
   assert.equal(await page.getByRole('navigation', {name: 'Main navigation'}).count(), 0);
   await page.getByText('Use with your AI agent', {exact: true}).click();
   assert.match(await page.getByRole('article').innerText(), /--skill skill-token-dd-score/);

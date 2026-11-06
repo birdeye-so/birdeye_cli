@@ -3,17 +3,17 @@
   "categories": [
     {
       "id": "discover",
-      "title": "Market discovery",
+      "title": "Market Discovery",
       "description": "Find tokens and activity worth a closer look."
     },
     {
       "id": "token",
-      "title": "Token research",
+      "title": "Token Due Diligence",
       "description": "Understand security, ownership and liquidity."
     },
     {
       "id": "wallet",
-      "title": "Wallet intelligence",
+      "title": "Wallet & Smart Money",
       "description": "Explore holdings, performance and trading behavior."
     },
     {

@@ -1,9 +1,9 @@
 ---
 name: skill-top-holder-analysis
-description: "Inspect the largest holders of a Solana token and their share of supply. Use to investigate ownership concentration and labeled holder groups."
+description: "Break down a Solana token’s top holders by share of supply with top-N concentration, and group holders by tag — dev, sniper, bundler, insider — showing each group’s holding, buy/sell volume, average buy price and PnL."
 ---
 
-<!-- Generated from src/workflows/skill-top-holder-analysis/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-top-holder-analysis/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Top Holder Analysis
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Inspect the largest holders of a Solana token and their share of supply. Use to investigate ownership concentration and labeled holder groups.
+Break down a Solana token’s top holders by share of supply with top-N concentration, and group holders by tag — dev, sniper, bundler, insider — showing each group’s holding, buy/sell volume, average buy price and PnL.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address, top-n (10–50), and optional depth full.
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Uses wallet-based holder distribution rather than token-account totals. --depth full adds holder-profile. Cohort shares can overlap and are not added; a label alone does not establish common ownership.
 
 Use cases:
-- Find the largest holders and how much supply the top ten control.
-- Add labeled cohort context when investigating concentrated ownership.
+- Spotting concentration and insider risk; seeing who could dump.
 
 Preview without API calls:
 
@@ -48,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Top 10–50 wallets per run
+- Supply share is by wallet, not token account
+
+### Execution notes
 
 - One distribution page of 10–50 wallets. Top-10 is unavailable when fewer than ten valid, distinct rows are returned.
 - Supply percentages use the distribution provider's denominator; token-account concentration from security is not relabeled as wallet concentration.

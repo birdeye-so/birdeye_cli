@@ -46,13 +46,13 @@ node dist/index.js --format interface --bind 127.0.0.1:8787
 node dist/index.js case skill-trending-list --scan-limit 20 --max-cu 50 --short
 ```
 
-Use `case --help` for flags. Wallet Analysis accepts `--intervals 7d,30d`; leaderboard accepts up to ten valid addresses, deduplicated before planning. Wallet Score fixes summary windows to 30d/90d/24h and position duration to 30d; Wallet Style supports 7d or 30d. `--skip-first-funded`, `--skip-transactions`, `--skip-portfolio`, `--skip-positions` affect relevant wallet recipes. `--skip-kline` affects Contract DD.
+Use `case --help` for flags. Wallet Analysis accepts `--intervals 7d,30d`; leaderboard accepts up to ten valid addresses, deduplicated before planning. Wallet Score fixes summary windows to 30d/90d/24h and position duration to 30d; Wallet Style supports 7d or 30d. `--skip-first-funded`, `--skip-transactions`, `--skip-portfolio`, `--skip-positions` affect relevant wallet recipes. `--skip-kline` affects Contract Due-Diligent.
 
 In UI, select a group and skill, read Purpose/What you get, then configure the relevant inputs. Workflow overview shows method/path, information, purpose, subject dependencies, per-request CU and editable API parameters. Leaderboard steps identify their individual wallet. Edits are schema-validated; invalid input disables execution. Changing recipe settings resets step edits. Source switching clears incompatible platform/sort settings. Preview and run share normalized input and fixed observation time.
 
 Smart Money Profile requests swaps with `before_time=to` only. The API accepts exactly one of `before_time` or `after_time`, so this page may include trades older than `from`; it is not complete coverage of the chosen period. A step override can switch to `after_time`. Net-worth history sends `time` as `YYYY-MM-DD HH:mm:ss` in UTC, converted from `to`.
 
-Token Security Check, Token DD, Contract DD and RugCheck Audit share authority interpretation. On Solana, `ownerAddress` supplies mint authority evidence when no explicit mint boolean is available. Explicit null `ownerAddress` or `freezeAuthority` means inactive; the all-ones freeze authority also means inactive. Missing or malformed authority stays unknown. Explicit boolean flags take precedence, and each result states its basis.
+Token Security Check, Token DD, Contract Due-Diligent and RugCheck Audit share authority interpretation. On Solana, `ownerAddress` supplies mint authority evidence when no explicit mint boolean is available. Explicit null `ownerAddress` or `freezeAuthority` means inactive; the all-ones freeze authority also means inactive. Missing or malformed authority stays unknown. Explicit boolean flags take precedence, and each result states its basis.
 
 ## Derived results and deliberate differences
 
@@ -62,7 +62,7 @@ Results contain `data.skillAnalysis.findings` with formula version, source IDs, 
 - **Wallet alpha:** follows source v3.2 profitability/consistency/quality/activity weights (35/35/20/10) and sustainability caps. Requires valid fixed-window, matching-method inputs. Win rate derives from win/loss counts; no magnitude-based percent guessing. Missing required data returns null. Positions are a fetched page, so this is a sampled heuristic, not a wallet-wide backtest. Copyability proxies and source recommendation tiers are not emitted.
 - **Wallet style:** frequency × realized ROI classification; uses documented ratio units and a corrected -50% loss threshold. Gives neutral descriptive labels. Incomplete data is unavailable. No estimated holding time is presented as an observed fact.
 - **Leaderboard:** compares only fully observed supplied wallets; fixes source's reversed PnL percentile. Ties share percentile; constant min/max factors are neutral. Missing wallets remain unranked. The comparison score is not Wallet Score alpha.
-- **Token DD / Contract DD:** retain identity, security, ownership and market evidence. Token DD uses a documented per-token money-flow call instead of joining a limited global smart-money list. No composite safety score or “Safe” label is emitted from absent honeypot, mint or LP-lock fields. Those checks remain explicit gaps.
+- **Token DD / Contract Due-Diligent:** retain identity, security, ownership and market evidence. Token DD uses a documented per-token money-flow call instead of joining a limited global smart-money list. No composite safety score or “Safe” label is emitted from absent honeypot, mint or LP-lock fields. Those checks remain explicit gaps.
 - **RugCheck Audit:** uses the real Birdeye liquidity-history endpoint. No guessed endpoints, price-to-liquidity proxy or RugCheck.org claim. Declining USD liquidity does not prove an LP withdrawal. Full LP-lock/honeypot coverage is unavailable.
 - **Smart Wallets:** bounds discovery and adds actual wallet PnL for standard/deep, rather than summing overlapping per-token trader results. Unsupported source pass-score/copyability filters are omitted.
 

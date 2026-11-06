@@ -59,7 +59,7 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .skill-rail nav { display: grid; gap: 4px; }
 .skill-card { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 8px 10px; min-width: 0; width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 6px; }
 .skill-card strong { font-size: 13px; }
-.skill-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.skill-icon { flex-shrink: 0; color: var(--accent); }
 .skill-card:hover { background: var(--surface-raised); border-color: var(--accent); }
 .skill-card.selected { background: var(--soft); border-color: var(--accent); }
 .main-shell { min-width: 0; }

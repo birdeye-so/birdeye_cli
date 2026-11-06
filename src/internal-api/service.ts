@@ -96,7 +96,7 @@ export class ResearchService {
     // A fresh runner holds only this caller's key. Credentials never enter saved inputs.
     const runner = this.options.runnerFactory?.(apiKey) ?? new Runner(ledger, apiKey);
     const id = ledger.createRun(maxCu, undefined, Math.max(20, plan.maxRequests * 2));
-    const saved: StoredRun = {id, title: plan.kind === "skill-price-surge" ? "Price Surge" : "Token DD",
+    const saved: StoredRun = {id, title: plan.kind === "skill-price-surge" ? "Price Surge" : "Token Due-Diligent Score",
       status: "running", createdAt: now(), input: {mode: "case", case: plan.input, maxCu}, ai: {}};
     this.archive.save(saved); // Fail before paid calls if durable storage is unavailable.
     try {

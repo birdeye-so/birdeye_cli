@@ -68,7 +68,7 @@ Static-host access logs can still contain visitor IP addresses and asset request
 
 Only one tab can open the persistent workspace at a time (Web Locks). Temporary tabs are independent. Pending request reservations are saved before dispatch so interrupted runs retain uncertain CU accounting. Storage failure stops a request before dispatch; it never silently falls back to plaintext or server storage.
 
-Browser mode includes local planning, all public skills, demos, usage accounting, history deletion, saved-data AI context and Token DD re-scoring. It does not load the CLI's local documentation index or enable MCP transport. Clearing history keeps CU records; forgetting the workspace removes both.
+Browser mode includes local planning, all public skills, demos, usage accounting, history deletion, saved-data AI context and Token Due-Diligent Score re-scoring. It does not load the CLI's local documentation index or enable MCP transport. Clearing history keeps CU records; forgetting the workspace removes both.
 
 ## Encryption and limits
 

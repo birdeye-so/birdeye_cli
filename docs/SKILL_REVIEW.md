@@ -2,7 +2,7 @@
 
 Đây là ghi chú cho maintainer, không nằm trong catalog công khai. Chưa thay đổi logic, thứ tự bước hoặc chế độ mặc định.
 
-Đánh dấu khi có ít nhất 4 bước trong một chế độ được kiểm tra, hoặc có bước chọn đối tượng từ kết quả trước. Có 20/23 skill thuộc diện này. Số request tính cả fan-out; không đồng nhất số bước với số lần gọi API. Đây là ước tính trước retry, không phải hóa đơn; pricing OHLC của Token DD Score còn provisional.
+Đánh dấu khi có ít nhất 4 bước trong một chế độ được kiểm tra, hoặc có bước chọn đối tượng từ kết quả trước. Có 20/23 skill thuộc diện này. Số request tính cả fan-out; không đồng nhất số bước với số lần gọi API. Đây là ước tính trước retry, không phải hóa đơn; pricing OHLC của Token Due-Diligent Score còn provisional.
 
 Chế độ full/deep/include và wallet tùy chọn được kiểm tra riêng, không phải liệt kê mọi tổ hợp cờ. Budget và lỗi có thể khiến bước sau không chạy.
 
@@ -61,7 +61,7 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 1. `candidates` → `market.meme-list` (30 CU/request).
 2. `launch-detail` → `token.meme-detail` (15 CU/request; lấy tối đa 3 token từ `candidates`, giữ thứ tự provider).
 
-### LP Analysis — `skill-lp-analysis`
+### Liquidity Pool Analysis — `skill-lp-analysis`
 
 Định nghĩa: [definition.ts](../src/workflows/skill-lp-analysis/definition.ts).
 
@@ -92,7 +92,7 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 3. `timeline` → `token.tags-tracker` (30 CU/request).
 4. `timeline-wallets` → `token.tags-tracker-details` (30 CU/request).
 
-### Token DD — `skill-token-dd-score`
+### Token Due-Diligent Score — `skill-token-dd-score`
 
 Định nghĩa: [definition.ts](../src/workflows/skill-token-dd-score/definition.ts).
 
@@ -134,7 +134,7 @@ Chạy `npm run skills:review` để cập nhật phần sinh tự động. Ghi 
 4. `holdings` → `portfolio.holdings` (20 CU/request; lấy tối đa 3 wallet từ `traders`, giữ thứ tự provider).
 5. `pnl-details` → `portfolio.pnl-details` (30 CU/request; lấy tối đa 3 wallet từ `traders`, giữ thứ tự provider).
 
-### Contract DD — `skill-contract-dd`
+### Contract Due-Diligent — `skill-contract-dd`
 
 Định nghĩa: [definition.ts](../src/workflows/skill-contract-dd/definition.ts).
 

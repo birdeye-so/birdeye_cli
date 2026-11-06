@@ -5,7 +5,7 @@ description: "Analyze where and how deep a Solana token can be traded — its to
 
 <!-- Generated from src/workflows/skill-lp-analysis/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
-# LP Analysis
+# Liquidity Pool Analysis
 
 Requires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.
 

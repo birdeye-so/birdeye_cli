@@ -1,9 +1,9 @@
 ---
 name: skill-wallet-score
-description: "Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows."
+description: "Score any Solana wallet 0–100 on profitability, consistency, trade quality and activity, showing PnL, win rate and the breakdown behind each component."
 ---
 
-<!-- Generated from src/workflows/skill-wallet-score/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-wallet-score/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Wallet Score
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Assess a wallet's profitability, consistency, position quality and activity from matching PnL windows.
+Score any Solana wallet 0–100 on profitability, consistency, trade quality and activity, showing PnL, win rate and the breakdown behind each component.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana wallet address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Vetting a wallet before copy-trading; ranking wallets.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Scored on fixed 30d and 90d PnL windows only
+- Reads up to 100 positions, not the full portfolio
+- Not a forecast of copy-trading returns
+
+### Execution notes
 
 - Alpha requires matching 30d/90d duration-only PnL and a 30d position page using the same accounting method. Other duration inputs are rejected; incompatible overrides or skipped/missing positions make the score unavailable.
 - Positions and holdings are one page of up to 100 each by default, not the full portfolio. The 24h summary is additional context, not a replacement for the required scoring windows.

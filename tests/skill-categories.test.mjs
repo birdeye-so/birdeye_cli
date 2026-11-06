@@ -19,3 +19,14 @@ test("category field controls membership even when the old UI group disagrees",(
  assert.deepEqual(skillsInCategory(cases,"token"),[]);
  assert.deepEqual(skillCategories(cases).map(c=>[c.id,c.skill_count]),[["wallet",1]]);
 });
+test("demo skill icons are the Skills API icons, inlined for every public skill",async()=>{
+ await build({entryPoints:["web/skill-icon.tsx","apps/skills-api/src/icons.ts"],outdir:".test-dist/skill-icon",bundle:true,platform:"node",format:"esm",jsx:"automatic",external:["react"]});
+ const {skillIconShapes}=await import("../.test-dist/skill-icon/web/skill-icon.js");
+ const {skillIconName,skillIconUrl}=await import("../.test-dist/skill-icon/apps/skills-api/src/icons.js");
+ for(const skill of (await createResourceCatalog()).skills){
+   const name=skillIconName(skill.id);
+   assert.notEqual(name,"file-text",skill.id);
+   assert.ok(skillIconShapes[name]?.length,`${skill.id}: ${name}`);
+   assert.ok(skillIconUrl(skill.id).includes(`/lucide/${name}.svg`));
+ }
+});

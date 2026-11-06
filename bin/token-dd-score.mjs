@@ -41,7 +41,7 @@ if(o.format!=="interface"&&child.stdout) {
   if(["ui","json","raw-json"].includes(o.format)||!report)process.stdout.write(child.stdout);
   else {
     const number=v=>v==null?"N/A":Number(v).toFixed(1);
-    console.log(`Token DD · ${report.mode} · ${report.address}\n${report.score.rating??"N/A"} · ${number(report.score.final)}/100 · ${report.score.verdict}`);
+    console.log(`Token Due-Diligent Score · ${report.mode} · ${report.address}\n${report.score.rating??"N/A"} · ${number(report.score.final)}/100 · ${report.score.verdict}`);
     for(const [name,p] of Object.entries(report.pillars)) {
       console.log(`${name}: ${number(p.score)} · coverage ${number(p.coverage*100)}%`);
       if(o.explain&&p.signals)for(const [key,s] of Object.entries(p.signals))console.log(`  ${key}: ${number(s.score)} — ${s.rule}`);

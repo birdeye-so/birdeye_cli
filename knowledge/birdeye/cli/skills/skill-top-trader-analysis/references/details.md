@@ -17,7 +17,7 @@ These eight skills run through the CLI, the local console and agent research too
 | `skill-smart-money-holders` | “Which smart traders still hold this token?” | Token → labeled positions; optional bounded activity timeline. |
 | `skill-kol-signal` | “Did observed KOL buying or selling dominate this period?” | Token and time range → cohort buckets, net USD and optional wallet samples. |
 
-All are data reports. For a composite token risk score use Token DD; for wallet-wide performance use Wallet Analysis or Wallet Score. Smart Money Holders takes a **token** address, whereas Smart Money Profile takes a **wallet** address.
+All are data reports. For a composite token risk score use Token Due-Diligent Score; for wallet-wide performance use Wallet Analysis or Wallet Score. Smart Money Holders takes a **token** address, whereas Smart Money Profile takes a **wallet** address.
 
 ## Install and run
 

@@ -5,7 +5,7 @@ description: "Rank trending Solana tokens by trending rank, volume or liquidity 
 
 <!-- Generated from src/workflows/skill-trending-list/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
-# Trending List
+# Token Trending
 
 Requires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.
 

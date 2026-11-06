@@ -1,9 +1,9 @@
 ---
 name: skill-token-security
-description: "Inspect a Solana token's contract controls and reported security flags. Use for a focused checklist before deeper token research."
+description: "Check a Solana token’s contract risks — mint and freeze authority, mutable metadata, transfer fees and creator holding, plus provider-reported honeypot and LP-lock flags — with each check marked observed or unknown."
 ---
 
-<!-- Generated from src/workflows/skill-token-security/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-token-security/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Token Security Check
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Inspect a Solana token's contract controls and reported security flags. Use for a focused checklist before deeper token research.
+Check a Solana token’s contract risks — mint and freeze authority, mutable metadata, transfer fees and creator holding, plus provider-reported honeypot and LP-lock flags — with each check marked observed or unknown.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address.
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Runs one security request. Treat reported flags as provider observations. On Solana, explicit null ownerAddress/freezeAuthority means the authority is inactive; missing or malformed authority remains unknown. Other null evidence stays unknown. This does not audit source code, simulate a sale or independently verify LP locks.
 
 Use cases:
-- Check whether mint, freeze or metadata controls remain active.
-- Inspect reported transfer restrictions without paying for a complete DD report.
+- Quick rug check before trading; filtering out unsafe tokens early in a pipeline.
 
 Preview without API calls:
 
@@ -48,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Fields the provider doesn't report show as unknown
+- Honeypot and LP lock are provider-reported, not verified
+- No overall safety score or verdict
+
+### Execution notes
 
 - Security payloads vary by token; absent fields remain unknown. No composite safety score or automatic trading verdict is produced.
 - Provider-reported honeypot and LP-lock values are not independent simulation or lock verification. Transfer fees are interpreted only with explicit units.

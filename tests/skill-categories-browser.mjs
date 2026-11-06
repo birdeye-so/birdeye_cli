@@ -23,7 +23,7 @@ try{
    page.on("request",r=>{if(!r.url().startsWith(app.url+"/")||new URL(r.url()).pathname.startsWith("/api"))unexpected.push(r.url());});
    await page.goto(app.url);
    await page.getByRole("button",{name:"Use temporary session",exact:true}).click();
-   await page.getByRole("heading",{name:"Trending List",exact:true}).waitFor();
+   await page.getByRole("heading",{name:"Token Trending",exact:true}).waitFor();
    assert.equal(await page.locator(".console-groups button").count(),categories.length+1);
    const rail=page.locator(".skill-rail");
    const openRail=async()=>{if(!await rail.evaluate(el=>el.open))await rail.locator("summary").click();};

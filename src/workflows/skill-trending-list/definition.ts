@@ -6,7 +6,7 @@ export default defineWorkflow({
   ...referencePolicy,
   planNotes: [referenceNote],
   id: "skill-trending-list",
-  title: "Trending List",
+  title: "Token Trending",
   category: "discover",
   family: "data-skills",
   subject: "none",

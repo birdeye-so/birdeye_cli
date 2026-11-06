@@ -61,7 +61,7 @@ test('Token DD is one installable skill with Standard and Advanced modes', async
   const entries = catalog.skills.filter(item => item.id.startsWith('skill-token-dd'));
   assert.equal(entries.length, 1);
   assert.equal(entries[0].id, 'skill-token-dd-score');
-  assert.equal(entries[0].title, 'Token DD');
+  assert.equal(entries[0].title, 'Token Due-Diligent Score');
   assert.match(entries[0].usage.instructions, /--dd-mode standard/);
   assert.match(entries[0].usage.run_command, /--dd-mode advanced/);
   const input = {kind: entries[0].id, address: 'So11111111111111111111111111111111111111112'};

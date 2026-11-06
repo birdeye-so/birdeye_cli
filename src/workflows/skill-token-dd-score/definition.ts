@@ -7,7 +7,7 @@ export default defineWorkflow({
   ...referencePolicy,
   planNotes: ["Reconstructed from the supplied Token DD Score specification. Only documented Birdeye endpoints are used; CU follows this CLI's catalog. Pagination is bounded to one page per step. Scores are research heuristics, not trading instructions."],
   id: "skill-token-dd-score",
-  title: "Token DD",
+  title: "Token Due-Diligent Score",
   category: "token",
   family: "data-skills",
   subject: "token",
@@ -39,7 +39,7 @@ export default defineWorkflow({
     const liquidity=steps.find(s=>s.id==="liquidity"),distribution=steps.find(s=>s.id==="distribution");
     if(liquidity){a.liqCandles=liquidity.params.count;a.liqResolution=liquidity.params.resolution;}
     if(distribution?.params.top_n!==undefined) {
-      if(distribution.params.top_n<10||distribution.params.top_n>50)throw new AppError("INVALID_INPUT","Token DD Score supports top_n 10–50 within one holder page.");
+      if(distribution.params.top_n<10||distribution.params.top_n>50)throw new AppError("INVALID_INPUT","Token Due-Diligent Score supports top_n 10–50 within one holder page.");
       a.topN=distribution.params.top_n;
     }
   },

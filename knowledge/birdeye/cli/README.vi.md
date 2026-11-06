@@ -20,7 +20,7 @@ npm run api:start -- --port 8788 --max-cu 320
 
 Client gửi Birdeye API key của user qua header `X-API-KEY` trong từng request live. Wrapper dùng đúng key đó cho mọi lời gọi Birdeye và retry của request; CU được tính vào tài khoản Birdeye của user. Server không đọc key từ env/config, không dùng lại key của request trước và không yêu cầu token internal riêng. Key không được lưu vào input/history; ledger chỉ giữ fingerprint. `POST /price-surge` hỗ trợ Solana, BSC, Base, Ethereum, Robinhood; holder health chỉ Solana. `POST /token-dd` chỉ hỗ trợ Solana, có mode standard/advanced. Cả hai trả dữ liệu nguồn, kết quả tính toán, phần còn thiếu và CU; `estimate_cu: true` chỉ lập kế hoạch, không gọi Birdeye và không cần key.
 
-`--max-cu` trên service là trần mỗi request, client chỉ có thể giảm. Mỗi process chạy tối đa một live request; chạy lại POST sẽ tạo run và tiêu CU mới. CLI/skill tiếp tục dùng logic chung trong process của CLI. Web interface vẫn chạy riêng qua `birdeye-cli --format interface` trên port 8787; `/price-surge` đã chuyển khỏi interface, không dùng cookie của UI nữa. Xem [hướng dẫn API, input Token DD, giới hạn và chuyển đổi client](docs/workflows/internal-api.md).
+`--max-cu` trên service là trần mỗi request, client chỉ có thể giảm. Mỗi process chạy tối đa một live request; chạy lại POST sẽ tạo run và tiêu CU mới. CLI/skill tiếp tục dùng logic chung trong process của CLI. Web interface vẫn chạy riêng qua `birdeye-cli --format interface` trên port 8787; `/price-surge` đã chuyển khỏi interface, không dùng cookie của UI nữa. Xem [hướng dẫn API, input Token Due-Diligent Score, giới hạn và chuyển đổi client](docs/workflows/internal-api.md).
 
 ## Cài đặt và bắt đầu sử dụng
 
@@ -511,12 +511,12 @@ Lấy `<kind>` bằng `birdeye-cli cases --short`. Các giá trị dưới đây
 | `--intervals <durations>` | `24h,7d,30d,90d,all` | Các cửa sổ PnL của wallet skill có hỗ trợ; 1–5 giá trị khác nhau. |
 | `--skill-depth <depth>` | `fast`; `fast`, `standard`, `deep` | Smart Wallets: shortlist; thêm PnL; thêm holdings/PnL từng token. |
 | `--list-source <source>` | `v3-list`; `v3-list`, `trending` | Nguồn cho skill-trending-list. |
-| `--sort-by <field>` | `volume` | Trending List: `volume`, `liquidity`, `market_cap`, `holder`, `trade_count`, `rank`; trending chỉ volume/liquidity/rank, v3-list không có rank. |
+| `--sort-by <field>` | `volume` | Token Trending: `volume`, `liquidity`, `market_cap`, `holder`, `trade_count`, `rank`; trending chỉ volume/liquidity/rank, v3-list không có rank. |
 | `--platform <name>` | Không có | Lọc platform với nguồn v3-list. |
 | `--resolution <interval>` | `15m` | Nến token skill: `1m`, `5m`, `15m`, `30m`, `1H`, `4H`, `1D`; phân biệt chữ hoa/thường. Không đổi resolution của mọi bước liquidity. |
 | `--window-days <days>` | `7`, phạm vi 1–30 | Window mặc định của token skill khi không truyền from/to. |
 | `--include <features>` | Không thêm bước tùy chọn | Token DD: `list`, `advanced_security`, `risk_history`, cách bằng dấu phẩy. |
-| `--skip-kline` | Tắt | Bỏ bước nến Contract DD. |
+| `--skip-kline` | Tắt | Bỏ bước nến Contract Due-Diligent. |
 | `--skip-portfolio` | Tắt | Bỏ bước holdings của wallet skill có hỗ trợ. |
 | `--skip-first-funded` | Tắt | Bỏ tra cứu lần funding đầu. |
 | `--skip-transactions` | Tắt | Bỏ trang transactions/trades của wallet skill có hỗ trợ. |
@@ -1291,7 +1291,7 @@ Tám skill dữ liệu bổ sung có mục đích riêng:
 
 Xem [cách chạy, tham số, API và cách diễn giải dữ liệu](docs/workflows/token-data-skills.md). Mỗi package trong `skills/` có `SKILL.md` và reference đi kèm. Tám skill này hỗ trợ Solana; KOL chạy theo từng yêu cầu, LP phân tích pool của token. Dữ liệu thiếu giữ trạng thái chưa xác định, không được coi là an toàn hoặc bằng 0.
 
-### Token DD Score Advanced · Node.js
+### Token Due-Diligent Score Advanced · Node.js
 
 Skill mới có entrypoint **Node.js**, dùng chung công thức với CLI/UI. Sau `npm run build`, có thể chạy file `.mjs`; khi cài package bằng npm sẽ có thêm lệnh `token-dd-score`. Chi tiết công thức và các giả định tái dựng nằm trong [doc.md](skills/token-duediligence/doc.md).
 
@@ -1309,7 +1309,7 @@ node skills/token-duediligence/token-dd-score.mjs So1111111111111111111111111111
 # Cùng workflow qua CLI
 node dist/index.js case skill-token-dd-score --address So11111111111111111111111111111111111111112 --dd-mode advanced --format json
 
-# UI: Token → Token DD Score · Advanced
+# UI: Token Due Diligence → Token Due-Diligent Score · Advanced
 node dist/index.js case skill-token-dd-score --address So11111111111111111111111111111111111111112 --format interface --bind 127.0.0.1:8787
 ```
 
@@ -1362,7 +1362,7 @@ node dist/index.js case skill-wallet-analysis --address So1111111111111111111111
 node dist/index.js case skill-smart-money-leaderboard --wallets So11111111111111111111111111111111111111112,11111111111111111111111111111112 --estimate-cu --short
 ```
 
-Trong UI: chọn nhóm → skill → nhập subject và options → xem/chỉnh **Workflow overview** → kiểm tra CU → **Run research**. Wallet leaderboard nhận 1–10 ví; Kline/Wallet Score/Style và leaderboard có **Skill findings** cùng formula/evidence. Score thiếu dữ liệu sẽ là unavailable; Token/Contract DD không gắn nhãn an toàn từ dữ liệu thiếu. Liquidity history dùng dữ liệu liquidity thật và giữ upper-bound CU theo resolution.
+Trong UI: chọn nhóm → skill → nhập subject và options → xem/chỉnh **Workflow overview** → kiểm tra CU → **Run research**. Wallet leaderboard nhận 1–10 ví; Kline/Wallet Score/Style và leaderboard có **Skill findings** cùng formula/evidence. Score thiếu dữ liệu sẽ là unavailable; Token DD/Contract Due-Diligent không gắn nhãn an toàn từ dữ liệu thiếu. Liquidity history dùng dữ liệu liquidity thật và giữ upper-bound CU theo resolution.
 
 ### 4. Interface — bind địa chỉ local
 

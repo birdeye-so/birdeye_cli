@@ -59,7 +59,7 @@ try {
     Object.defineProperty(navigator, "clipboard", {configurable: true, value: {writeText: async value => {window.copiedAddresses.push(value);}}});
   });
   await page.goto(app.url);
-  await page.getByRole("heading", { name: "Trending List", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Token Trending", exact: true }).waitFor();
   assert.equal(await page.getByRole("navigation", {name:"Workspace"}).getByRole("button", {name:"Imports",exact:true}).count(),0);
   assert.equal(await page.getByLabel("Connection code").count(), 0, "Loopback must auto-connect");
   const choose = async (group, title) => {
@@ -141,13 +141,13 @@ try {
   await page.getByText("50", { exact: true }).waitFor();
   assert.equal(ledger.summary().estimated, 120);
   assert.equal(sentRequests.find(url => url.pathname.endsWith("pnl/summary")).searchParams.get("pnl_method"), "net_cash");
-  await page.getByRole("button", {name: "Wallet intelligence", exact: true}).click();
-  await choose("Wallet intelligence", "Smart Money Leaderboard");
+  await page.getByRole("button", {name: "Wallet & Smart Money", exact: true}).click();
+  await choose("Wallet & Smart Money", "Smart Money Leaderboard");
   await page.getByLabel("Wallet addresses", {exact: false}).fill(`${address},11111111111111111111111111111112`);
   await page.getByText("140 CU before retries · at most 6 requests", {exact: true}).waitFor();
   assert.equal(ledger.summary().estimated, 120, "Multi-wallet planning remains free");
-  await page.getByRole("button", {name: "Token research", exact: true}).click();
-  await choose("Token research", "RugCheck Audit");
+  await page.getByRole("button", {name: "Token Due Diligence", exact: true}).click();
+  await choose("Token Due Diligence", "RugCheck Audit");
   await page.getByText("245 CU before retries · at most 5 requests", {exact: true}).waitFor();
   await page.locator(".workflow-details > summary").click();
   const liquidity = page.locator(".workflow-step").filter({has: page.getByRole("heading", {name: /Historical liquidity/})});
@@ -162,7 +162,7 @@ try {
     false,
     "Mobile should not overflow",
   );
-  await choose("Market discovery", "Smart Wallets");
+  await choose("Market Discovery", "Smart Wallets");
   await page.getByText("110 CU before retries · at most 4 requests", {exact: true}).waitFor();
   await page.getByRole("button", {name: "Run research", exact: true}).click();
   await page.getByRole("heading", {name: "Wallet shortlist", exact: true}).waitFor();

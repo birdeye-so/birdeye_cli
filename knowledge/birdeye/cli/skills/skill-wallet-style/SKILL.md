@@ -1,9 +1,9 @@
 ---
 name: skill-wallet-style
-description: "Describe how often a wallet trades and how profitable those trades were over a fixed period."
+description: "Tag a Solana wallet’s trading style from trade frequency and PnL profile, with a style label and the numbers behind it."
 ---
 
-<!-- Generated from src/workflows/skill-wallet-style/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-wallet-style/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Wallet Style
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Describe how often a wallet trades and how profitable those trades were over a fixed period.
+Tag a Solana wallet’s trading style from trade frequency and PnL profile, with a style label and the numbers behind it.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana wallet address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Knowing how a wallet trades before following it; segmenting users in wallet apps.
 
 Preview without API calls:
 
@@ -44,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- 7d or 30d windows only
+- Reads up to 100 positions per run
+
+### Execution notes
 
 - Style classification supports 7d or 30d only, with matching summary and position scopes. Missing, empty, incompatible or skipped positions can make classification unavailable.
 - The default position and optional transaction requests each return up to 100 rows. Loss share describes fetched positions; it is not a full wallet census.

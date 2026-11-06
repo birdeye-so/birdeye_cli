@@ -78,12 +78,12 @@ try {
       if (origin === preview.listenUrl) {
         await page.goto(origin + '/');
         await page.getByRole('button', {name: 'Use temporary session', exact: true}).click();
-        await page.getByRole('heading', {name: 'Trending List', exact: true}).waitFor();
+        await page.getByRole('heading', {name: 'Token Trending', exact: true}).waitFor();
         if (!await page.locator('.skill-rail').evaluate(element => element.open)) await page.locator('.skill-toggle').click();
         await page.getByRole('button', {name: 'Price Surge Screen', exact: true}).click();
         assert.equal(new URL(page.url()).pathname, '/skill-price-surge');
         await page.goBack();
-        await page.getByRole('heading', {name: 'Trending List', exact: true}).waitFor();
+        await page.getByRole('heading', {name: 'Token Trending', exact: true}).waitFor();
         await page.goForward();
         await page.getByRole('heading', {name: 'Price Surge Screen', exact: true}).waitFor();
       }

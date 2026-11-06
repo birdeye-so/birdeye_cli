@@ -1,9 +1,9 @@
 ---
 name: skill-smart-money-leaderboard
-description: "Compare an explicit list of wallets using consistent PnL windows and accounting."
+description: "Rank up to 10 Solana wallets side by side on 7-day and 30-day PnL and win rate, to see which one performs best."
 ---
 
-<!-- Generated from src/workflows/skill-smart-money-leaderboard/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-smart-money-leaderboard/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Smart Money Leaderboard
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Compare an explicit list of wallets using consistent PnL windows and accounting.
+Rank up to 10 Solana wallets side by side on 7-day and 30-day PnL and win rate, to see which one performs best.
 
 ## Input
 
@@ -20,6 +20,9 @@ One to ten Solana wallet addresses, separated by commas.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Choosing which wallet to copy among candidates; building trader leaderboards for communities and wallet apps.
 
 Preview without API calls:
 
@@ -44,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Compares 1–10 wallets you supply; doesn't find top wallets
+- Ranks within your list only; 70 CU per wallet
+
+### Execution notes
 
 - Accepts 1–10 explicitly supplied Solana wallets, deduplicated before calls. This is a relative comparison of that list, not discovery of all top wallets.
 - Ranking requires matching 7d/30d duration-only summaries and complete comparison metrics; missing inputs remain unranked. Per-token evidence is one page of up to 100 rows per wallet by default.

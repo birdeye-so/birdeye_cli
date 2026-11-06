@@ -35,6 +35,10 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligent Score, Contract DD → Contract Due-Diligent, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
+- Renamed categories: Market Discovery, Token Due Diligence, and Wallet & Smart Money. Category IDs are unchanged.
+- The demo UI shows the same Lucide icons as the Skills API `icon_url`, inlined so no remote images load.
+
 - Skills API defaults to port 3003 and accepts `--port`, which takes precedence over `SKILL_API_PORT`; valid ports remain 1–65535.
 
 - Descriptions, use cases, capabilities, agent prompts, chain summaries, limitations and illustrative samples for all 20 current skills now have one editable source in `catalog/skill-content.json`. API list/view expose the authored fields and `sample_output.example` while retaining generated CLI parameters and the JSON CU preview. Installable skill descriptions/instructions and the landing catalog synchronize from that source. Skill icon URLs use `#00ffa3`.

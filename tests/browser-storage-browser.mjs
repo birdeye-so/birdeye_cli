@@ -29,7 +29,7 @@ try {
  await page.getByLabel("Workspace password",{exact:true}).fill(password);
  await page.getByLabel("Confirm password").fill(password);
  await page.getByRole("button",{name:"Create workspace",exact:true}).click();
- await page.getByRole("heading",{name:"Trending List",exact:true}).waitFor();
+ await page.getByRole("heading",{name:"Token Trending",exact:true}).waitFor();
  await page.getByRole("button",{name:"Settings",exact:true}).click();
  await page.locator("#bkey").fill(bkey);await page.locator("#akey").fill(akey);
  await page.getByLabel("Base URL",{exact:true}).fill("https://provider.test/v1");
@@ -93,7 +93,7 @@ try {
  await page.getByRole("alert").filter({hasText:"Wrong password"}).waitFor();
  await page.getByLabel("Workspace password",{exact:true}).fill(password);
  await page.getByRole("button",{name:"Unlock workspace",exact:true}).click();
- await page.getByRole("heading",{name:"Trending List",exact:true}).waitFor();
+ await page.getByRole("heading",{name:"Token Trending",exact:true}).waitFor();
  assert.match(await page.locator(".connection-bar").innerText(),/key configured/);
  if(!await page.locator(".history-rail").evaluate(el=>el.open))await page.locator(".history-rail > summary").click();
  assert.ok(await page.locator(".history-item").count()>=2);
@@ -107,7 +107,7 @@ try {
  await page.reload();
  await page.getByRole("button",{name:"Unlock workspace",exact:true}).waitFor();
  await page.getByRole("button",{name:"Use temporary session",exact:true}).click();
- await page.getByRole("heading",{name:"Trending List",exact:true}).waitFor();
+ await page.getByRole("heading",{name:"Token Trending",exact:true}).waitFor();
  assert.match(await page.locator(".connection-bar").innerText(),/key required/);
  assert.equal(await page.locator(".history-item").count(),0);
  await page.getByRole("button",{name:"Lock workspace",exact:true}).click();

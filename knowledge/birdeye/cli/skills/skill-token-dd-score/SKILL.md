@@ -1,17 +1,17 @@
 ---
 name: skill-token-dd-score
-description: "Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence."
+description: "Score any Solana token 0–100 with an A+ to F rating across five pillars — security, holder concentration, trading activity, liquidity and smart money — showing each pillar’s points and the reason behind every deduction."
 ---
 
-<!-- Generated from src/workflows/skill-token-dd-score/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-token-dd-score/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
-# Token DD
+# Token Due-Diligent Score
 
 Requires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.
 
 ## When to use
 
-Explain token due-diligence risk through security, holders, activity, liquidity and smart-money evidence.
+Score any Solana token 0–100 with an A+ to F rating across five pillars — security, holder concentration, trading activity, liquidity and smart money — showing each pillar’s points and the reason behind every deduction.
 
 ## Input
 
@@ -19,7 +19,10 @@ A Solana token address.
 
 ## Use
 
-Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.
+Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Token Due-Diligent Score combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs.
+
+Use cases:
+- Pre-buy check, grading a shortlist, auto-rating tokens in a bot or wallet.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Standard and Advanced scores are not comparable
+- Checks without data are left out of the score
+- Advanced samples top holders, not every holder
+
+### Execution notes
 
 - Standard uses overview/security only; advanced adds holder, flow and liquidity evidence. Scores from different modes or coverage are not comparable.
 - Advanced distribution covers 10–50 top wallets, holders one page of up to 100, and liquidity 1–100 candles. Labeled cohorts can overlap; these samples are not the full holder population.

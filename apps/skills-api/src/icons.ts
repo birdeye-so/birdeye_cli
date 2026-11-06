@@ -21,7 +21,10 @@ const icons: Record<string, string> = {
   'skill-smart-money-profile': 'user-search',
   'skill-smart-money-leaderboard': 'trophy',
 };
+// The demo UI (web/skill-icon.tsx) inlines the same Lucide names.
+export function skillIconName(id: string) {
+  return Object.hasOwn(icons, id) ? icons[id] : 'file-text';
+}
 export function skillIconUrl(id: string) {
-  const icon = Object.hasOwn(icons, id) ? icons[id] : 'file-text';
-  return `https://api.iconify.design/lucide/${icon}.svg?color=%2300ffa3`;
+  return `https://api.iconify.design/lucide/${skillIconName(id)}.svg?color=%2300ffa3`;
 }

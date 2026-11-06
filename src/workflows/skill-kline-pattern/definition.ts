@@ -6,7 +6,7 @@ export default defineWorkflow({
   ...referencePolicy,
   planNotes: [referenceNote],
   id: "skill-kline-pattern",
-  title: "Kline Pattern",
+  title: "Token Kline Pattern",
   category: "token",
   family: "data-skills",
   subject: "token",
