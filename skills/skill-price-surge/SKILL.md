@@ -1,9 +1,9 @@
 ---
 name: skill-price-surge
-description: "Find surging tokens within a market-cap band and screen liquidity, trading and optional security risks."
+description: "Screen tokens surging in price over 1m to 30d on Solana, BSC, Base, Ethereum or Robinhood within a market-cap band, filtered by liquidity, volume and holders, and auto-exclude rows with risk signs, with deeper rug and honeypot checks in advanced mode — showing price change, volume, trades, liquidity and the reason for every exclusion."
 ---
 
-<!-- Generated from src/workflows/skill-price-surge/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-price-surge/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Price Surge Screen
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Find surging tokens within a market-cap band and screen liquidity, trading and optional security risks.
+Screen tokens surging in price over 1m to 30d on Solana, BSC, Base, Ethereum or Robinhood within a market-cap band, filtered by liquidity, volume and holders, and auto-exclude rows with risk signs, with deeper rug and honeypot checks in advanced mode — showing price change, volume, trades, liquidity and the reason for every exclusion.
 
 ## Input
 
@@ -20,6 +20,9 @@ Chain, surge interval and market-cap band. Standard is the default; choose advan
 ## Use
 
 Install birdeye-cli and configure the Birdeye API key locally. Preview the user's filters and CU budget, then run the same command with --max-cu. Standard costs 50 CU. Advanced hydrates at most --top survivors; --with-security adds security, while --no-holder-health skips Solana holder cohorts. --no-auto-filter retains every row with its flags. Top-10 and developer caps require security evidence. Unknown KOL tags are not zero buyers. Use --help for the full filter list; read the detailed reference for interpretation and the /price-surge API contract. HTTP automation uses the separate birdeye-api process: send the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. Terminal usage needs no background server.
+
+Use cases:
+- Catching momentum early without chasing fake pumps; momentum feeds and alert bots.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`, `bsc`, `base`, `ethereum`, `robinhood`. Broader upstream API support does not enable additional chains for this skill.
+
+- Up to 100 tokens per run
+- Security checks are optional, in advanced mode only
+- Holder checks run on Solana only
+
+### Execution notes
 
 - Arbitrum is unavailable because Token List V3 does not document it. Other upstream chains are outside this skill's implemented scope.
 - Standard requests one page of 1–100 tokens for 50 CU. Advanced hydrates at most min(top, limit) first-pass survivors; exclusions are not backfilled. Unhydrated rows have no advanced risk assessment.

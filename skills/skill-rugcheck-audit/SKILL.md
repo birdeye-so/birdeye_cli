@@ -1,9 +1,9 @@
 ---
 name: skill-rugcheck-audit
-description: "Review contract, holder and actual liquidity-history evidence for potential risk."
+description: "Review a Solana token’s rug risk — contract controls, holder concentration, labeled holder groups and liquidity history — with every unverified check listed instead of assumed safe."
 ---
 
-<!-- Generated from src/workflows/skill-rugcheck-audit/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-rugcheck-audit/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # RugCheck Audit
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Review contract, holder and actual liquidity-history evidence for potential risk.
+Review a Solana token’s rug risk — contract controls, holder concentration, labeled holder groups and liquidity history — with every unverified check listed instead of assumed safe.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana token address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- A fast yes/no safety gate before buying or listing a token; auto-blocking risky tokens in wallets, DEX listings and trading bots.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Uses Birdeye data; not a RugCheck.org integration
+- No honeypot simulation or LP-lock verification
+- A drop in USD liquidity doesn't prove an LP pull
+
+### Execution notes
 
 - Uses Birdeye, not RugCheck.org. Honeypot simulation and independent LP-lock verification are unavailable; unknown controls are not passed checks.
 - Default holder evidence is one 20-row page plus labeled cohorts. Liquidity history takes at most 100 snapshots; at least two are required for a change calculation. Cohorts can overlap.

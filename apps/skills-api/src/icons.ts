@@ -23,5 +23,5 @@ const icons: Record<string, string> = {
 };
 export function skillIconUrl(id: string) {
   const icon = Object.hasOwn(icons, id) ? icons[id] : 'file-text';
-  return `https://api.iconify.design/lucide/${icon}.svg?color=%232563eb`;
+  return `https://api.iconify.design/lucide/${icon}.svg?color=%2300ffa3`;
 }

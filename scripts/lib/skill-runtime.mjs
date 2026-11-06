@@ -1,6 +1,7 @@
 import {build} from 'esbuild';
 import {resolve, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {skillContent} from './skill-content.mjs';
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export async function loadSkillRuntime() {
   const bundle = await build({stdin: {contents: `export {workflowCatalog, planCase} from "./src/workflows.ts";
@@ -12,10 +13,14 @@ export async function loadSkillRuntime() {
 export const sharedSkillLimitations = "Live requests require a Birdeye key with access to every requested endpoint; coverage may be incomplete. Plans fetch bounded pages, not complete populations. CU estimates exclude retries and are not confirmed billing. Skills perform research, not trading, continuous monitoring or copy-trade backtesting.";
 export function skillSupportMarkdown(item) {
   if (!item.supportedChains?.length || !item.limitations?.length) throw new Error(`Missing chain support or limitations: ${item.kind}`);
-  return `## Supported chains and limitations\n\nSupported chains in this CLI: ${item.supportedChains.map(chain => `\`${chain}\``).join(', ')}. Broader upstream API support does not enable additional chains for this skill.\n\n${item.limitations.map(note => `- ${note}`).join('\n')}\n\n${sharedSkillLimitations}`;
+  const content = skillContent(item.kind);
+  return `## Supported chains and limitations\n\nSupported chains in this CLI: ${content.supported_chains.map(chain => `\`${chain}\``).join(', ')}. Broader upstream API support does not enable additional chains for this skill.\n\n${content.limitations.map(note => `- ${note}`).join('\n')}\n\n### Execution notes\n\n${item.limitations.map(note => `- ${note}`).join('\n')}\n\n${sharedSkillLimitations}`;
 }
 export function publicSkill(item, {includeSupport = true} = {}) {
   const skill = basePublicSkill(item);
+  const content = skillContent(item.kind);
+  skill.description = content.description;
+  skill.usage.instructions += `\n\nUse cases:\n${content.use_cases.map(example => `- ${example}`).join('\n')}`;
   if (includeSupport) {
     skill.usage.input += ` Supported chains in this CLI: ${item.supportedChains.join(', ')}.`;
     skill.usage.instructions += `\n\n${skillSupportMarkdown(item)}`;
@@ -36,7 +41,7 @@ function basePublicSkill(item) {
   const mode = item.kind === "skill-token-dd-score" ? " --dd-mode advanced" : "";
   const run = `birdeye-cli case ${item.kind}${subject}${mode}${item.guide?.exampleFlags ? ` ${item.guide.exampleFlags}` : ""} --short`;
   return {id: item.kind, title: item.title, category: item.category, description: item.purpose,
-    usage: {input, instructions: 'Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.' + (item.guide ? ` ${item.guide.instructions}\n\nUse cases:\n${item.guide.useCases.map(example => `- ${example}`).join('\n')}` : '') + (item.kind === "skill-token-dd-score" ? " Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs." : ""),
+    usage: {input, instructions: 'Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.' + (item.guide ? ` ${item.guide.instructions}` : '') + (item.kind === "skill-token-dd-score" ? " Token DD combines Standard and Advanced in one skill. Use --dd-mode standard for two API calls, or --dd-mode advanced (default) for seven calls and deeper holder, liquidity and smart-money evidence. Preview the selected mode before running. HTTP automation can call POST /token-dd on the separate birdeye-api service, sending the user's Birdeye key in X-API-KEY for each live request. The wrapper never uses a server key; estimates need no key. The endpoint is Solana-only and uses snake_case inputs." : ""),
       preview_command: `${run} --estimate-cu`, run_command: run, result: item.produces,
       install_command: `npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill ${item.kind} --global`}};
 }

@@ -1,9 +1,9 @@
 ---
 name: skill-contract-dd
-description: "Review contract controls, ownership concentration and price behavior together."
+description: "Check a Solana token’s contract controls, holder concentration and optional candle pattern, with missing controls kept unknown and no overall safety score."
 ---
 
-<!-- Generated from src/workflows/skill-contract-dd/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-contract-dd/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Contract DD
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Review contract controls, ownership concentration and price behavior together.
+Check a Solana token’s contract controls, holder concentration and optional candle pattern, with missing controls kept unknown and no overall safety score.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana token address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Checking contract controls and concentration before deeper token research; adding optional chart context.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- No source-code audit, sell simulation or LP-lock check
+- No safety score; missing controls stay unknown
+- Candle check needs at least 8 closed candles
+
+### Execution notes
 
 - Uses Birdeye observations, a top-ten wallet distribution and optional candles; it does not audit source code, simulate selling, or independently verify LP locks.
 - No Safe tier or composite safety score is produced. Missing controls remain unknown, and price action cannot establish contract safety.

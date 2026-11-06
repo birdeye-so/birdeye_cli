@@ -1,0 +1,620 @@
+{
+  "schemaVersion": 1,
+  "skills": {
+    "skill-trending-list": {
+      "description": "Rank trending Solana tokens by trending rank, volume or liquidity over 1h to 24h, showing price, price and volume change, market cap, FDV and liquidity.",
+      "use_cases": [
+        "Daily market scan, picking candidates for due diligence, trending feeds for bots."
+      ],
+      "core_capabilities": [
+        "Rank Solana tokens by 1h, 4h or 24h volume, liquidity, market cap, holders or trade count",
+        "Narrow the list to one launch platform, such as pump.fun",
+        "Switch to Birdeye's native trending rank for the same order as Birdeye's trending page",
+        "Show price and volume change, market cap, FDV and liquidity for up to 50 tokens"
+      ],
+      "just_say_to_your_agent": [
+        "Show me the top 20 Solana tokens by 24h volume",
+        "Which pump.fun tokens have the most liquidity right now?",
+        "Rank Solana tokens by Birdeye trending over the last 4 hours, and estimate the CU first"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Up to 50 tokens per run; intervals 1h, 4h or 24h",
+        "Platform filter works with the V3 token list only",
+        "A ranking, not a risk screen"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "Top Solana tokens by 24h volume\n#  token   24h volume   liquidity   market cap\n1  SOL         $2.74B      $5.86B     $57.20B\n2  USDC        $1.34B      $8.38B      $8.76B\n3  USDT      $177.24M    $167.49M      $3.84B\n4  cbBTC     $101.21M     $30.22M    $236.20M"
+      }
+    },
+    "skill-launchpad-trending": {
+      "description": "Scan Solana launchpad tokens — Pump.fun, Moonshot, Raydium LaunchLab and Meteora DBC — by launch stage or bonding-curve progress, filtered by liquidity, showing progress, creator, liquidity and trading activity.",
+      "use_cases": [
+        "Catching early launches, building launch watchlists, launchpad alert bots."
+      ],
+      "core_capabilities": [
+        "Scan Pump.fun, Moonshot, Raydium LaunchLab and Meteora DBC launches, or all four at once",
+        "Filter by stage: newly created, newly listed, near graduation or graduated",
+        "Rank by 24h volume, liquidity, market cap, creation time, graduation time or bonding-curve progress",
+        "Show each token's launchpad, progress, graduation status, liquidity and creation time"
+      ],
+      "just_say_to_your_agent": [
+        "Find Pump.fun tokens above 80% bonding-curve progress, ranked by 24h volume",
+        "Show the tokens that graduated from Solana launchpads in the last 24 hours",
+        "List the newest Raydium LaunchLab tokens with at least $10K liquidity"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Up to 50 tokens per run (20 for newly listed)",
+        "Created, listed and graduated are separate stages",
+        "Launch progress is not a safety signal"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "Newly created launchpad tokens, ranked by 24h volume\n#  token   source       progress   24h volume   liquidity\n1  AI      LaunchLab        2.5%     $373.02K     $23.74K\n2  Ansem   Pump.fun        36.7%     $296.85K      $1.27K\n3  CAPY    Pump.fun         3.6%     $261.47K         $79\n4  PONSFUN Pump.fun        61.5%     $251.20K      $2.15K\n5  Willow  Pump.fun        18.7%     $222.41K        $490"
+      }
+    },
+    "skill-price-surge": {
+      "description": "Screen tokens surging in price over 1m to 30d on Solana, BSC, Base, Ethereum or Robinhood within a market-cap band, filtered by liquidity, volume and holders, and auto-exclude rows with risk signs, with deeper rug and honeypot checks in advanced mode — showing price change, volume, trades, liquidity and the reason for every exclusion.",
+      "use_cases": [
+        "Catching momentum early without chasing fake pumps; momentum feeds and alert bots."
+      ],
+      "core_capabilities": [
+        "Find tokens surging over 1m to 30d on Solana, BSC, Base, Ethereum or Robinhood",
+        "Filter by market-cap band, liquidity, volume, trade count and holders",
+        "Auto-exclude risky tokens (no or thin liquidity, honeypot or wash-trade patterns) with a reason for each",
+        "Advanced mode checks traders and holders on the top survivors, with optional token security"
+      ],
+      "just_say_to_your_agent": [
+        "Find Solana tokens up most in the last hour, market cap $50K–$5M",
+        "Screen BSC tokens surging over 24h and tell me why each excluded token was dropped",
+        "Run an advanced surge screen on Base with security checks, and estimate the CU first"
+      ],
+      "supported_chains": [
+        "solana",
+        "bsc",
+        "base",
+        "ethereum",
+        "robinhood"
+      ],
+      "limitations": [
+        "Up to 100 tokens per run",
+        "Security checks are optional, in advanced mode only",
+        "Holder checks run on Solana only"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "Solana 1h surge, market cap $50K–$5M: 10 scanned, 10 kept, 0 excluded\n#  token   1h change   market cap   1h volume   liquidity\n1  ZELDA    +4003.8%     $113.43K    $462.15K     $30.31K\n2  ABTC      +877.6%      $61.49K    $107.60K     $49.96K\n3  d/acc     +866.1%      $78.71K      $1.49M     $38.12K\n4  M4GA      +858.6%     $108.21K      $1.21M     $46.40K\n5  d/acc     +495.6%      $69.65K    $379.69K     $20.97K"
+      }
+    },
+    "skill-smart-wallets": {
+      "description": "Discover smart-money wallets on Solana from the top traders of Birdeye’s smart-money tokens, with a deduplicated shortlist and fast, standard or deep scan depth.",
+      "use_cases": [
+        "Finding wallets worth following or copy-trading; seeding watchlists for smart-money and KOL tracking."
+      ],
+      "core_capabilities": [
+        "Start from the tokens on Birdeye's smart-money list",
+        "Find the top traders of each token and remove duplicate wallets",
+        "Standard depth adds each wallet's PnL summary; deep depth adds holdings and per-token PnL",
+        "Keeps per-token PnL separate and never adds it up as a wallet total"
+      ],
+      "just_say_to_your_agent": [
+        "Find wallets trading the tokens smart money is buying on Solana",
+        "Give me 3 smart-money wallets with their PnL, and estimate the CU first",
+        "Run a deep smart-wallet scan and show each wallet's holdings"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Shortlists up to 5 wallets from top traders of smart-money tokens",
+        "Not a complete wallet leaderboard",
+        "Wallet PnL needs standard or deep mode"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "Smart-money tokens → top traders: 28 wallets seen, 3 shortlisted\nA9PzVmoBvTMLSh8VcaPQfYc3qwH63pmLuMxRmWraqGYk · top trader of DJT, MSFTx\n4aWgCnEDx7YnriGShBxSRRNjy6RN8wZrMQGHgzA8sH4M · top trader of DJT\nbpfe9tJukfJWf4M8SPVR1kzby6NCfH45zA87vbYgtG5 · top trader of DJT\nStandard mode adds 30d PnL per wallet; deep adds holdings"
+      }
+    },
+    "skill-token-security": {
+      "description": "Check a Solana token’s contract risks — mint and freeze authority, mutable metadata, transfer fees and creator holding, plus provider-reported honeypot and LP-lock flags — with each check marked observed or unknown.",
+      "use_cases": [
+        "Quick rug check before trading; filtering out unsafe tokens early in a pipeline."
+      ],
+      "core_capabilities": [
+        "Check mint and freeze authority, mutable metadata and non-transferable status",
+        "Read transfer-fee settings, creator supply share and top-10 account share",
+        "Show provider-reported honeypot and LP-lock flags",
+        "Mark each of the 9 checks as observed or unknown in a single 30 CU request"
+      ],
+      "just_say_to_your_agent": [
+        "Is <TOKEN_ADDRESS> mintable or freezeable?",
+        "Run a quick security check on <TOKEN_ADDRESS> before I trade it",
+        "Does <TOKEN_ADDRESS> charge a transfer fee?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Fields the provider doesn't report show as unknown",
+        "Honeypot and LP lock are provider-reported, not verified",
+        "No overall safety score or verdict"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · 4 checks observed, 5 unknown\nMint authority active        no\nFreeze authority active      no\nMutable metadata             unknown\nNon-transferable             unknown\nTransfer fee · %             unknown\nReported honeypot            unknown\nReported LP locked           unknown\nCreator supply · %           0.0%\nTop-10 token accounts · %    59.4%"
+      }
+    },
+    "skill-token-stats": {
+      "description": "Get a Solana token’s full stats in one run — price, market cap, FDV, supply, liquidity, holder count and number of markets — plus trades, buys/sells, volume and unique buyers/sellers from 1m to 24h, each with change vs the previous period.",
+      "use_cases": [
+        "Token overview cards, enriching watchlists, feeding your own models."
+      ],
+      "core_capabilities": [
+        "Get price, market cap, FDV, liquidity and holder count in one run",
+        "Compare rolling windows from 1m to 24h, with 1h and 24h by default",
+        "See USD volume, buy and sell volume, trades and active wallets for each window",
+        "Show each window separately, with its own price change"
+      ],
+      "just_say_to_your_agent": [
+        "Give me a market snapshot of <TOKEN_ADDRESS>",
+        "Compare the last hour of trading on <TOKEN_ADDRESS> with the last 24 hours",
+        "What are the market cap, FDV and liquidity of <TOKEN_ADDRESS>?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Current data only, no historical snapshots",
+        "Time windows overlap; don't add them together"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · price $0.00434\nMarket cap $1.78B · FDV $3.58B · liquidity $45.12M · 426,562 holders\nwindow  price    volume     buys      sells     trades    wallets\n1h       +1.6%  $870.81K  $517.38K  $353.43K     7,731      823\n24h      -2.0%   $45.17M   $23.19M   $21.98M   441,940   29,784"
+      }
+    },
+    "skill-top-holder-analysis": {
+      "description": "Break down a Solana token’s top holders by share of supply with top-N concentration, and group holders by tag — dev, sniper, bundler, insider — showing each group’s holding, buy/sell volume, average buy price and PnL.",
+      "use_cases": [
+        "Spotting concentration and insider risk; seeing who could dump."
+      ],
+      "core_capabilities": [
+        "List the top 10–50 holder wallets of a Solana token with their share of supply",
+        "Show how much supply the top 1 and top 10 wallets hold",
+        "Group holders by Birdeye labels such as dev, sniper, bundler and insider",
+        "Count wallets rather than token accounts, so one owner is not split across accounts"
+      ],
+      "just_say_to_your_agent": [
+        "Who are the top 10 holders of <TOKEN_ADDRESS>?",
+        "How much of <TOKEN_ADDRESS>'s supply do the top 10 wallets hold?",
+        "Are snipers or insiders holding <TOKEN_ADDRESS>?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Top 10–50 wallets per run",
+        "Supply share is by wallet, not token account"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · top 1 holds 27.8%, top 10 hold 59.4%\n1  Cfq1ts1iFr1eUWWBm8eFxUzm5R3YA3UvMZznwiShbgZt  27.81%\n2  8UhbNoBXmGoxJr2TeWW8wmSMoWmjS2rTT2tVJxzuTogC  9.71%\n3  9pkFKCR1mdS31JxjKdtmWg2awZUg6vJUYVY722DAcXzv  4.25%\n4  BBvQteuawKB2UtExfevL8HYLjWWsgmWXsp922vFbvCfT  3.03%\nCohorts: bundler 5,985 · sniper 3 · insider 0 · dev 0"
+      }
+    },
+    "skill-top-trader-analysis": {
+      "description": "List up to 10 top traders of a Solana token over 30m to all-time, sorted by volume, trades or PnL, showing buy/sell volume, trade count, realized, unrealized and total PnL, and wallet tags such as sniper, insider or smart trader.",
+      "use_cases": [
+        "Understanding who drives the price; finding wallets worth following."
+      ],
+      "core_capabilities": [
+        "Rank up to 10 traders of a token, from 30m to all time",
+        "Sort by USD volume, trade count, PnL or current holding",
+        "Show each trader's buys, sells, realized and unrealized PnL and current holding",
+        "PnL covers this token only, not the whole wallet"
+      ],
+      "just_say_to_your_agent": [
+        "Who were the most profitable traders of <TOKEN_ADDRESS> in the last 24 hours?",
+        "Show the top 10 wallets by volume on <TOKEN_ADDRESS> this week",
+        "Which top traders of <TOKEN_ADDRESS> still hold a position?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Up to 10 traders per run",
+        "PnL covers this token only, not the whole wallet"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · top traders, 24h, by USD volume\n#  wallet                                          volume     realized PnL   holding\n1  Cfq1ts1iFr1eUWWBm8eFxUzm5R3YA3UvMZznwiShbgZt    $3.01M      -$7.72K     $412.28K\n2  8UhbNoBXmGoxJr2TeWW8wmSMoWmjS2rTT2tVJxzuTogC    $2.08M      -$7.13K     $310.11K\n3  9pkFKCR1mdS31JxjKdtmWg2awZUg6vJUYVY722DAcXzv    $2.07M         $101      $0.00\n4  BBvQteuawKB2UtExfevL8HYLjWWsgmWXsp922vFbvCfT    $1.92M      -$3.26K     $661.14K\n5  A8A9GoxfmcjY2QAQ8tYS98SqDBF6hUFDmxAKBsLw29sL    $1.50M         $103         $4"
+      }
+    },
+    "skill-lp-analysis": {
+      "description": "Analyze where and how deep a Solana token can be traded — its top pools with venue, liquidity, 24h volume and age, plus total and exit liquidity over time.",
+      "use_cases": [
+        "Spotting concentration and insider risk; seeing who could dump."
+      ],
+      "core_capabilities": [
+        "List up to 20 pools of a Solana token with DEX, liquidity and 24h volume",
+        "Show each pool's share of the observed liquidity",
+        "Pull 24h volume and trade count for up to 5 pairs",
+        "Full depth adds liquidity and exit-liquidity history in 4h snapshots"
+      ],
+      "just_say_to_your_agent": [
+        "Where is <TOKEN_ADDRESS> traded, and which pool holds the most liquidity?",
+        "Is <TOKEN_ADDRESS>'s liquidity concentrated in one pool?",
+        "How has liquidity on <TOKEN_ADDRESS> changed over the last day?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Up to 20 pools; shares are within those pools",
+        "Liquidity history is per token, not per pool",
+        "No slippage, APR or impermanent-loss figures"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · 20 pools read, $41.27M liquidity\npool                                          dex         liquidity   share\n2uF4Xh61rDwxnG9woyxsVQP7zuA6kLFpb3NvnRQeoiSd  Pump Amm      $23.39M   56.7%\nDNhfyh75AApg1L1Yig3fErvERKutYRqfWLGb496iViSZ  Tesserav       $3.80M   9.2%\nBofA2ViUSudPBTUms2KRuG6AHNeMawjNfwqTJDgx5BKW  Orca           $2.42M   5.9%\nHbjYfcWZBjCBYTJpZkLGxqArVmZVu3mQcRudb6Wg1sVh  Meteora Dl     $1.90M   4.6%\nToken liquidity change over the window: -1.4%"
+      }
+    },
+    "skill-token-dd-score": {
+      "description": "Score any Solana token 0–100 with an A+ to F rating across five pillars — security, holder concentration, trading activity, liquidity and smart money — showing each pillar’s points and the reason behind every deduction.",
+      "use_cases": [
+        "Pre-buy check, grading a shortlist, auto-rating tokens in a bot or wallet."
+      ],
+      "core_capabilities": [
+        "0–100 score from 5 weighted pillars: security, holders, activity, liquidity, smart money",
+        "Rating from A+ to F, with a verdict from HOT to CRITICAL",
+        "Standard (2 calls) or Advanced (7 calls) with holder, flow and liquidity evidence",
+        "Missing checks show N/A and don't count; re-score a saved run at 0 CU"
+      ],
+      "just_say_to_your_agent": [
+        "Run a due-diligence score on <TOKEN_ADDRESS>",
+        "What is the DD grade of <TOKEN_ADDRESS>, and which checks are missing?",
+        "Estimate the CU for an advanced DD review of <TOKEN_ADDRESS> without fetching data"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Standard and Advanced scores are not comparable",
+        "Checks without data are left out of the score",
+        "Advanced samples top holders, not every holder"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCm…Dfn) · Token DD (advanced)\nScore 79.0 / 100 · Rating B · FAIR\nsecurity   holders   activity   liquidity   smart money\n   100        86        60         87            40\nLiquidity drawdown 2.5% · no hard blocks"
+      }
+    },
+    "skill-contract-dd": {
+      "description": "Check a Solana token’s contract controls, holder concentration and optional candle pattern, with missing controls kept unknown and no overall safety score.",
+      "use_cases": [
+        "Checking contract controls and concentration before deeper token research; adding optional chart context."
+      ],
+      "core_capabilities": [
+        "Check contract controls from Birdeye security data",
+        "Show how much supply the top 10 wallets hold",
+        "Read the candle pattern and score; skip it with --skip-kline to save 100 CU",
+        "No safety score: unknown controls stay unknown"
+      ],
+      "just_say_to_your_agent": [
+        "Check the contract controls and holder concentration of <TOKEN_ADDRESS>",
+        "Is <TOKEN_ADDRESS> freezeable?",
+        "Run Contract DD on <TOKEN_ADDRESS> without the price chart, to save CU"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "No source-code audit, sell simulation or LP-lock check",
+        "No safety score; missing controls stay unknown",
+        "Candle check needs at least 8 closed candles"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · Contract DD\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nPrice pattern (15m, 7d): bounce_off_lows · trend flat · drawdown 25.1%\nHoneypot and LP lock: not available · no safety score"
+      }
+    },
+    "skill-rugcheck-audit": {
+      "description": "Review a Solana token’s rug risk — contract controls, holder concentration, labeled holder groups and liquidity history — with every unverified check listed instead of assumed safe.",
+      "use_cases": [
+        "A fast yes/no safety gate before buying or listing a token; auto-blocking risky tokens in wallets, DEX listings and trading bots."
+      ],
+      "core_capabilities": [
+        "Check contract controls from Birdeye security data",
+        "List the top 20 holders and labeled holder groups",
+        "Track liquidity in 4h snapshots across your window",
+        "List honeypot and LP-lock checks as unavailable instead of assuming them safe"
+      ],
+      "just_say_to_your_agent": [
+        "Audit <TOKEN_ADDRESS> for rug risk",
+        "Has liquidity on <TOKEN_ADDRESS> dropped over the last 7 days?",
+        "Show the top holders and holder groups of <TOKEN_ADDRESS>"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Uses Birdeye data; not a RugCheck.org integration",
+        "No honeypot simulation or LP-lock verification",
+        "A drop in USD liquidity doesn't prove an LP pull"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · RugCheck Audit\nMint authority: unknown · Freeze authority: unknown\nTop 10 token accounts hold 59.4%\nLiquidity over 7 days (42 snapshots): -3.1%\nHoneypot and LP lock: not available"
+      }
+    },
+    "skill-kline-pattern": {
+      "description": "Read a Solana token’s candlestick chart at a chosen resolution and window, detect the price pattern, score it 0–100 and mark observed support and resistance levels.",
+      "use_cases": [
+        "Timing entries and exits around key price levels; adding chart signals to trading agents and alert bots."
+      ],
+      "core_capabilities": [
+        "11 patterns, such as uptrend channel, breakdown, slow bleed and basing at lows",
+        "0–100 score with each adjustment listed, plus observed support and resistance",
+        "Trend, slope, volatility, drawdown, volume and recovery measurements",
+        "Uses closed candles only and needs at least 8 of them"
+      ],
+      "just_say_to_your_agent": [
+        "What chart pattern is <TOKEN_ADDRESS> in on the 1-hour chart this week?",
+        "Score the last 7 days of candles for <TOKEN_ADDRESS>",
+        "Is <TOKEN_ADDRESS> basing at lows or still bleeding?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Candles from 1m to 1D; needs at least 8 closed candles",
+        "Support and resistance are observed levels, not forecasts",
+        "The score is a heuristic, not a backtest"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · 1H candles, 167 closed\nPattern: sideways_consolidation · score 50 / 100 · trend flat\nDrawdown 25.8% · recovery from low 14.3% · volume ratio 0.54\nObserved support $0.00375 · resistance $0.00578"
+      }
+    },
+    "skill-wallet-score": {
+      "description": "Score any Solana wallet 0–100 on profitability, consistency, trade quality and activity, showing PnL, win rate and the breakdown behind each component.",
+      "use_cases": [
+        "Vetting a wallet before copy-trading; ranking wallets."
+      ],
+      "core_capabilities": [
+        "0–100 alpha score from 4 components: profitability 35%, consistency 35%, quality 20%, activity 10%",
+        "Scores fixed 30d and 90d PnL windows plus 30d positions; 24h PnL is context only",
+        "Shows each component's score and the inputs behind it",
+        "Returns no score when required data is missing"
+      ],
+      "just_say_to_your_agent": [
+        "Score wallet <WALLET_ADDRESS> on Solana",
+        "How strong is <WALLET_ADDRESS> as a trader? Show the score breakdown.",
+        "Estimate the CU to score <WALLET_ADDRESS> without holdings"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Scored on fixed 30d and 90d PnL windows only",
+        "Reads up to 100 positions, not the full portfolio",
+        "Not a forecast of copy-trading returns"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "wallet FtFt…kJPQ · Wallet Score\nAlpha score 52.8 / 100 from 100 positions\nprofitability   consistency   quality   activity\n     0             91            70         70"
+      }
+    },
+    "skill-wallet-style": {
+      "description": "Tag a Solana wallet’s trading style from trade frequency and PnL profile, with a style label and the numbers behind it.",
+      "use_cases": [
+        "Knowing how a wallet trades before following it; segmenting users in wallet apps."
+      ],
+      "core_capabilities": [
+        "Style label from trade frequency (Rare, Regular, Frequent, Machine) and result (Heavy loss to Strong profit)",
+        "Trades per day, realized ROI and win rate",
+        "Share of tokens closed at a loss",
+        "7-day or 30-day window"
+      ],
+      "just_say_to_your_agent": [
+        "What kind of trader is <WALLET_ADDRESS>?",
+        "Classify the trading style of <WALLET_ADDRESS> over the last 7 days",
+        "How often does <WALLET_ADDRESS> trade, and is it profitable?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "7d or 30d windows only",
+        "Reads up to 100 positions per run"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "wallet FtFtF8iamFC3gCv5VYUTBd1G4r1XEc1TbcHyuy6hkJPQ · last 30d\nStyle: Machine · Break-even\n12,917 trades per day · realized ROI 0.04%\nWin rate 85.6% · loss share 9% of 100 positions"
+      }
+    },
+    "skill-wallet-analysis": {
+      "description": "Deep-dive a Solana wallet’s portfolio and performance — holdings, realized and unrealized PnL, ROI, win rate and per-token PnL from 24h to all-time — plus the wallet that first funded it.",
+      "use_cases": [
+        "Portfolio view in wallet apps; due diligence on a wallet."
+      ],
+      "core_capabilities": [
+        "Realized and unrealized PnL for 24h, 7d, 30d, 90d and all time, each shown separately",
+        "Per-token PnL",
+        "Current holdings",
+        "Recent transactions and the wallet's first funding transaction"
+      ],
+      "just_say_to_your_agent": [
+        "Analyze wallet <WALLET_ADDRESS>",
+        "Show the 7d and 30d PnL of <WALLET_ADDRESS> separately",
+        "What does <WALLET_ADDRESS> hold right now, and what has it traded recently?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Windows 24h, 7d, 30d, 90d and all; they overlap",
+        "Up to 100 holdings, positions and transactions each"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "wallet FtFtF8iamFC3gCv5VYUTBd1G4r1XEc1TbcHyuy6hkJPQ · PnL by window (overlapping, not additive)\nwindow  realized    unrealized   total       win rate     trades\n7d       -$57.87K    -$88.87K   -$146.74K     81.6%     27,996\n30d      +$31.07K    -$89.13K    -$58.05K     85.6%    387,507\n90d      +$73.80K    -$89.25K    -$15.45K     93.8%  1,237,411\nall      +$73.80K    -$89.25K    -$15.45K     93.8%  1,237,411"
+      }
+    },
+    "skill-smart-money-profile": {
+      "description": "Profile a Solana wallet in one run — 7-day and 30-day PnL, win rate, positions, holdings, swaps and net-worth history.",
+      "use_cases": [
+        "Checking a wallet found in Smart Wallets or a KOL feed before copy-trading; building trader profile pages in wallet apps and communities."
+      ],
+      "core_capabilities": [
+        "7-day and 30-day PnL side by side",
+        "Per-token positions and current holdings",
+        "Swaps within your chosen time range",
+        "Daily net-worth history and the first funding transaction"
+      ],
+      "just_say_to_your_agent": [
+        "Build a profile of wallet <WALLET_ADDRESS>",
+        "How has the net worth of <WALLET_ADDRESS> changed this month?",
+        "Show the swaps <WALLET_ADDRESS> made in the last 30 days"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "One wallet per run; up to 100 positions, holdings and trades",
+        "Net-worth change includes deposits and withdrawals"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "wallet FtFtF8iamFC3gCv5VYUTBd1G4r1XEc1TbcHyuy6hkJPQ · Smart Money Profile\nwindow  realized    total       win rate   trades\n7d       -$57.87K  -$145.65K     81.6%   27,996\n30d      +$31.07K   -$56.96K     85.6%  387,507\nAlso returns position details, holdings and first funding"
+      }
+    },
+    "skill-smart-money-leaderboard": {
+      "description": "Rank up to 10 Solana wallets side by side on 7-day and 30-day PnL and win rate, to see which one performs best.",
+      "use_cases": [
+        "Choosing which wallet to copy among candidates; building trader leaderboards for communities and wallet apps."
+      ],
+      "core_capabilities": [
+        "Rank up to 10 wallets you supply",
+        "7-day and 30-day PnL and win rate, with per-token evidence for each wallet",
+        "Same PnL windows and accounting method for every wallet",
+        "Duplicate addresses are removed; wallets with missing data stay unranked"
+      ],
+      "just_say_to_your_agent": [
+        "Rank these wallets by PnL: <WALLET_1>, <WALLET_2>, <WALLET_3>",
+        "Which of these 5 wallets performed best over the last 30 days?",
+        "Estimate the CU to compare 10 wallets"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Compares 1–10 wallets you supply; doesn't find top wallets",
+        "Ranks within your list only; 70 CU per wallet"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "Leaderboard of supplied wallets (7d / 30d)\n#  wallet                                  30d PnL    30d win rate   7d win rate   score\n1  FtFtF8iamFC3gCv5VYUTBd1G4r1XEc1TbcHyuy6hkJPQ +$31.07K    85.6%      81.6%        90.5\n2  4aWgCnEDx7YnriGShBxSRRNjy6RN8wZrMQGHgzA8sH4M -$17.04K    42.0%      48.2%        57.0\n3  HTE2Wriii7AWJpBcUiEmBHndotMMQdtqpHJ1LHwetXT1   -$134.18K   37.1%      15.8%        34.9\n4  bpfe9tJukfJWf4M8SPVR1kzby6NCfH45zA87vbYgtG5 -$168.03K   39.2%      41.9%        34.7"
+      }
+    },
+    "skill-smart-money-holders": {
+      "description": "See which smart traders hold a Solana token, showing each wallet’s share of supply, average buy price, PnL, buy/sell volume and first trade time, plus the cohort’s buy/sell activity over time.",
+      "use_cases": [
+        "Confirming smart-money conviction before entry; spotting smart money exiting."
+      ],
+      "core_capabilities": [
+        "See how many Birdeye-labeled smart traders hold a Solana token and their combined supply share",
+        "List up to 50 smart-trader positions with holding, supply share, PnL and lifetime buys and sells",
+        "Full depth adds hourly buy and sell activity with a net-flow signal",
+        "Optionally include wallets that have already exited"
+      ],
+      "just_say_to_your_agent": [
+        "Are smart traders holding <TOKEN_ADDRESS>?",
+        "Show the smart-money wallets in <TOKEN_ADDRESS> and their PnL",
+        "Were smart traders buying or selling <TOKEN_ADDRESS> over the last 24 hours?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Up to 50 smart-trader positions per run",
+        "Labels are observed cohorts, not verified identities"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCm…Dfn) · 2,167 smart traders hold 0.33% of supply\nwallet                                        supply   position PnL\nGNRgBxkRFnyLYUTX8DSs3SM3Wm4jYSHQn6JQQVXapoRc  0.025%   +$404.31K\nECUa5EfrNgNPAp4SsjZyf6qhS1rvQE14wvLBurYBctfw  0.025%   +$553.18K\nHYcLuHtcXYFQNYzTsh3gfBYdDtgULdcAQUdHbB5J31h8  0.024%    -$32.42K\nLast 24h: bought $2.00M, sold $951.45K, net +$1.04M → buy-dominant"
+      }
+    },
+    "skill-kol-signal": {
+      "description": "Summarize KOL buying and selling on a Solana token over a chosen window, showing buy and sell USD, net flow, a buy/sell dominance label and optional wallet-level activity.",
+      "use_cases": [
+        "Following KOL calls, alert bots, detecting KOL exits."
+      ],
+      "core_capabilities": [
+        "Total buy and sell USD from Birdeye-labeled KOL wallets on a Solana token",
+        "Net flow with a buy-dominant, sell-dominant or balanced label",
+        "Hourly buckets over the last day by default, or your own time range and threshold",
+        "Full depth adds a sample of the KOL wallets that traded"
+      ],
+      "just_say_to_your_agent": [
+        "Are KOLs buying or selling <TOKEN_ADDRESS>?",
+        "Show KOL net flow on <TOKEN_ADDRESS> over the last 24 hours",
+        "Which KOL wallets traded <TOKEN_ADDRESS> yesterday?"
+      ],
+      "supported_chains": [
+        "solana"
+      ],
+      "limitations": [
+        "Birdeye-labeled KOL wallets only, not a market-wide feed",
+        "Activity comes in time buckets, not single transactions"
+      ],
+      "sample_output": {
+        "format": "text",
+        "kind": "illustrative",
+        "description": "Illustrative example supplied for documentation; not a live API response or a verified market snapshot.",
+        "output": "PUMP (pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn) · KOL wallets, last 24h in 1h buckets\nBought $116.35K · sold $112.60K · net +$3.75K\nSignal: buy-dominant\nhour   bought    sold\n05:00   $1.55K   $1.21K\n06:00     $189     $198\n07:00      $83      $98"
+      }
+    }
+  }
+}

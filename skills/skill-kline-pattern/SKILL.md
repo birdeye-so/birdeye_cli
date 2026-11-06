@@ -1,9 +1,9 @@
 ---
 name: skill-kline-pattern
-description: "Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules."
+description: "Read a Solana token’s candlestick chart at a chosen resolution and window, detect the price pattern, score it 0–100 and mark observed support and resistance levels."
 ---
 
-<!-- Generated from src/workflows/skill-kline-pattern/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-kline-pattern/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Kline Pattern
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Classify observed candle behavior using the reference skill's trend, slope, volatility, drawdown, volume and recovery rules.
+Read a Solana token’s candlestick chart at a chosen resolution and window, detect the price pattern, score it 0–100 and mark observed support and resistance levels.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana token address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Timing entries and exits around key price levels; adding chart signals to trading agents and alert bots.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Candles from 1m to 1D; needs at least 8 closed candles
+- Support and resistance are observed levels, not forecasts
+- The score is a heuristic, not a backtest
+
+### Execution notes
 
 - Supports 1m, 5m, 15m, 30m, 1H, 4H and 1D candles over a maximum 5000-interval request window. Intervals are case-sensitive; closed valid candles only, with at least eight required.
 - Reports invalid candles and gaps; a missing volume baseline receives no volume adjustment. Observed support/resistance are sample extrema, not forecasts.

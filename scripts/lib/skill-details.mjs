@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {skillContent} from './skill-content.mjs';
 
 // Only expose flags used by each skill. Values and defaults come from runtime schemas.
 const fields = {
@@ -39,6 +40,7 @@ const sampleAddress = 'So11111111111111111111111111111111111111112';
 const sampleTime = 1793577600; // 2026-11-02T00:00:00Z; stable, reproducible previews.
 
 export function skillDetails(definition, runtime) {
+  const content = skillContent(definition.kind);
   const surge = definition.kind === 'skill-price-surge';
   const schema = z.toJSONSchema(surge ? runtime.priceSurgeSchema : runtime.workflowInputSchema, {unrepresentable: 'any'}).properties;
   const input = {kind: definition.kind};
@@ -80,12 +82,14 @@ export function skillDetails(definition, runtime) {
   params.push(row('--format', false, 'json | table | interface | plain | ui', 'json'),
     row('--short', false, 'Flag', false), row('--estimate-cu', false, 'Flag; preview without API calls', false),
     row('--max-cu', false, 'Nonnegative integer CU budget', null));
-  const subject = definition.subject === 'wallets' ? ' Use wallets <WALLET_1,WALLET_2>.'
-    : input.address ? ` Use ${definition.subject} <SOLANA_ADDRESS>.` : '';
   return {
-    core_capabilities: [definition.purpose, definition.produces],
-    just_say_to_your_agent: (definition.guide?.useCases ?? [definition.purpose]).map(prompt => `Use ${definition.title} (${definition.kind}) to help me: ${prompt}${subject} Preview CU before running.`),
+    use_cases: content.use_cases,
+    core_capabilities: content.core_capabilities,
+    just_say_to_your_agent: content.just_say_to_your_agent,
+    supported_chains: content.supported_chains,
+    limitations: content.limitations,
     cli_parameters: params,
-    sample_output: {format: 'json', kind: 'estimate', description: 'Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.', command, output: plan},
+    sample_output: {format: 'json', kind: 'estimate', description: 'Offline cost-preview output with illustrative inputs and a fixed observation time. No live market data or API calls.', command, output: plan,
+      ...(content.sample_output ? {example: content.sample_output} : {})},
   };
 }

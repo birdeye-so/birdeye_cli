@@ -1,9 +1,9 @@
 ---
 name: skill-token-stats
-description: "Summarize a Solana token's valuation, liquidity, holders and buying/selling activity. Use for a market snapshot across supported rolling windows."
+description: "Get a Solana token’s full stats in one run — price, market cap, FDV, supply, liquidity, holder count and number of markets — plus trades, buys/sells, volume and unique buyers/sellers from 1m to 24h, each with change vs the previous period."
 ---
 
-<!-- Generated from src/workflows/skill-token-stats/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-token-stats/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Token Stats
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Summarize a Solana token's valuation, liquidity, holders and buying/selling activity. Use for a market snapshot across supported rolling windows.
+Get a Solana token’s full stats in one run — price, market cap, FDV, supply, liquidity, holder count and number of markets — plus trades, buys/sells, volume and unique buyers/sellers from 1m to 24h, each with change vs the previous period.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address and stats-frames, default 1h,24h.
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Overview supplies valuation and holders; trade-data supplies the requested rolling windows. These endpoints do not retrieve historical snapshots at --from/--to. Overlapping windows are shown separately.
 
 Use cases:
-- Compare a token's last hour of activity with its last 24 hours.
-- Check market cap, FDV and liquidity before choosing a deeper analysis.
+- Token overview cards, enriching watchlists, feeding your own models.
 
 Preview without API calls:
 
@@ -48,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Current data only, no historical snapshots
+- Time windows overlap; don't add them together
+
+### Execution notes
 
 - Two current-data requests, not historical snapshot reconstruction. Windows overlap and must not be added together.
 - Volume is reported in USD, token counts are separate, and market cap is not substituted with FDV when unavailable.

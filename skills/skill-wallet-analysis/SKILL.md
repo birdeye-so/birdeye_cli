@@ -1,9 +1,9 @@
 ---
 name: skill-wallet-analysis
-description: "Compare wallet PnL across several periods and inspect holdings, positions and recent activity."
+description: "Deep-dive a Solana wallet’s portfolio and performance — holdings, realized and unrealized PnL, ROI, win rate and per-token PnL from 24h to all-time — plus the wallet that first funded it."
 ---
 
-<!-- Generated from src/workflows/skill-wallet-analysis/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-wallet-analysis/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Wallet Analysis
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Compare wallet PnL across several periods and inspect holdings, positions and recent activity.
+Deep-dive a Solana wallet’s portfolio and performance — holdings, realized and unrealized PnL, ROI, win rate and per-token PnL from 24h to all-time — plus the wallet that first funded it.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana wallet address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Portfolio view in wallet apps; due diligence on a wallet.
 
 Preview without API calls:
 
@@ -44,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Windows 24h, 7d, 30d, 90d and all; they overlap
+- Up to 100 holdings, positions and transactions each
+
+### Execution notes
 
 - Select up to five distinct summary windows from 24h, 7d, 30d, 90d and all. These overlap and must not be added. Per-token positions use the separate duration input, default 30d.
 - Default holdings, positions and transactions each cover one page of up to 100 rows; low-liquidity assets and provider history may be missing. --skip-* flags remove evidence, not just output.

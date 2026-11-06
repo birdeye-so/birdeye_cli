@@ -3,6 +3,7 @@ import {resolve, relative, dirname, sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {z} from 'zod';
 import {loadSkillRuntime, publicSkill, skillSupportMarkdown, sharedSkillLimitations} from './skill-runtime.mjs';
+import {validateSkillContent} from './skill-content.mjs';
 
 export const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const slug = z.string().regex(/^[a-z0-9][a-z0-9-]*$/);
@@ -35,13 +36,14 @@ export async function skillPackages() {
 export async function syncSkillPackages({check = false} = {}) {
   const {workflowCatalog} = await loadSkillRuntime();
   const definitions = workflowCatalog().filter(item => item.family !== "legacy");
+  validateSkillContent(definitions);
   for (const definition of definitions) {
     const skill = publicSkill(definition, {includeSupport: false});
     const directory = resolve(root, 'skills', skill.id);
     const references = definition.guide || definition.source.startsWith('skills/') || definition.kind === 'skill-price-surge' ? {'references/details.md': definition.source} : {};
     const hasResearchApi = ['skill-price-surge', 'skill-token-dd-score'].includes(definition.kind);
     if (hasResearchApi) references['references/internal-api.md'] = 'docs/workflows/internal-api.md';
-    let instructions = `---\nname: ${skill.id}\ndescription: ${JSON.stringify(skill.description)}\n---\n\n<!-- Generated from src/workflows/${skill.id}/definition.ts; run npm run skills:sync. -->\n\n# ${skill.title}\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\n${skill.description}\n\n## Input\n\n${skill.usage.input}\n\n## Use\n\n${skill.usage.instructions}\n\nPreview without API calls:\n\n\`\`\`bash\n${skill.usage.preview_command}\n\`\`\`\n\nRun after confirming the input and budget:\n\n\`\`\`bash\n${skill.usage.run_command} --max-cu <CU_BUDGET>\n\`\`\`\n\nUse \`birdeye-cli ${skill.id === "skill-price-surge" ? "price-surge" : `case ${skill.id}`} --help\` for optional flags. Run from any directory.\n\n## Result\n\n${skill.usage.result}\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.\n`;
+    let instructions = `---\nname: ${skill.id}\ndescription: ${JSON.stringify(skill.description)}\n---\n\n<!-- Generated from src/workflows/${skill.id}/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->\n\n# ${skill.title}\n\nRequires the separately installed birdeye-cli (Node.js >=22.16) and configured Birdeye credentials.\n\n## When to use\n\n${skill.description}\n\n## Input\n\n${skill.usage.input}\n\n## Use\n\n${skill.usage.instructions}\n\nPreview without API calls:\n\n\`\`\`bash\n${skill.usage.preview_command}\n\`\`\`\n\nRun after confirming the input and budget:\n\n\`\`\`bash\n${skill.usage.run_command} --max-cu <CU_BUDGET>\n\`\`\`\n\nUse \`birdeye-cli ${skill.id === "skill-price-surge" ? "price-surge" : `case ${skill.id}`} --help\` for optional flags. Run from any directory.\n\n## Result\n\n${skill.usage.result}\n\nReport sources, observation times, missing evidence and CU usage. Preserve unknown values; distinguish incomplete evidence from a passed check. These results support research, not automatic trading.\n`;
     instructions += `\n${skillSupportMarkdown(definition)}\n`;
     if (definition.guide) instructions += '\nRead [the API and usage reference](references/details.md) to choose evidence depth, understand units and distinguish rolling snapshots from historical activity.\n';
     else if (Object.keys(references).length) instructions += skill.id === 'skill-price-surge' ? '\nRead [the detailed reference](references/details.md) for filters, risk interpretation, missing data, installation or the aggregate HTTP API.\n' : '\nRead [the detailed reference](references/details.md) when interpreting formulas, selecting evidence modes, or re-scoring saved evidence.\n';

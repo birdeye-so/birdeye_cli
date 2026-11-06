@@ -1,9 +1,9 @@
 ---
 name: skill-top-trader-analysis
-description: "Rank a Solana token's traders by USD volume, trade count, PnL or remaining holdings. Use to inspect which wallets drove activity in a chosen window."
+description: "List up to 10 top traders of a Solana token over 30m to all-time, sorted by volume, trades or PnL, showing buy/sell volume, trade count, realized, unrealized and total PnL, and wallet tags such as sniper, insider or smart trader."
 ---
 
-<!-- Generated from src/workflows/skill-top-trader-analysis/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-top-trader-analysis/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Top Trader Analysis
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Rank a Solana token's traders by USD volume, trade count, PnL or remaining holdings. Use to inspect which wallets drove activity in a chosen window.
+List up to 10 top traders of a Solana token over 30m to all-time, sorted by volume, trades or PnL, showing buy/sell volume, trade count, realized, unrealized and total PnL, and wallet tags such as sniper, insider or smart trader.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address, trader-window and trader-sort. Up to ten traders per req
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Use trader-sort volume_usd for USD activity, realized_pnl for realized results, or hold_volume for current holdings. The window is the provider's relative trader window; --from/--to are not supported. PnL covers this token, not the whole wallet.
 
 Use cases:
-- Find the most profitable traders of one token over 24h.
-- Compare active traders with wallets that still hold a position.
+- Understanding who drives the price; finding wallets worth following.
 
 Preview without API calls:
 
@@ -48,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Up to 10 traders per run
+- PnL covers this token only, not the whole wallet
+
+### Execution notes
 
 - One page of at most ten traders; scan-limit is capped at ten. Ranking and PnL apply to this token and the requested provider window.
 - Current holdings do not prove purchases in the window. Missing PnL/holding fields remain unknown; highest volume does not imply trading skill.

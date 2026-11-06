@@ -28,6 +28,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Descriptions, use cases, capabilities, agent prompts, chain summaries, limitations and illustrative samples for all 20 current skills now have one editable source in `catalog/skill-content.json`. API list/view expose the authored fields and `sample_output.example` while retaining generated CLI parameters and the JSON CU preview. Installable skill descriptions/instructions and the landing catalog synchronize from that source. Skill icon URLs use `#00ffa3`.
+
 - GET `/agent/api/skills` now returns complete view data for every skill, including capabilities, agent prompts, CLI parameters and sample output, so frontends can cache the list for detail navigation. Category filters preserve the full objects and GET does not increment view/download counters.
 
 - Skill list, view and download responses now share canonical `skill_id`, `demo_path` and advertised aliases with both demo hosts. View/download/stat accept short IDs and Price Surge spelling aliases and count them under the existing canonical ID; download now returns the skill summary and installation instructions in `data`.

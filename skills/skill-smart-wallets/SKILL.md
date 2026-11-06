@@ -1,9 +1,9 @@
 ---
 name: skill-smart-wallets
-description: "Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist."
+description: "Discover smart-money wallets on Solana from the top traders of Birdeye’s smart-money tokens, with a deduplicated shortlist and fast, standard or deep scan depth."
 ---
 
-<!-- Generated from src/workflows/skill-smart-wallets/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-smart-wallets/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Smart Wallets
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Discover wallets trading tokens in Birdeye's smart-money list, then inspect a bounded wallet shortlist.
+Discover smart-money wallets on Solana from the top traders of Birdeye’s smart-money tokens, with a deduplicated shortlist and fast, standard or deep scan depth.
 
 ## Input
 
@@ -20,6 +20,9 @@ No address is required. Choose filters appropriate to the research question.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Finding wallets worth following or copy-trading; seeding watchlists for smart-money and KOL tracking.
 
 Preview without API calls:
 
@@ -44,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Shortlists up to 5 wallets from top traders of smart-money tokens
+- Not a complete wallet leaderboard
+- Wallet PnL needs standard or deep mode
+
+### Execution notes
 
 - Default discovery takes at most 20 smart-money tokens from a 1d page, then ten 30d top traders for each of 1–5 selected tokens. It deduplicates at most 1–5 wallets in provider order; this is not a complete wallet leaderboard.
 - Fast mode has no wallet-wide PnL evidence; standard adds 30d PnL and deep adds holdings and a per-token PnL page. Token-scoped trader PnL cannot be summed into wallet-wide PnL or win rate.

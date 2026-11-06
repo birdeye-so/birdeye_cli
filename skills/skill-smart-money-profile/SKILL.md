@@ -1,9 +1,9 @@
 ---
 name: skill-smart-money-profile
-description: "Combine short and monthly performance with position, trade and net-worth history for one wallet."
+description: "Profile a Solana wallet in one run — 7-day and 30-day PnL, win rate, positions, holdings, swaps and net-worth history."
 ---
 
-<!-- Generated from src/workflows/skill-smart-money-profile/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-smart-money-profile/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # Smart Money Profile
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Combine short and monthly performance with position, trade and net-worth history for one wallet.
+Profile a Solana wallet in one run — 7-day and 30-day PnL, win rate, positions, holdings, swaps and net-worth history.
 
 ## Input
 
@@ -20,6 +20,9 @@ A Solana wallet address.
 ## Use
 
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu.
+
+Use cases:
+- Checking a wallet found in Smart Wallets or a KOL feed before copy-trading; building trader profile pages in wallet apps and communities.
 
 Preview without API calls:
 
@@ -44,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- One wallet per run; up to 100 positions, holdings and trades
+- Net-worth change includes deposits and withdrawals
+
+### Execution notes
 
 - Profiles one supplied wallet using overlapping 7d/30d summaries. Position duration and the trade time cursor are separate inputs; do not merge incompatible scopes.
 - Default positions, holdings and trades each cover at most 100 rows, and net-worth history requests 30 daily snapshots. Trades are swaps, not complete transfer history.

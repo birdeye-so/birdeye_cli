@@ -1,9 +1,9 @@
 ---
 name: skill-kol-signal
-description: "Summarize observed buying and selling by Birdeye-labeled KOL wallets for a Solana token. Use to compare cohort buy/sell pressure within a bounded time window."
+description: "Summarize KOL buying and selling on a Solana token over a chosen window, showing buy and sell USD, net flow, a buy/sell dominance label and optional wallet-level activity."
 ---
 
-<!-- Generated from src/workflows/skill-kol-signal/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-kol-signal/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # KOL Buy/Sell Signal
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Summarize observed buying and selling by Birdeye-labeled KOL wallets for a Solana token. Use to compare cohort buy/sell pressure within a bounded time window.
+Summarize KOL buying and selling on a Solana token over a chosen window, showing buy and sell USD, net flow, a buy/sell dominance label and optional wallet-level activity.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address, optional from/to timestamps, tracker-frame, signal-thres
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Uses the KOL tracker for bounded historical buckets, rather than rolling money-flow or top-trader labels. Default is one day in hourly buckets. Full adds wallet details. Net USD above the threshold is buy-dominant, below its negative is sell-dominant; otherwise balanced. Missing buckets/cohort evidence stay unknown. This runs once and does not subscribe or send alerts.
 
 Use cases:
-- See whether observed KOL buying or selling dominated over the last day.
-- Investigate which sampled KOL wallets traded in a historical time window.
+- Following KOL calls, alert bots, detecting KOL exits.
 
 Preview without API calls:
 
@@ -48,6 +47,11 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Birdeye-labeled KOL wallets only, not a market-wide feed
+- Activity comes in time buckets, not single transactions
+
+### Execution notes
 
 - Provider labels describe observed cohorts, not verified identities. Holdings are a snapshot; a position's lifetime buy/sell totals are not activity in the requested timeline window.
 - Timeline totals cover returned buckets. Bucket wallet counts cannot be added as unique wallets; detail pages cap wallets per bucket and may have more pages. Unsupported tokens and absent cohorts stay unavailable.

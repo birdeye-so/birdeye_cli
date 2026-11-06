@@ -1,9 +1,9 @@
 ---
 name: skill-lp-analysis
-description: "Analyze a Solana token's liquidity pools, DEX activity and liquidity history. Use to locate thin liquidity or concentration across observed pools."
+description: "Analyze where and how deep a Solana token can be traded — its top pools with venue, liquidity, 24h volume and age, plus total and exit liquidity over time."
 ---
 
-<!-- Generated from src/workflows/skill-lp-analysis/definition.ts; run npm run skills:sync. -->
+<!-- Generated from src/workflows/skill-lp-analysis/definition.ts and catalog/skill-content.json; run npm run skills:sync. -->
 
 # LP Analysis
 
@@ -11,7 +11,7 @@ Requires the separately installed birdeye-cli (Node.js >=22.16) and configured B
 
 ## When to use
 
-Analyze a Solana token's liquidity pools, DEX activity and liquidity history. Use to locate thin liquidity or concentration across observed pools.
+Analyze where and how deep a Solana token can be traded — its top pools with venue, liquidity, 24h volume and age, plus total and exit liquidity over time.
 
 ## Input
 
@@ -22,8 +22,7 @@ A Solana token address, scan-limit (capped at 20 pools), limit (1–5 pair detai
 Install birdeye-cli and configure your Birdeye API key. Replace placeholders with your inputs, preview the cost, then run with your chosen budget using --max-cu. Core reads pools and at most --limit pair overviews. Full adds token-level liquidity history over --from/--to (default one day), using 4h snapshots. Each historical response is bounded to 100 rows. This analyzes token pools, not a wallet's LP fees or yield.
 
 Use cases:
-- Identify which pools hold most of a token's observed liquidity.
-- Compare current pool activity with token-level liquidity changes.
+- Spotting concentration and insider risk; seeing who could dump.
 
 Preview without API calls:
 
@@ -48,6 +47,12 @@ Report sources, observation times, missing evidence and CU usage. Preserve unkno
 ## Supported chains and limitations
 
 Supported chains in this CLI: `solana`. Broader upstream API support does not enable additional chains for this skill.
+
+- Up to 20 pools; shares are within those pools
+- Liquidity history is per token, not per pool
+- No slippage, APR or impermanent-loss figures
+
+### Execution notes
 
 - Pool percentages are relative to the fetched page, not all market liquidity. Pair details cover at most five pools.
 - Historical liquidity belongs to the token, not each pool. USD changes do not prove LP withdrawals; no slippage quote, LP APR or impermanent-loss calculation is provided.

@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
 import { createResourceCatalog } from '../scripts/lib/catalog.mjs';
 import {loadSkillRuntime} from '../scripts/lib/skill-runtime.mjs';
 import {skillDetails} from '../scripts/lib/skill-details.mjs';
+import {readSkillContent, validateSkillContent} from '../scripts/lib/skill-content.mjs';
 import { DatabaseSync } from 'node:sqlite';
 
 test('bundled API catalog exposes current skills with complete detail content', async () => {
@@ -23,10 +24,21 @@ test('bundled API catalog exposes current skills with complete detail content', 
   assert.ok(bundled.skills.every(skill => skill.usage.run_command && !('steps' in skill) && !('related_skill_ids' in skill)));
   const runtime = await loadSkillRuntime();
   const definitions = new Map(runtime.workflowCatalog().map(item => [item.kind, item]));
+  const content = readSkillContent();
+  assert.deepEqual(Object.keys(content).sort(), bundled.skills.map(skill => skill.id).sort());
+  validateSkillContent(runtime.workflowCatalog().filter(item => item.family !== 'legacy'));
+  assert.throws(() => validateSkillContent(runtime.workflowCatalog().filter(item => item.family !== 'legacy').map(item => ({...item, supportedChains: ['unsupported']}))), /do not match implemented chains/);
+  for (const skill of bundled.skills) {
+    assert.equal(skill.description, content[skill.id].description);
+    for (const useCase of content[skill.id].use_cases) assert.ok(skill.usage.instructions.includes(useCase));
+    const markdown = await readFile(`skills/${skill.id}/SKILL.md`, 'utf8');
+    assert.ok(markdown.includes(content[skill.id].description));
+    for (const limit of content[skill.id].limitations) assert.ok(markdown.includes(limit));
+  }
   for (const {id, detail} of bundled.skills) {
     assert.deepEqual(detail, JSON.parse(JSON.stringify(skillDetails(definitions.get(id), runtime))), `Stale detail: ${id}`);
     assert.ok(detail.core_capabilities.length > 0, id);
-    assert.ok(detail.just_say_to_your_agent.every(prompt => prompt.includes(id)), id);
+    assert.equal(detail.just_say_to_your_agent.length, 3, id);
     assert.ok(detail.cli_parameters.length > 0, id);
     assert.equal(new Set(detail.cli_parameters.map(row => row.param)).size, detail.cli_parameters.length, id);
     for (const row of detail.cli_parameters) {
@@ -36,6 +48,10 @@ test('bundled API catalog exposes current skills with complete detail content', 
     assert.equal(detail.sample_output.kind, 'estimate');
     assert.match(detail.sample_output.command, /--estimate-cu/);
     assert.ok(detail.sample_output.output.estimatedCu > 0, id);
+    for (const key of ['use_cases', 'core_capabilities', 'just_say_to_your_agent', 'supported_chains', 'limitations'])
+      assert.deepEqual(detail[key], content[id][key], `${id}/${key}`);
+    assert.deepEqual(detail.sample_output.example, content[id].sample_output);
+    assert.equal(detail.sample_output.example.kind, 'illustrative');
   }
   const params = id => new Map(bundled.skills.find(skill => skill.id === id).detail.cli_parameters.map(row => [row.param, row]));
   assert.equal(params('skill-token-dd-score').get('--dd-mode').default, 'advanced');
@@ -182,7 +198,7 @@ test('standalone HTTP server exposes routes, CORS preflight, and bounded request
       const icon = new URL(skill.icon_url);
       assert.equal(icon.origin, 'https://api.iconify.design');
       assert.match(icon.pathname, /^\/lucide\/[a-z0-9-]+\.svg$/);
-      assert.equal(icon.searchParams.get('color'), '#2563eb');
+      assert.equal(icon.searchParams.get('color'), '#00ffa3');
     }
     assert.equal(new Set(allSkills.map(s => s.icon_url)).size, allSkills.length, 'Every current skill has a distinct icon');
     for (const path of ['/agent/api/categories']) {
