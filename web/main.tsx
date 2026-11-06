@@ -7,6 +7,7 @@ import { WorkflowOverview, type PreparedCase } from "./workflow-overview";
 import { SkillSettings, SkillFindings } from "./skill-settings";
 import { SkillList, RunHistory, plainResult } from "./skill-console";
 import { SkillIcon } from "./skill-icon";
+import { Brand } from "./brand";
 import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-text";
 import {ChatPanel} from "./chat-panel";
 import {MarkdownText} from "./markdown-text";
@@ -581,7 +582,6 @@ function App() {
       <header className="console-header">
         <Brand />
         <nav aria-label="Workspace">{(["research", "demos", "usage", "settings"] as View[]).map(v => <button key={v} aria-current={view === v ? "page" : undefined} className={view === v ? "nav-item selected" : "nav-item"} onClick={() => {setView(v); setError("");}}>{v === "research" ? "Research" : v === "demos" ? "Demos" : v === "usage" ? "Usage & credits" : "Settings"}</button>)}</nav>
-        <span className="network">Solana</span>
         <button className="quiet" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button>
       </header>
       <div className="connection-bar">
@@ -802,6 +802,7 @@ function App() {
                 </div>
                 </div>
                 <form onSubmit={start}>
+                  {kind === "skill-wallet-analysis" && <p className="wallet-accounting-note">Birdeye Terminal data use the Net_cash method and may differ from Demo results calculated with wac method.</p>}
                   {mode === "case" ? (
                     <>
                       {!noAddress && <>
@@ -1053,19 +1054,6 @@ function App() {
       <AddressCopyNotice />
       <RunHistory remove={removeHistory} busy={busy} more={status.historyNextCursor ? () => {void loadHistory();} : undefined} loading={historyLoading} runs={status.runs} selected={run?.id} choose={id => {void watch(id).catch(e => setError(e.message));}} clear={() => {viewedRun.current=null;setRun(null);setChatMessages([]);setQuestion("");setLiveData(true);setView("research");}} />
       </div>
-    </div>
-  );
-}
-function Brand() {
-  return (
-    <div className="brand">
-      <svg width="29" height="29" viewBox="0 0 32 32" aria-hidden="true">
-        <path d="M4 5h23L16 16h11L4 28V5Z" fill="currentColor" />
-        <circle cx="11" cy="11" r="2.1" fill="white" />
-      </svg>
-      <span>
-        birdeye<span className="brand-suffix"> / skills</span>
-      </span>
     </div>
   );
 }
