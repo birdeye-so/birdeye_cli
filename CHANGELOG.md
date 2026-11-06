@@ -35,7 +35,7 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
-- Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligent Score, Contract DD → Contract Due-Diligent, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
+- Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligence, Contract DD → Contract Due-Diligence, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
 - Renamed categories: Market Discovery, Token Due Diligence, and Wallet & Smart Money. Category IDs are unchanged.
 - The demo UI shows the same Lucide icons as the Skills API `icon_url`, inlined so no remote images load.
 

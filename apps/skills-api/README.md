@@ -171,7 +171,7 @@ Counters measure deduplicated client-IP events, not verified downloads or unique
 
 ## Direct demo links
 
-`https://support-api.owland.xyz/skill-token-dd-score` opens Token Due-Diligent Score. All current catalog IDs and their advertised aliases have a route on this server and the browser preview on port 8787; retired or unknown IDs return 404. Links select the skill after the browser workspace is opened/unlocked. Opening a link never starts research or increments view/download counters.
+`https://support-api.owland.xyz/skill-token-dd-score` opens Token Due-Diligence. All current catalog IDs and their advertised aliases have a route on this server and the browser preview on port 8787; retired or unknown IDs return 404. Links select the skill after the browser workspace is opened/unlocked. Opening a link never starts research or increments view/download counters.
 
 The repository-root `npm run skills-api:build` bundles the browser demo into `apps/skills-api/public/` as well as compiling the API. Include that directory when deploying the standalone service. `SKILL_DEMO_DIR` can point to an alternate absolute directory containing the browser build (`index.html`, `main.js`, `main.css`). Missing assets return 503. Public hosting must use HTTPS for the browser workspace.
 

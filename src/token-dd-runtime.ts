@@ -16,7 +16,7 @@ export function attachDdCu(result:Result,ledger:LedgerPort,run:string) {
 }
 
 export function rescoreDd(original:Result,overrides:Data,ledger:LedgerPort,archive:{save(value:Data):unknown;get(id:string):any}) {
-  if(original?.data?.plan?.kind!=="skill-token-dd-score"||!Array.isArray(original.data.sources))throw new AppError("RESCORE_INVALID","Expected a full Token Due-Diligent Score result with source evidence.");
+  if(original?.data?.plan?.kind!=="skill-token-dd-score"||!Array.isArray(original.data.sources))throw new AppError("RESCORE_INVALID","Expected a full Token Due-Diligence result with source evidence.");
   if(original.data.sources.length>20||original.data.sources.some((s:Data)=>!s||typeof s!=="object"||!s.meta||typeof s.meta.operation!=="string"||!s.meta.params||s.data===undefined))throw new AppError("RESCORE_INVALID","Invalid source evidence in exported result.");
   if(original.data.sources.some((s:Data)=>s.outputTruncation)||original.meta?.outputTruncation)throw new AppError("RESCORE_INVALID","Short output cannot be re-scored. Use the full SQLite run or JSON export.");
   const allowed=new Set(["ddMode","topN","liqCandles"]);
@@ -33,6 +33,6 @@ export function rescoreDd(original:Result,overrides:Data,ledger:LedgerPort,archi
   result.meta={...result.meta,runId:id,retrievedAt:createdAt,coverage:result.data.status,cu:ledger.summary(id),
     rescore:{sourceRunId:original.meta?.runId??null,sourceRetrievedAt:original.meta?.retrievedAt??null,sourceCu:original.meta?.cu??null},warnings:[...(original.meta?.warnings??[]),"0-CU re-score from cache; original observation times are preserved on sources."]};
   attachDdCu(result,ledger,id);
-  archive.save({id,title:"Token Due-Diligent Score · Re-score",status:result.data.missing.length?"partial":"completed",createdAt,input:{mode:"case",case:input,rescoreOf:original.meta?.runId??null},result,ai:{inputTokens:0,outputTokens:0,calls:0,unknownCalls:0}});
+  archive.save({id,title:"Token Due-Diligence · Re-score",status:result.data.missing.length?"partial":"completed",createdAt,input:{mode:"case",case:input,rescoreOf:original.meta?.runId??null},result,ai:{inputTokens:0,outputTokens:0,calls:0,unknownCalls:0}});
   return archive.get(id);
 }

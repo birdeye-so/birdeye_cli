@@ -6,7 +6,7 @@ export default defineWorkflow({
   ...referencePolicy,
   planNotes: [referenceNote],
   id: "skill-contract-dd",
-  title: "Contract Due-Diligent",
+  title: "Contract Due-Diligence",
   category: "token",
   family: "data-skills",
   subject: "token",

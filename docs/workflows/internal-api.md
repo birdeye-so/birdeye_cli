@@ -56,7 +56,7 @@ Shared controls: `estimate_cu` is a boolean, default false. A true value returns
 
 Supported chains: **solana, bsc, base, ethereum, robinhood**. Arbitrum is rejected because the current source Token List v3 contract does not list it. Holder-health enrichment is **Solana-only**. Trader enrichment uses one page of ten wallets; 1m/5m screens use a 30m trader window. Missing tags/security fields remain unknown. The screen does not backfill candidates after exclusions or scan the entire market.
 
-### Token Due-Diligent Score
+### Token Due-Diligence
 
 `POST /token-dd` accepts:
 
@@ -75,7 +75,7 @@ Scores cover security, holders, activity, liquidity and smart money. Missing che
 
 ## Responses and limits
 
-A live request waits for its final JSON result. Both endpoints return `{schemaVersion:1,data:{...},meta:{...}}`. Price Surge uses `data.kind="price-surge-v1"`, with rows, exclusions, source payloads and the complete token-list `raw_response`. Token Due-Diligent Score uses `data.kind="skill-token-dd-score"`; the scored report is in `data.skillAnalysis.findings`, with collected payloads in `data.sources`. Every report has `meta.runId`, `meta.cu`, coverage, timestamps and missing-evidence details.
+A live request waits for its final JSON result. Both endpoints return `{schemaVersion:1,data:{...},meta:{...}}`. Price Surge uses `data.kind="price-surge-v1"`, with rows, exclusions, source payloads and the complete token-list `raw_response`. Token Due-Diligence uses `data.kind="skill-token-dd-score"`; the scored report is in `data.skillAnalysis.findings`, with collected payloads in `data.sources`. Every report has `meta.runId`, `meta.cu`, coverage, timestamps and missing-evidence details.
 
 HTTP 200 can carry `meta.coverage="partial"` after an upstream failure, exhausted budget or missing fields. Inspect it before interpreting the result. A fatal execution error returns `{error,run_id,result?}`, retaining the last checkpoint when available. Cancelling the client connection cancels further work; already sent requests can still consume CU. Runs/checkpoints are saved to `usage.sqlite` and can be inspected through `birdeye-cli history` using the same config directory.
 

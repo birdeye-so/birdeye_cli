@@ -1,6 +1,6 @@
 ---
 name: token-duediligence
-description: Calculate or explain Birdeye Token Due-Diligent Score for a Solana token, including advanced liquidity and holder evidence, or re-score a saved run locally at zero CU.
+description: Calculate or explain Birdeye Token Due-Diligence for a Solana token, including advanced liquidity and holder evidence, or re-score a saved run locally at zero CU.
 ---
 
 Requires the separately installed `birdeye-cli` (Node.js >=22.16) and configured Birdeye credentials. Run the commands below from any directory; prefix `case`, `token`, `market`, `portfolio`, `cases`, `capabilities`, `workflow` and `usage` commands with `birdeye-cli`.

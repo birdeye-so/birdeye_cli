@@ -79,7 +79,7 @@ function Icon({ name, size = 19 }: { name: string; size?: number }) {
 }
 const titleFor: Record<string, string> = {
   "skill-trending-list": "Token Trending", "skill-smart-wallets": "Smart Wallets",
-  "skill-token-dd": "Token DD", "skill-contract-dd": "Contract Due-Diligent", "skill-rugcheck-audit": "RugCheck Audit", "skill-kline-pattern": "Token Kline Pattern",
+  "skill-token-dd": "Token DD", "skill-contract-dd": "Contract Due-Diligence", "skill-rugcheck-audit": "RugCheck Audit", "skill-kline-pattern": "Token Kline Pattern",
   "skill-wallet-score": "Wallet Score", "skill-wallet-style": "Wallet Style", "skill-wallet-analysis": "Wallet Analysis", "skill-smart-money-profile": "Smart Money Profile", "skill-smart-money-leaderboard": "Smart Money Leaderboard",
   "token-research": "Token research",
   "market-shortlist": "Market shortlist",
