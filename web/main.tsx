@@ -521,11 +521,30 @@ function App() {
       setSettings((s) => ({ ...s, birdeyeApiKey: "", apiKey: "" }));
       setSaved(settings.persist && (!browserStorage || status?.configStorage?.persisted) ? `Connections saved and active now. They remain after ${browserStorage ? "locking" : "restarting"}.` : "Connections active now for this session only.");
       setError("");
-      await refresh();
+      const s = await refresh();
+      if (payload.profile && s?.config.ai.profiles[s.activeAiProfile]?.configured) await checkTools();
     } catch (e: any) {
       setError(e.message);
     }
   }
+  const toolCheck: {supported: boolean; message?: string} | null = status?.aiToolCheck ?? null;
+  const [checkingTools, setCheckingTools] = useState(false);
+  const toolProbe = useRef(false), autoChecked = useRef("");
+  async function checkTools() {
+    if (toolProbe.current) return;
+    toolProbe.current = true;setCheckingTools(true);
+    try {await api("/ai/check", {});await refresh();}
+    catch (e: any) {setError(e.message);}
+    finally {toolProbe.current = false;setCheckingTools(false);}
+  }
+  // Probe each saved profile once when chat opens, so an unsupported model is flagged before the first question.
+  useEffect(() => {
+    if (mode !== "chat" || !status || status.aiToolCheck || savedProfile === undefined || autoChecked.current === savedProfile) return;
+    if (!status.config.ai.profiles[status.activeAiProfile]?.configured) return;
+    autoChecked.current = savedProfile;
+    void checkTools();
+  }, [mode, savedProfile, status?.aiToolCheck]);
+  const toolWarning = "AI chat needs function calling to fetch Birdeye data and run skills; this model will answer without them.";
   const notice = error ? (
     <div className="notice error" role="alert">
       <span>{error}</span>
@@ -693,6 +712,12 @@ function App() {
                       />
                     </div>
                   </div>
+                  {aiConfigured && (
+                    <p className={toolCheck?.supported === false ? "setup-note" : "muted"} aria-live="polite">
+                      <span>{checkingTools ? "Checking function calling…" : toolCheck?.supported ? "Function calling: supported." : toolCheck ? `Function calling: not supported. ${toolCheck.message} ${toolWarning}` : "Function calling: not checked yet."}</span>{" "}
+                      <button type="button" className="text-link" disabled={checkingTools} onClick={() => void checkTools()}>Check function calling</button>
+                    </p>
+                  )}
                 </section>
                 <label className="check">
                   <input
@@ -855,6 +880,12 @@ function App() {
                             Settings
                           </button>{" "}
                           to ask questions.
+                        </p>
+                      )}
+                      {aiConfigured && toolCheck?.supported === false && (
+                        <p className="setup-note">
+                          <span><strong>This model does not support function calling.</strong> {toolWarning} Choose a model with tool support in{" "}
+                          <button type="button" className="text-link" onClick={() => setView("settings")}>Settings</button>.</span>
                         </p>
                       )}
                     </>

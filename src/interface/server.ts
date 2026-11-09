@@ -1,4 +1,4 @@
-import http, { type IncomingMessage, type ServerResponse } from "node:http";
+import http,{ type IncomingMessage, type ServerResponse } from "node:http";
 import https from "node:https";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -24,7 +24,7 @@ import {
 } from "../config.js";
 import { runCase, caseSchema } from "../analysis.js";
 import { caseKinds, planCase, workflowCatalog, type CaseInput } from "../workflows.js";
-import { runChat, type AIUsage } from "../ai.js";
+import { runChat, checkToolCalling, toolCheckSignature, type AIUsage } from "../ai.js";
 import { AppError, errorData, integer, now, type Data } from "../shared.js";
 import { capabilities, prepare } from "../catalog.js";
 import { previewCase } from "../workflow-preview.js";
@@ -179,6 +179,9 @@ export async function startInterface(options: ServerOptions) {
   const environmentBindings = new Map(Object.entries(config.ai.profiles).map(([name, profile]) =>
     [name, {origin: new URL(profile.baseUrl).origin, variable: profile.apiKeyEnv}] as const));
   let settingsPersisted = !options.config;
+  // Function-calling probe results by profile signature; in memory, shared by every tab.
+  const toolChecks = new Map<string, {supported: boolean; message?: string}>();
+  const toolCheck = () => {const profile = activeProfile(config, options.aiProfile); return profile ? toolChecks.get(toolCheckSignature(profile)) ?? null : null;};
   const autoConnect = loopback && !options.publicUrl && !options.requireCode;
   const connectCode = randomBytes(24).toString("base64url");
   const session = randomBytes(32).toString("base64url");
@@ -495,6 +498,7 @@ export async function startInterface(options: ServerOptions) {
             config: safeConfig(config),
             configStorage: {path: configPath(dir), persisted: settingsPersisted},
             activeAiProfile: options.aiProfile || config.ai.defaultProfile,
+            aiToolCheck: toolCheck(),
             capabilities: capabilities(),
             cases: workflowCatalog(),
             maxCu: options.maxCu ?? null,
@@ -514,6 +518,14 @@ export async function startInterface(options: ServerOptions) {
           const before = new URL(req.url!, origin).searchParams.get("before");
           json(res, 200, history(before === null ? undefined : integer(before, "before", 1, Number.MAX_SAFE_INTEGER)));
           return;
+        }
+        if (path === "/api/ai/check" && req.method === "POST") {
+          await body(req);
+          const profile = activeProfile(config, options.aiProfile);
+          if (!profile) throw new AppError("AI_CONFIG_MISSING", "Configure an AI endpoint, model and key first.");
+          const result = await checkToolCalling(profile, {fetch: options.aiFetch});
+          toolChecks.set(toolCheckSignature(profile), result);
+          json(res, 200, result);return;
         }
         if (path === "/api/knowledge" && req.method === "GET") {
           json(res,200,docs().info);return;

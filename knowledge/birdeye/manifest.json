@@ -3026,8 +3026,8 @@
       "id": "cli/docs/USAGE.md",
       "title": "Usage",
       "source": "cli:docs/USAGE.md",
-      "sha256": "6062bc99ced2ef899b69ce77ac4734b940709bde071b7d98e188ecf5bdbac4fd",
-      "sourceSha256": "6062bc99ced2ef899b69ce77ac4734b940709bde071b7d98e188ecf5bdbac4fd"
+      "sha256": "23c3be9507d6c8107170fb535f7c2598498828a559ecdd6462fc75ad2f4e302f",
+      "sourceSha256": "23c3be9507d6c8107170fb535f7c2598498828a559ecdd6462fc75ad2f4e302f"
     },
     {
       "id": "cli/docs/workflows/birdeye-data-skills.md",

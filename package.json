@@ -66,7 +66,8 @@
     "skills:review": "node scripts/build-skill-review.mjs",
     "build:browser": "node scripts/build-browser.mjs",
     "test:browser-storage": "node tests/browser-storage-browser.mjs",
-    "test:settings-sync": "node tests/settings-sync-browser.mjs"
+    "test:settings-sync": "node tests/settings-sync-browser.mjs",
+    "test:ai-tool-check": "node tests/ai-tool-check-browser.mjs"
   },
   "dependencies": {
     "bignumber.js": "9.3.1",

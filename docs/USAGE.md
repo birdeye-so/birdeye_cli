@@ -65,7 +65,7 @@ birdeye-cli config ai init --api-format responses --save-key
 birdeye-cli config ai show --short
 ```
 
-Supply a provider base URL, model and key through the prompts. Use `--api-format chat-completions` if that is the provider's supported format. The base URL must not already end in `/responses` or `/chat/completions`. The provider must support tool/function calling for research tools.
+Supply a provider base URL, model and key through the prompts. Use `--api-format chat-completions` if that is the provider's supported format. The base URL must not already end in `/responses` or `/chat/completions`. The provider must support tool/function calling for research tools. Saving the provider in the UI, or opening **Ask AI**, sends one small test request; Settings and Ask AI warn when the model does not call the test tool or the provider rejects tools.
 
 `birdeye-cli doctor --ai --short` sends a provider request and may incur AI charges. Restart an already running UI after changing config through the CLI. When using saved-only chat, Birdeye calls are blocked but AI usage can still be billed. The provider receives the question and selected research/documentation context.
 

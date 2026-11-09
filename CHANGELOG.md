@@ -13,6 +13,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Settings and Ask AI check whether the configured AI model supports function calling with one small test request when the provider is saved or chat opens. Models that answer without calling the test tool, or providers that reject tools, show a warning that AI chat cannot fetch Birdeye data or run skills; **Check function calling** repeats the test.
+
 - Skills API list/view/download responses include `demo_url`, built from the canonical path and the origin configured with `--demo-host` or `SKILL_DEMO_HOST`. Trailing slashes are normalized; the default is the local API listener origin.
 
 - Eight installable data skills: Launchpad Trending, Token Security, Token Stats, Top Holder Analysis, Top Trader Analysis, LP Analysis, Smart Money Holders and KOL Buy/Sell Signal. Each includes purpose-specific inputs, use cases, Birdeye API references, normalized evidence tables, bounded CU plans and explicit missing-data/pagination limits.

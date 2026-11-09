@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { completion, runChat } from "../src/ai.js";
+import { completion, runChat, checkToolCalling } from "../src/ai.js";
 import { profileSchema, type Profile } from "../src/config.js";
 import { Ledger } from "../src/ledger.js";
 import { Runner } from "../src/runner.js";
@@ -147,4 +147,19 @@ test("legacy profiles keep Chat Completions and reject unknown API formats", asy
     assert.equal(body.input, undefined);
     return Response.json({choices: [{message: {role: "assistant", content: "OK"}}]});
   }});
+});
+
+test("function-calling probe distinguishes tool support, silent tool dropping and rejected tools", async () => {
+  const probe = (reply: (body: Data) => Response) => checkToolCalling(profile, {fetch: async (_, init) => reply(JSON.parse(String(init?.body)))});
+  assert.deepEqual(await probe(() => response([call("p", "confirm_tool_support", {ok: true})])), {supported: true});
+  assert.deepEqual(await probe(() => response([message("ok")])), {supported: false, message: "The model answered with text instead of calling the test tool."});
+  const sent: Data[] = [];
+  assert.deepEqual(await probe(body => {sent.push(body); return body.tools ? new Response("{}", {status: 400}) : response([message("ok")]);}),
+    {supported: false, message: "The provider rejected the tools parameter."});
+  assert.equal(sent.length, 2); assert.equal(sent[1].tools, undefined);
+  await assert.rejects(probe(() => new Response("{}", {status: 400})), (e: AppError) => e.code === "AI_PROVIDER_ERROR");
+  await assert.rejects(probe(() => new Response("{}", {status: 503})), (e: AppError) => e.code === "AI_PROVIDER_ERROR" && e.retryable);
+  const chat = {...profile, apiFormat: "chat-completions" as const};
+  assert.deepEqual(await checkToolCalling(chat, {fetch: async () => Response.json({choices: [{message: {role: "assistant", content: null, tool_calls: [{id: "c", type: "function", function: {name: "confirm_tool_support", arguments: "{\"ok\":true}"}}]}}]})}), {supported: true});
+  assert.deepEqual(await checkToolCalling(chat, {fetch: async () => Response.json({choices: [{message: {role: "assistant", content: "ok"}}]})}), {supported: false, message: "The model answered with text instead of calling the test tool."});
 });

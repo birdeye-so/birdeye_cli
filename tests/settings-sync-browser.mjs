@@ -25,7 +25,8 @@ try {
   await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
   await other.evaluate(()=>document.dispatchEvent(new Event("visibilitychange")));
   await bar(other).getByText("key configured").waitFor({timeout:5000});
-  assert.equal(await other.getByRole("button",{name:"Run research",exact:true}).isDisabled(),false);
+  // Background tabs throttle the plan preview timer, so wait for the button instead of sampling it.
+  await other.locator("button:enabled",{hasText:"Run research"}).waitFor({timeout:10000});
   assert.equal(await page.getByLabel("Model ID").inputValue(),"unsaved-model");
   assert.deepEqual(errors,[]);
   console.log("Settings sync: saved keys reach other open tabs on focus without reload; unsaved edits kept.");

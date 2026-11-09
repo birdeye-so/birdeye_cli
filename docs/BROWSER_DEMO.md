@@ -60,7 +60,7 @@ Static-host access logs can still contain visitor IP addresses and asset request
 ## User flow
 
 1. Create an encrypted workspace with a password of at least 12 characters, or choose **Use temporary session**.
-2. In **Settings**, enter a Birdeye key and an OpenAI-compatible endpoint, model and AI key. Responses and Chat Completions formats are supported.
+2. In **Settings**, enter a Birdeye key and an OpenAI-compatible endpoint, model and AI key. Responses and Chat Completions formats are supported. The model must support function calling: saving sends one small test request, and Settings and Ask AI warn when the model cannot call tools.
 3. Select **Save keys in encrypted browser workspace** to retain keys in the encrypted vault. Unchecked means session-only keys; previously saved keys remain. Temporary mode never persists keys or research.
 4. Run skills, product demos or AI chat. All provider requests go directly from the browser. History, run inputs, evidence and CU are included in the encrypted workspace.
 5. **Lock workspace** aborts active work, saves available evidence, clears the active session and requires the password again. Automatic locking occurs after 15 minutes without interaction or 1 minute in a hidden tab. Reload also requires unlock.

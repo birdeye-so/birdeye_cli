@@ -142,6 +142,26 @@ export async function completion(
   }
 }
 
+// AI chat needs function calling to fetch Birdeye data. Some providers reject `tools`;
+// others silently drop it and answer from memory, so probe with one trivial tool.
+const probeTool = {type: "function", function: {name: "confirm_tool_support", description: "Confirms that function calling works.",
+  parameters: {type: "object", properties: {ok: {type: "boolean"}}, required: ["ok"], additionalProperties: false}}};
+export const toolCheckSignature = (profile: Profile) => `${profile.apiFormat ?? "chat-completions"}|${profile.baseUrl}|${profile.model}`;
+export async function checkToolCalling(profile: Profile, options: {fetch?: typeof fetch; signal?: AbortSignal} = {}) {
+  const usage = {inputTokens: 0, outputTokens: 0, calls: 0, unknownCalls: 0};
+  const messages = [{role: "user", content: "Call the confirm_tool_support tool with ok set to true. Do not answer with text."}];
+  try {
+    const message = await completion(profile, messages, {...options, tools: [probeTool], usage});
+    if (Array.isArray(message.tool_calls) && message.tool_calls.some((c: Data) => c.function?.name === "confirm_tool_support")) return {supported: true};
+    return {supported: false, message: "The model answered with text instead of calling the test tool."};
+  } catch (error) {
+    if (!(error instanceof AppError) || error.code !== "AI_PROVIDER_ERROR" || error.retryable) throw error;
+    // Same request without tools: success means the provider rejected only the tools parameter.
+    await completion(profile, messages, {...options, usage});
+    return {supported: false, message: "The provider rejected the tools parameter."};
+  }
+}
+
 export async function runChat(
   runner: Runner,
   run: string,

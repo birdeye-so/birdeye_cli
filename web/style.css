@@ -165,6 +165,7 @@ label > input, label > select, label > textarea { margin-top: 5px; }
 .setup-note { display: flex; align-items: center; gap: 10px; padding: 6px 10px; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--warning-bg); }
 .setup-note p { color: var(--muted); font-size: 12px; }
 .setup-note .secondary { margin-left: auto; }
+.setup-note .text-link { white-space: nowrap; }
 .progress-line { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 0; color: var(--accent); }
 .progress-line > span:last-child { margin-left: auto; color: var(--warning); font-size: 12px; }
 .results { margin-top: 20px; min-width: 0; }

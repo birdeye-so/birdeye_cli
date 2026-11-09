@@ -2,7 +2,7 @@ import {Runner} from "../../src/runner";
 import {workflowCatalog, planCase} from "../../src/workflows";
 import {previewCase} from "../../src/workflow-preview";
 import {runCase} from "../../src/analysis";
-import {runChat} from "../../src/ai";
+import {runChat,checkToolCalling,toolCheckSignature} from "../../src/ai";
 import {demoCatalog,planDemo,runDemo} from "../../src/demos";
 import {capabilities} from "../../src/catalog";
 import {rescoreDd} from "../../src/token-dd-runtime";
@@ -20,6 +20,7 @@ export class BrowserRuntime {
   private activeId:string|null=null;
   private listeners=new Map<string,Set<Stream>>();
   private stopped=false;
+  private toolChecks=new Map<string,{supported:boolean;message?:string}>();
   private task:Promise<void>|null=null;
   constructor(private state:Workspace,private vault:BrowserVault|null) {
     this.ledger=new BrowserLedger(state);
@@ -56,6 +57,7 @@ export class BrowserRuntime {
       profiles:Object.fromEntries(Object.entries(this.config.ai.profiles as Record<string,Data>).map(([name,{apiKey,...profile}])=>[name,{...profile,configured:!!apiKey}]))
     }};
   }
+  private toolCheck() {const profile=this.config.ai.profiles[this.config.ai.defaultProfile];return profile?this.toolChecks.get(toolCheckSignature(profile))??null:null;}
   private history() {return {items:this.state.runs.slice().reverse().map(r=>this.get(r.id)),nextCursor:null};}
   private thread(id?:string) {
     const items:Data[]=[],visited=new Set<string>();
@@ -71,9 +73,18 @@ export class BrowserRuntime {
     const route=path.split("?")[0];
     if(route==="/status")return {
       config:this.safeConfig(),configStorage:{path:this.vault?"Encrypted browser storage (IndexedDB)":"Browser memory · this tab only",persisted:!!this.vault},
-      activeAiProfile:this.config.ai.defaultProfile,capabilities:capabilities(),cases:workflowCatalog(),maxCu:null,short:true,
+      activeAiProfile:this.config.ai.defaultProfile,aiToolCheck:this.toolCheck(),capabilities:capabilities(),cases:workflowCatalog(),maxCu:null,short:true,
       active:!!this.activeId,activeRunId:this.activeId,usage:this.ledger.summary(),runs:this.history().items,historyNextCursor:null,initialId:null,
     };
+    if(route==="/ai/check"){
+      const profile=this.config.ai.profiles[this.config.ai.defaultProfile];
+      if(!profile?.apiKey)throw new Error("Configure an AI endpoint, model and key first.");
+      const result=await checkToolCalling(profile,{fetch:async(resource,init)=>{
+        try {return await fetch(resource,{...init,credentials:"omit",referrerPolicy:"no-referrer",redirect:"error"});}
+        catch {throw new AppError("BROWSER_NETWORK_ERROR","Could not reach the AI provider. Check the URL and that it allows CORS from this site.");}
+      }});
+      this.toolChecks.set(toolCheckSignature(profile),result);return result;
+    }
     if(route==="/connect")return {ok:true};
     if(route==="/initial")return {id:null};
     if(route==="/history")return this.history();
