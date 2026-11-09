@@ -13,6 +13,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- Send an AI chat message with Cmd+Enter on macOS or Ctrl+Enter on Windows and Linux. The shortcut works only when Send is enabled, ignores keys while an input method such as Vietnamese Telex is composing, and is shown under the message box.
+
 - AI profiles accept extra request parameters for provider-specific fields: a JSON object in Settings or `config ai init --request-params`. Values override app defaults and `null` removes one, for example `{"max_completion_tokens":1800}` to cap output on newer OpenAI models. `model`, `messages`/`input`, `tools` and `stream` remain app-controlled.
 
 - Optional AI relay for browser storage mode: `--ai-relay <hosts>` lets the preview server forward chat requests for allowlisted AI providers whose CORS preflight fails in browsers, such as `api.z.ai`. Only POST requests to `/chat/completions` and `/responses` are relayed with `Authorization` and `Content-Type`; keys stay in memory and are never logged. Settings and the workspace bar disclose relayed hosts, and connection errors now explain how to resolve blocked providers.
@@ -76,6 +78,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - CI now covers the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS.
 
 ### Fixed
+
+- Price Surge Screen runs in the demo now show their results: ranked surging tokens with price change, liquidity and key metrics, a selectable token detail, and every excluded token with its reasons. Previously the screen produced findings the UI did not render, leaving an empty Research findings section.
 
 - AI provider errors now include the provider's own JSON error message (bounded, with the configured key redacted) instead of only the HTTP status, so unsupported parameters or unknown models can be diagnosed from Settings and chat.
 

@@ -13,7 +13,7 @@ const ratioPct = (v: unknown) => numeric(v) === null ? "N/A" : pct(Number(v)*100
 const human = (v?: string) => v ? v.replaceAll("_", " ").replace(/^./, c => c.toUpperCase()) : "Unavailable";
 const signTone = (v: unknown) => numeric(v) === null || Number(v) === 0 ? "" : Number(v) > 0 ? "sv-positive" : "sv-negative";
 const scoreTone = (v: unknown) => numeric(v) === null ? "" : Number(v) >= 75 ? "sv-positive" : Number(v) >= 50 ? "sv-caution" : "sv-negative";
-const titles: Record<string,string> = {"skill-trending-list":"Trending tokens", "skill-smart-wallets":"Smart wallet discovery", "skill-token-dd":"Token research", "skill-contract-dd":"Contract due diligence", "skill-rugcheck-audit":"Risk & liquidity audit", "skill-kline-pattern":"Price action", "skill-wallet-score":"Wallet alpha", "skill-wallet-style":"Wallet trading style", "skill-wallet-analysis":"Wallet performance", "skill-smart-money-profile":"Smart money profile", "skill-smart-money-leaderboard":"Wallet comparison"};
+const titles: Record<string,string> = {"price-surge-v1":"Price surge screen", "skill-trending-list":"Trending tokens", "skill-smart-wallets":"Smart wallet discovery", "skill-token-dd":"Token research", "skill-contract-dd":"Contract due diligence", "skill-rugcheck-audit":"Risk & liquidity audit", "skill-kline-pattern":"Price action", "skill-wallet-score":"Wallet alpha", "skill-wallet-style":"Wallet trading style", "skill-wallet-analysis":"Wallet performance", "skill-smart-money-profile":"Smart money profile", "skill-smart-money-leaderboard":"Wallet comparison"};
 
 function Empty({children = "No observations available in this snapshot."}: {children?: React.ReactNode}) {return <p className="sv-empty">{children}</p>;}
 function Facts({items}: {items: [string, React.ReactNode][]}) {return <dl className="sv-facts">{items.map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>;}
@@ -127,6 +127,22 @@ function Trending({sources}: {sources:Data[]}) {
   </section>;
 }
 
+function PriceSurge({finding}: {finding:Data}) {
+  const rows:Data[]=Array.isArray(finding.rows)?finding.rows:[],dropped:Data[]=Array.isArray(finding.dropped)?finding.dropped:[];
+  const interval=String(finding.interval??"interval"),chain=typeof finding.chain==="string"?finding.chain:"solana";
+  const [selected,setSelected]=useState<string|null>(null);
+  const active=rows.find(r=>r.address===selected)??rows[0],max=Math.max(0,...rows.map(r=>numeric(r.liquidity)??0));
+  const reasons=(list:unknown)=>Array.isArray(list)&&list.length?list.map(v=>human(String(v))).join(", "):"None";
+  return <section className="sv-finding" aria-label="Surging tokens"><div className="sv-section-heading"><h4>Surging tokens</h4><span>{rows.length} ranked · {dropped.length} excluded · {interval} price change</span></div>
+    <div className="sv-watchlist">{rows.length?rows.map(r=><div className="sv-watchlist-row" key={r.address}><button className="sv-watchlist-select" type="button" aria-pressed={active===r} onClick={()=>setSelected(r.address)}><span className="sv-rank">{r.rank}</span><span className="sv-token-avatar" aria-hidden="true">{String(r.symbol??"?").slice(0,2).toUpperCase()}</span><span className="sv-token-name"><strong>{r.symbol??"Unknown"}</strong><small>{usd(r.price)}</small></span><span className="sv-watchlist-bar"><Meter value={r.liquidity} max={max} label={`${r.symbol??"Token"} liquidity`}/><small>{usd(r.liquidity)} liquidity</small></span><span className={signTone(r.price_change_interval_pct)}>{pct(r.price_change_interval_pct)}<small>{interval} change</small></span></button><div className="sv-row-address"><AddressText text={r.address} kind="token" compact chain={chain}/></div></div>)
+      :<Empty>{dropped.length?"No token passed the screen; see the excluded tokens and their reasons below.":"No tokens matched the screen in this snapshot."}</Empty>}</div>
+    {active&&<section className="sv-selected-token" aria-label="Selected surge token"><div className="sv-section-heading"><h4>{active.symbol??"Unknown"}</h4><AddressText text={active.address} kind="token" compact chain={chain}/></div>
+      <Facts items={[["Price",usd(active.price)],["Market cap",usd(active.market_cap)],["Liquidity",usd(active.liquidity)],["Liquidity / market cap",ratioPct(active.liq_mcap_ratio)],[`Volume · ${interval}`,usd(active.volume_interval)],[`Trades · ${interval}`,fmt(active.trade_interval_count,0)],["Holders",fmt(active.holder,0)],["Risk flags",reasons(active.risk_flags)]]}/>
+      {Array.isArray(active.missing_fields)&&active.missing_fields.length>0&&<p className="sv-note">Unavailable from the provider: {reasons(active.missing_fields)}. Missing values are not treated as passed checks.</p>}</section>}
+    {dropped.length>0&&<details className="sv-evidence"><summary>Excluded tokens · {dropped.length}</summary><ul>{dropped.map(d=><li key={d.address}><strong>{d.symbol??"Unknown"}</strong> · {reasons(String(d.reason??"").split(", ").filter(Boolean))} · <AddressText text={d.address} kind="token" compact chain={chain}/></li>)}</ul></details>}
+  </section>;
+}
+
 function WalletPerformance({sources,compact=false}: {sources:Data[];compact?:boolean}) {
   const rowId=useId();
   const windows=pnlWindows(sources),[selected,setSelected]=useState<string|null>(null);
@@ -179,9 +195,9 @@ export function SkillDashboard({analysis,sources=[],kind,onRescore}: {analysis:D
   if(dataReport)return <TokenDataReport report={dataReport}/>;
   const wallet=kind?.includes("wallet")||kind?.includes("smart-money"),address=clean.find(s=>wallet?s.meta?.params?.wallet:s.meta?.params?.address)?.meta?.params;
   return <section className="skill-visuals" aria-label="Skill findings">
-    <header className="sv-report-header"><div className="sv-report-title"><DemoIcon id={wallet?"wallet-intelligence":["skill-trending-list","skill-kline-pattern"].includes(kind??"")?"terminal":"security-signals"} size={26}/><div><h3>{titles[kind??""]??"Research findings"}</h3>{(address?.wallet??address?.address)&&<AddressText text={address.wallet??address.address} compact kind={wallet?"wallet":"token"} chain="solana"/>}</div></div><span>{clean.length} evidence sources</span></header>
+    <header className="sv-report-header"><div className="sv-report-title"><DemoIcon id={wallet?"wallet-intelligence":["skill-trending-list","skill-kline-pattern","price-surge-v1"].includes(kind??"")?"terminal":"security-signals"} size={26}/><div><h3>{titles[kind??""]??"Research findings"}</h3>{(address?.wallet??address?.address)&&<AddressText text={address.wallet??address.address} compact kind={wallet?"wallet":"token"} chain="solana"/>}</div></div><span>{clean.length} evidence sources</span></header>
     {kind==="skill-trending-list"&&<Trending sources={clean}/>}
-    {findings.map((f,i)=>f.kind==="kline"?<Kline key={i} finding={f} sources={clean}/>:f.kind==="wallet-alpha"?<Alpha key={i} finding={f}/>:f.kind==="wallet-style"?<Style key={i} finding={f}/>:f.kind==="security-evidence"?<Security key={i} finding={f} sources={clean}/>:f.kind==="liquidity-change"?<Liquidity key={i} finding={f} sources={clean}/>:f.kind==="wallet-leaderboard"?<WalletComparison key={i} finding={f}/>:f.kind==="wallet-discovery"?<Discovery key={i} finding={f} sources={clean}/>:<Evidence key={i} finding={f}/>)}
+    {findings.map((f,i)=>f.kind==="price-surge-v1"?<PriceSurge key={i} finding={f}/>:f.kind==="kline"?<Kline key={i} finding={f} sources={clean}/>:f.kind==="wallet-alpha"?<Alpha key={i} finding={f}/>:f.kind==="wallet-style"?<Style key={i} finding={f}/>:f.kind==="security-evidence"?<Security key={i} finding={f} sources={clean}/>:f.kind==="liquidity-change"?<Liquidity key={i} finding={f} sources={clean}/>:f.kind==="wallet-leaderboard"?<WalletComparison key={i} finding={f}/>:f.kind==="wallet-discovery"?<Discovery key={i} finding={f} sources={clean}/>:<Evidence key={i} finding={f}/>)}
     {["skill-wallet-score","skill-wallet-style","skill-wallet-analysis","skill-smart-money-profile"].includes(kind??"")&&<WalletPerformance sources={clean}/>}
     {["skill-token-dd","skill-contract-dd","skill-rugcheck-audit"].includes(kind??"")&&<MarketContext sources={clean}/>}
     {!findings.length&&!["skill-trending-list","skill-wallet-score","skill-wallet-style","skill-wallet-analysis","skill-smart-money-profile"].includes(kind??"")&&<Empty/>}

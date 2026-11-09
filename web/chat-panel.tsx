@@ -3,6 +3,7 @@ import React, {useEffect,useRef} from "react";
 import {AddressText} from "./address-text";
 import {MarkdownText} from "./markdown-text";
 type Data=Record<string,any>;
+const mac=typeof navigator!=="undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.platform||navigator.userAgent);
 export function ChatPanel({messages,question,change,live,setLive,busy,saved,knowledge,workflow}: {
   messages:Data[];question:string;change:(value:string)=>void;live:boolean;setLive:(value:boolean)=>void;
   busy:boolean;saved?:Data|null;knowledge:Data|null;
@@ -32,6 +33,15 @@ export function ChatPanel({messages,question,change,live,setLive,busy,saved,know
       </article>) : null}
     </div>
     <label htmlFor="question">Message</label>
-    <textarea id="question" value={question} onChange={e=>change(e.target.value)} placeholder="Ask about a token, wallet or saved result…" rows={3} required disabled={busy} />
+    <textarea id="question" value={question} onChange={e=>change(e.target.value)} placeholder="Ask about a token, wallet or saved result…" rows={3} required disabled={busy}
+      aria-keyshortcuts={mac?"Meta+Enter":"Control+Enter"} aria-describedby="question-shortcut"
+      onKeyDown={e=>{
+        // Skip while an IME (e.g. Vietnamese Telex) is composing; send only through an enabled Send button.
+        if(e.key!=="Enter"||e.nativeEvent.isComposing||!(mac?e.metaKey:e.ctrlKey))return;
+        e.preventDefault();
+        const send=e.currentTarget.form?.querySelector<HTMLButtonElement>("#composer-submit");
+        if(send&&!send.disabled)e.currentTarget.form!.requestSubmit(send);
+      }} />
+    <span id="question-shortcut" className="field-hint">{mac?"⌘ + Enter":"Ctrl + Enter"} to send</span>
   </section>;
 }

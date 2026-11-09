@@ -955,6 +955,7 @@ function App() {
                       </button>
                     ) : (
                       <button
+                        id="composer-submit"
                         className="primary"
                         disabled={
                           (mode === "case" && !config.birdeyeConfigured) ||

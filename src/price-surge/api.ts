@@ -194,7 +194,7 @@ export async function runPriceSurge(runner: Runner, run: string, input: unknown 
     };
     return {schemaVersion: 1, data: {...screen, sources: [...sources], missing: [...missing], scopeNotes: plan.notes,
       plan: {...plan, input: {kind: plan.kind, priceSurge: p}}, status: missing.length ? "partial" : "complete-for-requested-scope",
-      skillAnalysis: {formulaVersion: "price-surge-v1", findings: [{kind: "price-surge-v1", rows: kept, dropped}]},
+      skillAnalysis: {formulaVersion: "price-surge-v1", findings: [{kind: "price-surge-v1", rows: kept, dropped, interval: p.interval, chain: p.chain}]},
     }, meta: {operation: "analysis", chain: p.chain, runId: run, retrievedAt: now(), coverage: missing.length ? "partial" : "complete-for-requested-scope",
       pricingVersion: plan.pricingVersion, cu: runner.ledger.summary(run), warnings: [...plan.notes, ...missing.map(m => `${m.operation}: ${m.reason}`)]}};
   };
