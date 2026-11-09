@@ -553,7 +553,7 @@ function App() {
     autoChecked.current = savedProfile;
     void checkTools();
   }, [mode, savedProfile, status?.aiToolCheck]);
-  const toolWarning = "AI chat needs function calling to fetch Birdeye data and run skills; this model will answer without them.";
+  const toolWarning = "AI chat needs function calling to fetch Birdeye data and run skills; until it works, answers cannot use them.";
   const notice = error ? (
     <div className="notice error" role="alert">
       <span>{error}</span>
@@ -740,7 +740,7 @@ function App() {
                   )}
                   {aiConfigured && (
                     <p className={toolCheck?.supported === false ? "setup-note" : "muted"} aria-live="polite">
-                      <span>{checkingTools ? "Checking function calling…" : toolCheck?.supported ? "Function calling: supported." : toolCheck ? `Function calling: not supported. ${toolCheck.message} ${toolWarning}` : "Function calling: not checked yet."}</span>{" "}
+                      <span>{checkingTools ? "Checking function calling…" : toolCheck?.supported ? "Function calling: supported." : toolCheck ? `Function calling: not working with these settings. ${toolCheck.message} ${toolWarning}` : "Function calling: not checked yet."}</span>{" "}
                       <button type="button" className="text-link" disabled={checkingTools} onClick={() => void checkTools()}>Check function calling</button>
                     </p>
                   )}
@@ -910,8 +910,8 @@ function App() {
                       )}
                       {aiConfigured && toolCheck?.supported === false && (
                         <p className="setup-note">
-                          <span><strong>This model does not support function calling.</strong> {toolWarning} Choose a model with tool support in{" "}
-                          <button type="button" className="text-link" onClick={() => setView("settings")}>Settings</button>.</span>
+                          <span><strong>Function calling is not working with the current AI settings.</strong> {toolWarning} See the provider's reason in{" "}
+                          <button type="button" className="text-link" onClick={() => setView("settings")}>Settings</button>; changing the API format, request parameters or model usually fixes it.</span>
                         </p>
                       )}
                     </>

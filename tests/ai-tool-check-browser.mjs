@@ -43,14 +43,14 @@ async function check(mode,app){
     await page.getByRole("button",{name:"Save connections",exact:true}).click();
   };
   await save("text-model");
-  await page.getByText("Function calling: not supported. The model answered with text instead of calling the test tool.").waitFor();
+  await page.getByText("Function calling: not working with these settings. The model answered with text instead of calling the test tool.").waitFor();
   await page.getByRole("button",{name:"Research",exact:true}).click();
   await page.getByRole("button",{name:"Ask AI",exact:true}).click();
-  await page.getByText("This model does not support function calling.").waitFor();
+  await page.getByText("Function calling is not working with the current AI settings.").waitFor();
   await save("tools-model");
   await page.getByText("Function calling: supported.").waitFor();
   await page.getByRole("button",{name:"Research",exact:true}).click();
-  assert.equal(await page.getByText("This model does not support function calling.").count(),0);
+  assert.equal(await page.getByText("Function calling is not working with the current AI settings.").count(),0);
   if(mode==="browser"){
     await page.getByRole("button",{name:"Settings",exact:true}).first().click();
     const params=page.getByLabel("Extra request parameters (JSON, optional)");

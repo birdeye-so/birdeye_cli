@@ -17,7 +17,7 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 - Optional AI relay for browser storage mode: `--ai-relay <hosts>` lets the preview server forward chat requests for allowlisted AI providers whose CORS preflight fails in browsers, such as `api.z.ai`. Only POST requests to `/chat/completions` and `/responses` are relayed with `Authorization` and `Content-Type`; keys stay in memory and are never logged. Settings and the workspace bar disclose relayed hosts, and connection errors now explain how to resolve blocked providers.
 
-- Settings and Ask AI check whether the configured AI model supports function calling with one small test request when the provider is saved or chat opens. Models that answer without calling the test tool, or providers that reject tools, show a warning that AI chat cannot fetch Birdeye data or run skills; **Check function calling** repeats the test.
+- Settings and Ask AI check whether the configured AI model supports function calling with one small test request when the provider is saved or chat opens. When the model answers without calling the test tool, or the provider rejects tools for the current settings, Settings and Ask AI show the provider's reason and explain that AI chat cannot fetch Birdeye data or run skills until it works; **Check function calling** repeats the test.
 
 - Skills API list/view/download responses include `demo_url`, built from the canonical path and the origin configured with `--demo-host` or `SKILL_DEMO_HOST`. Trailing slashes are normalized; the default is the local API listener origin.
 
