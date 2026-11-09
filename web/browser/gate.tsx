@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState} from "react";
 import {BrowserVault,emptyWorkspace} from "./vault";
-import {BrowserRuntime,setRuntime} from "./runtime";
+import {BrowserRuntime,setRuntime,relayHosts} from "./runtime";
 export const browserStorage = true;
 export function StorageGate({children}:{children:React.ReactNode}) {
   const [exists,setExists]=useState<boolean|null>(null),[password,setPassword]=useState(""),[confirm,setConfirm]=useState(""),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(""),[forget,setForget]=useState(false);
@@ -52,7 +52,7 @@ export function StorageGate({children}:{children:React.ReactNode}) {
     catch(e){setError((e as Error).message);}
     finally{release.current?.();release.current=null;setBusy(false);}
   }
-  if(ready)return <><div className="browser-storage-bar"><span>{runtime.current?.persistent?"Encrypted browser workspace":"Temporary browser session"} · requests go directly to your providers</span><button type="button" onClick={()=>void lock()}>Lock workspace</button></div>{children}</>;
+  if(ready)return <><div className="browser-storage-bar"><span>{runtime.current?.persistent?"Encrypted browser workspace":"Temporary browser session"} · {relayHosts().length?`requests go directly to your providers, except AI requests to ${relayHosts().join(", ")}, which this site relays`:"requests go directly to your providers"}</span><button type="button" onClick={()=>void lock()}>Lock workspace</button></div>{children}</>;
   return <main className="browser-vault console-app"><section aria-labelledby="vault-title">
     <h1 id="vault-title">Your browser workspace</h1>
     <p>Keep your API keys and research in this browser. This website has no workspace backend.</p>

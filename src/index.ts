@@ -65,7 +65,8 @@ program
   .option(
     "--public-url <url>",
     "browser URL allowed by Host/Origin checks (supports HTTPS proxy to loopback)",
-  );
+  )
+  .option("--ai-relay <hosts>", "browser storage: comma-separated AI provider hosts whose requests this server relays when the provider blocks browser CORS; keys pass through this process");
 let ledger: Ledger | undefined;
 let currentRun: string | undefined;
 let storedRun: StoredRun | undefined;
@@ -78,6 +79,8 @@ function options(command: Command) {
   if (opts.configDir) process.env.BIRDEYE_CONFIG_DIR = opts.configDir;
   if (opts.storage === "browser" && opts.format !== "interface")
     throw new AppError("INVALID_INPUT", "--storage browser requires --format interface.");
+  if (opts.aiRelay !== undefined && opts.storage !== "browser")
+    throw new AppError("INVALID_INPUT", "--ai-relay requires --storage browser; SQLite mode calls AI providers from the server already.");
   if (opts.bind && opts.format !== "interface")
     throw new AppError("INVALID_INPUT", "--bind requires --format interface.");
   return opts;
@@ -112,9 +115,10 @@ async function serve(
     if(opts.requireCode || opts.tlsCert || opts.tlsKey)
       throw new AppError("INVALID_INPUT", "Browser mode serves static files on loopback. Terminate HTTPS at a reverse proxy and use --public-url; connection codes are not used.");
     const {startBrowserInterface}=await import("./interface/browser-server.js");
-    const app=await startBrowserInterface(opts.bind,opts.publicUrl);
+    const aiRelayHosts=opts.aiRelay?String(opts.aiRelay).split(","):[];
+    const app=await startBrowserInterface(opts.bind,opts.publicUrl,{aiRelayHosts});
     serving=true;
-    console.log(`Browser-only interface: ${app.url}\nLocal upstream: ${app.listenUrl}\nKeys, history and CU stay in the browser. No SQLite workspace is opened.\nFor website hosting, deploy dist/browser over HTTPS.`);
+    console.log(`Browser-only interface: ${app.url}\nLocal upstream: ${app.listenUrl}\nKeys, history and CU stay in the browser. No SQLite workspace is opened.${aiRelayHosts.length?`\nAI relay: requests to ${aiRelayHosts.join(", ")} pass through this server, including the AI key (memory only, never logged).`:""}\nFor website hosting, deploy dist/browser over HTTPS.`);
     for(const signal of ["SIGINT","SIGTERM"] as const)process.once(signal,()=>{void app.close();});
     return;
   }
@@ -492,9 +496,14 @@ ai.command("init")
     "environment variable containing key",
   )
   .option("--save-key", "save the AI key from its environment variable or a hidden prompt locally")
+  .option("--request-params <json>", 'provider-specific request fields as a JSON object, e.g. \'{"max_completion_tokens":1800}\'; null removes an app default')
   .action(async (o: Data, c: Command) => {
     const opts = options(c);
     const cfg = readConfig();
+    let requestParams: unknown;
+    if (o.requestParams !== undefined) {
+      try { requestParams = JSON.parse(o.requestParams); } catch { throw new AppError("INVALID_INPUT", "--request-params must be valid JSON."); }
+    }
     const baseUrl = o.baseUrl || (await prompt("AI base URL: "));
     validateProviderUrl(baseUrl);
     const model = o.model || (await prompt("Model: "));
@@ -510,7 +519,8 @@ ai.command("init")
       model,
       apiKeyEnv,
       ...(apiKey ? {apiKey} : {}),
-    };
+      ...(requestParams !== undefined ? {requestParams} : prior?.requestParams ? {requestParams: prior.requestParams} : {}),
+    } as Config["ai"]["profiles"][string];
     cfg.ai.defaultProfile = o.name;
     saveConfig(cfg);
     print(safeConfig(cfg).ai, opts);

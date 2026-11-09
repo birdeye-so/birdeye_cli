@@ -82,7 +82,18 @@ HTTPS (or localhost) and modern Web Crypto, IndexedDB and Web Locks support are 
 
 Both Birdeye and the chosen AI endpoint must allow browser requests from the demo origin, including their authentication headers. The tested Birdeye preflight permits `X-API-KEY` and `x-chain`; provider behavior may change. Select an AI endpoint that explicitly supports CORS for your website, including `Authorization` and `Content-Type`.
 
-There is no secret-forwarding proxy, server fallback or CORS bypass. A blocked provider produces a connection/CORS error. The app never retries through another host. AI keys are not preserved when changing the configured provider origin unless the user explicitly enters a key for the new origin.
+By default there is no secret-forwarding proxy, server fallback or CORS bypass. A blocked provider produces a connection/CORS error, and the app never retries through another host.
+
+### AI relay for providers that block browsers
+
+Some OpenAI-compatible providers answer API calls but reject the browser preflight. As of 2026-11-09, `api.z.ai` returns its `OPTIONS` response without any `Access-Control-Allow-*` header, so browsers block every call even though the same request works from a terminal. The built-in preview server can relay such hosts when the operator opts in:
+
+```bash
+node dist/index.js --format interface --storage browser --bind 127.0.0.1:8787 \\
+  --public-url https://support-api.owland.xyz --ai-relay api.z.ai
+```
+
+`--ai-relay` takes comma-separated hostnames. For those hosts only, the browser sends AI requests to `/relay/<host>/…` on the demo origin and the server forwards them to `https://<host>/…`. The relay accepts only `POST` requests to paths ending in `/chat/completions` or `/responses` that pass the normal Host/Origin checks. It forwards only `Authorization` and `Content-Type`, follows no redirects, and limits bodies and responses to 4 MB and concurrency to 16. **The AI key and the conversation pass through the demo server.** They stay in memory for the request and are never logged or stored. Settings and the workspace bar say which hosts are relayed. Birdeye calls and other providers still go directly from the browser. Static hosts have no relay; use SQLite mode there, or a provider that allows CORS. AI keys are not preserved when changing the configured provider origin unless the user explicitly enters a key for the new origin.
 
 ## Verification
 

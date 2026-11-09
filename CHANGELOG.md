@@ -13,6 +13,10 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Added
 
+- AI profiles accept extra request parameters for provider-specific fields: a JSON object in Settings or `config ai init --request-params`. Values override app defaults and `null` removes one, for example `{"max_completion_tokens":1800}` to cap output on newer OpenAI models. `model`, `messages`/`input`, `tools` and `stream` remain app-controlled.
+
+- Optional AI relay for browser storage mode: `--ai-relay <hosts>` lets the preview server forward chat requests for allowlisted AI providers whose CORS preflight fails in browsers, such as `api.z.ai`. Only POST requests to `/chat/completions` and `/responses` are relayed with `Authorization` and `Content-Type`; keys stay in memory and are never logged. Settings and the workspace bar disclose relayed hosts, and connection errors now explain how to resolve blocked providers.
+
 - Settings and Ask AI check whether the configured AI model supports function calling with one small test request when the provider is saved or chat opens. Models that answer without calling the test tool, or providers that reject tools, show a warning that AI chat cannot fetch Birdeye data or run skills; **Check function calling** repeats the test.
 
 - Skills API list/view/download responses include `demo_url`, built from the canonical path and the origin configured with `--demo-host` or `SKILL_DEMO_HOST`. Trailing slashes are normalized; the default is the local API listener origin.
@@ -36,6 +40,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - An isolated tarball installation smoke test covering CLI version/help, offline estimates, bundled knowledge and the local web interface.
 
 ### Changed
+
+- Chat Completions requests no longer send `max_tokens: 1800`. Providers disagree on `max_tokens` and `max_completion_tokens`, and newer OpenAI models reject `max_tokens`. The provider's default output limit applies unless a profile sets one in its extra request parameters.
 
 - Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligence Score, Contract DD → Contract Due-Diligence Score, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
 - Renamed categories: Market Discovery, Token Due Diligence, and Wallet & Smart Money. Category IDs are unchanged.
@@ -70,6 +76,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 - CI now covers the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS.
 
 ### Fixed
+
+- AI provider errors now include the provider's own JSON error message (bounded, with the configured key redacted) instead of only the HTTP status, so unsupported parameters or unknown models can be diagnosed from Settings and chat.
 
 - Keys saved in Settings now reach other open tabs and browsers sharing the local workspace when they are shown or focused, instead of requiring a reload. The save confirmation says the keys are active immediately, and focus refreshes keep unsaved AI settings edits.
 

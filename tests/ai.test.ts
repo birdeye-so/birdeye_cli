@@ -163,3 +163,32 @@ test("function-calling probe distinguishes tool support, silent tool dropping an
   assert.deepEqual(await checkToolCalling(chat, {fetch: async () => Response.json({choices: [{message: {role: "assistant", content: null, tool_calls: [{id: "c", type: "function", function: {name: "confirm_tool_support", arguments: "{\"ok\":true}"}}]}}]})}), {supported: true});
   assert.deepEqual(await checkToolCalling(chat, {fetch: async () => Response.json({choices: [{message: {role: "assistant", content: "ok"}}]})}), {supported: false, message: "The model answered with text instead of calling the test tool."});
 });
+
+test("provider errors show the provider's reason without the configured key", async () => {
+  const fail = (status: number, body: string) => completion(profile, [{role: "user", content: "hi"}], {usage: usage(), fetch: async () => new Response(body, {status})});
+  await assert.rejects(fail(400, JSON.stringify({error: {message: "Unsupported parameter: 'max_tokens'. Key fixture was used.", param: "max_tokens"}})),
+    (e: AppError) => e.message === "AI provider returned HTTP 400: Unsupported parameter: 'max_tokens'. Key <redacted> was used." && !e.retryable);
+  await assert.rejects(fail(400, "<html>Bad Request</html>"), (e: AppError) => e.message === "AI provider returned HTTP 400. Check the model, key and tool-calling support.");
+  await assert.rejects(fail(422, JSON.stringify({detail: "x".repeat(500)})), (e: AppError) => e.message.length === "AI provider returned HTTP 422: ".length + 300);
+  const rejected = await checkToolCalling(profile, {fetch: async (_, init) => JSON.parse(String(init?.body)).tools
+    ? new Response(JSON.stringify({error: {message: "Invalid schema for function 'confirm_tool_support'."}}), {status: 400}) : response([message("ok")])});
+  assert.deepEqual(rejected, {supported: false, message: "The provider rejected the tools parameter: Invalid schema for function 'confirm_tool_support'."});
+});
+
+test("user request parameters override provider defaults and null removes them", async () => {
+  const sent = async (p: Profile) => {let body: Data = {}; await completion(p, [{role: "user", content: "hi"}], {usage: usage(), fetch: async (_, init) => {body = JSON.parse(String(init?.body)); return p.apiFormat === "responses" ? response([message("ok")]) : Response.json({choices: [{message: {role: "assistant", content: "ok"}}]});}}); return body;};
+  const chat = {...profile, apiFormat: "chat-completions" as const};
+  const plain = await sent(chat);
+  assert.equal("max_tokens" in plain, false); assert.equal("max_completion_tokens" in plain, false);
+  assert.equal((await sent({...chat, requestParams: {max_tokens: 500}})).max_tokens, 500);
+  const openai = await sent({...chat, requestParams: {max_completion_tokens: 1800, reasoning_effort: "low"}});
+  assert.equal("max_tokens" in openai, false);
+  assert.equal(openai.max_completion_tokens, 1800); assert.equal(openai.reasoning_effort, "low"); assert.equal(openai.model, "fixture");
+  const responses = await sent({...profile, requestParams: {include: null, max_output_tokens: 4000, reasoning: {effort: "high"}}});
+  assert.equal("include" in responses, false); assert.equal(responses.store, false);
+  assert.equal(responses.max_output_tokens, 4000); assert.deepEqual(responses.reasoning, {effort: "high"});
+  for (const key of ["model", "messages", "input", "tools", "stream"])
+    assert.throws(() => profileSchema.parse({...profile, requestParams: {[key]: "x"}}), /set by the app/);
+  assert.throws(() => profileSchema.parse({...profile, requestParams: {notes: "x".repeat(4001)}}), /4,000/);
+  assert.throws(() => profileSchema.parse({...profile, requestParams: ["max_tokens"]}));
+});

@@ -115,3 +115,34 @@ test("browser preview reports an occupied port with actionable CLI output",async
    assert.match(result.error.message,/--bind/);
  }finally{await app.close();}
 });
+
+test("browser AI relay forwards only allowlisted chat endpoints and strips browser headers",async()=>{
+ const {startBrowserInterface}=await import("../dist/interface/browser-server.js");
+ for(const host of ["https://api.z.ai","api.z.ai/v4","localhost","127.0.0.1:9"])
+   await assert.rejects(startBrowserInterface("127.0.0.1:0",undefined,{aiRelayHosts:[host]}),/AI relay host/);
+ const sent=[];
+ const app=await startBrowserInterface("127.0.0.1:0",undefined,{aiRelayHosts:["API.Z.AI"],relayFetch:async(url,init)=>{sent.push({url,init});return Response.json({ok:true},{status:201});}});
+ const post=(path,body="{}",headers={})=>fetch(app.listenUrl+path,{method:"POST",body,headers:{"Content-Type":"application/json",Authorization:"Bearer synthetic-key",Cookie:"session=private","X-Forwarded-For":"10.0.0.1",...headers}});
+ try{
+   assert.deepEqual(await (await fetch(app.listenUrl+"/relay-hosts.json")).json(),{hosts:["api.z.ai"]});
+   const ok=await post("/relay/api.z.ai/api/coding/paas/v4/chat/completions",'{"model":"glm"}');
+   assert.equal(ok.status,201);assert.deepEqual(await ok.json(),{ok:true});
+   assert.equal(sent.length,1);
+   assert.equal(sent[0].url,"https://api.z.ai/api/coding/paas/v4/chat/completions");
+   assert.deepEqual(sent[0].init.headers,{"Content-Type":"application/json",Authorization:"Bearer synthetic-key"});
+   assert.equal(sent[0].init.redirect,"error");
+   assert.equal(Buffer.from(sent[0].init.body).toString(),'{"model":"glm"}');
+   assert.equal((await post("/relay/api.z.ai/v1/responses")).status,201);
+   for(const path of ["/relay/evil.example/v1/chat/completions","/relay/api.z.ai/v1/models","/relay/api.z.ai/v1/chat/completions/x","/relay/api.z.ai/%2e%2e/chat/completions"])
+     assert.equal((await post(path)).status,404,path);
+   assert.equal((await fetch(app.listenUrl+"/relay/api.z.ai/v1/chat/completions")).status,404);
+   assert.equal((await post("/relay/api.z.ai/v1/chat/completions","x".repeat(4_000_001))).status,413);
+   assert.equal((await post("/relay/api.z.ai/v1/chat/completions","{}",{Origin:"https://evil.example"})).status,403);
+   assert.equal(sent.length,2);
+ }finally{await app.close();}
+ const plain=await startBrowserInterface("127.0.0.1:0");
+ try{
+   assert.deepEqual(await (await fetch(plain.listenUrl+"/relay-hosts.json")).json(),{hosts:[]});
+   assert.equal((await fetch(plain.listenUrl+"/relay/api.z.ai/v1/chat/completions",{method:"POST",body:"{}"})).status,404);
+ }finally{await plain.close();}
+});

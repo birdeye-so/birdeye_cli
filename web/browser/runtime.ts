@@ -12,6 +12,17 @@ import {BrowserLedger} from "./ledger";
 import {BrowserVault,type Workspace} from "./vault";
 import {clearCredentialIds} from "./config";
 
+// AI hosts the serving origin relays because their CORS preflight fails; empty on static hosts.
+let relayList:string[]=[];
+const relayReady=fetch("relay-hosts.json",{credentials:"omit"}).then(r=>r.ok?r.json():null).then(j=>{relayList=Array.isArray(j?.hosts)?j.hosts.filter((h:unknown)=>typeof h==="string"):[];}).catch(()=>{});
+export const relayHosts=()=>relayList;
+const corsHelp="Check the URL and that the provider allows browser requests (CORS) from this site; if it does not, the site operator can enable the AI relay for it.";
+async function providerFetch(resource:RequestInfo|URL,init?:RequestInit) {
+  await relayReady;
+  const url=new URL(resource instanceof Request?resource.url:String(resource));
+  const target=url.protocol==="https:" && relayList.includes(url.host) ? `relay/${url.host}${url.pathname}` : resource;
+  return fetch(target,{...init,credentials:"omit",referrerPolicy:"no-referrer",redirect:"error"});
+}
 type Stream = {onmessage: ((event:{data:string})=>void)|null; onerror:(()=>void)|null; close:()=>void};
 export class BrowserRuntime {
   private ledger:BrowserLedger;
@@ -57,6 +68,7 @@ export class BrowserRuntime {
       profiles:Object.fromEntries(Object.entries(this.config.ai.profiles as Record<string,Data>).map(([name,{apiKey,...profile}])=>[name,{...profile,configured:!!apiKey}]))
     }};
   }
+  private relayHost() {const profile=this.config.ai.profiles[this.config.ai.defaultProfile];const host=profile?new URL(profile.baseUrl).host:"";return relayList.includes(host)?host:null;}
   private toolCheck() {const profile=this.config.ai.profiles[this.config.ai.defaultProfile];return profile?this.toolChecks.get(toolCheckSignature(profile))??null:null;}
   private history() {return {items:this.state.runs.slice().reverse().map(r=>this.get(r.id)),nextCursor:null};}
   private thread(id?:string) {
@@ -73,15 +85,15 @@ export class BrowserRuntime {
     const route=path.split("?")[0];
     if(route==="/status")return {
       config:this.safeConfig(),configStorage:{path:this.vault?"Encrypted browser storage (IndexedDB)":"Browser memory · this tab only",persisted:!!this.vault},
-      activeAiProfile:this.config.ai.defaultProfile,aiToolCheck:this.toolCheck(),capabilities:capabilities(),cases:workflowCatalog(),maxCu:null,short:true,
+      activeAiProfile:this.config.ai.defaultProfile,aiToolCheck:this.toolCheck(),aiRelayHost:this.relayHost(),capabilities:capabilities(),cases:workflowCatalog(),maxCu:null,short:true,
       active:!!this.activeId,activeRunId:this.activeId,usage:this.ledger.summary(),runs:this.history().items,historyNextCursor:null,initialId:null,
     };
     if(route==="/ai/check"){
       const profile=this.config.ai.profiles[this.config.ai.defaultProfile];
       if(!profile?.apiKey)throw new Error("Configure an AI endpoint, model and key first.");
       const result=await checkToolCalling(profile,{fetch:async(resource,init)=>{
-        try {return await fetch(resource,{...init,credentials:"omit",referrerPolicy:"no-referrer",redirect:"error"});}
-        catch {throw new AppError("BROWSER_NETWORK_ERROR","Could not reach the AI provider. Check the URL and that it allows CORS from this site.");}
+        try {return await providerFetch(resource,init);}
+        catch {throw new AppError("BROWSER_NETWORK_ERROR","Could not reach the AI provider. "+corsHelp);}
       }});
       this.toolChecks.set(toolCheckSignature(profile),result);return result;
     }
@@ -171,8 +183,8 @@ export class BrowserRuntime {
         if(signal.aborted)throw error;
         throw new AppError("BROWSER_STORAGE_ERROR","Browser storage failed before sending the request. Free space or export your results before continuing.");
       }
-      try {return await fetch(resource,{...init,credentials:"omit",referrerPolicy:"no-referrer",redirect:"error"});}
-      catch(error) {if(signal.aborted)throw error;throw new AppError("BROWSER_NETWORK_ERROR","Could not reach the provider. Check your connection and that the endpoint allows CORS from this site. No proxy fallback was used.");}
+      try {return await providerFetch(resource,init);}
+      catch(error) {if(signal.aborted)throw error;throw new AppError("BROWSER_NETWORK_ERROR","Could not reach the provider. Check your connection. "+corsHelp);}
     };
     const runner=new Runner(this.ledger,this.config.birdeyeApiKey||"",{fetch:directFetch,retries:0});
     const evidence=(result:Data)=>{run.result=result;};

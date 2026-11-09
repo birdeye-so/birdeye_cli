@@ -52,6 +52,16 @@ function responsesMessage(body: Data): Data {
   return {role: "assistant", content: text.join("\n"), tool_calls: calls, responseOutput: body.output};
 }
 
+// The provider's own error explains most 400s (unsupported parameter, unknown model).
+// Show only a structured JSON message, bounded, with the configured key removed; raw bodies may echo secrets.
+async function providerReason(response: Response, key: string) {
+  try {
+    const body = JSON.parse((await response.text()).slice(0, 8000));
+    const message = [body?.error?.message, body?.message, body?.error, body?.detail].find(v => typeof v === "string") ?? "";
+    return message.split(key).join("<redacted>").replace(/\s+/g, " ").trim().slice(0, 300);
+  } catch { return ""; }
+}
+
 export async function completion(
   profile: Profile,
   messages: Data[],
@@ -71,7 +81,7 @@ export async function completion(
     );
   const responses = profile.apiFormat === "responses";
   const url = profile.baseUrl.replace(/\/+$/, "") + (responses ? "/responses" : "/chat/completions");
-  const request = responses ? {
+  const request: Data = responses ? {
     model: profile.model,
     input: responsesInput(messages),
     ...(options.tools?.length ? {tools: options.tools.map(tool => ({
@@ -84,8 +94,12 @@ export async function completion(
   } : {
     model: profile.model, messages,
     ...(options.tools?.length ? {tools: options.tools} : {}),
-    stream: false, max_tokens: 1800,
+    // No token-limit default: providers disagree on max_tokens vs max_completion_tokens; set one in requestParams.
+    stream: false,
   };
+  // User-supplied provider options win over app defaults; null removes a default (e.g. include).
+  for (const [name, value] of Object.entries(profile.requestParams ?? {}))
+    if (value === null) delete request[name]; else request[name] = value;
   options.usage.calls++;
   let usageRecorded = false;
   try {
@@ -103,11 +117,12 @@ export async function completion(
       body: JSON.stringify(request),
     });
     if (!response.ok) {
-      await response.body?.cancel();
+      const reason = await providerReason(response, key);
       throw new AppError(
         "AI_PROVIDER_ERROR",
-        `AI provider returned HTTP ${response.status}. Check the model, key and tool-calling support.`,
+        `AI provider returned HTTP ${response.status}${reason ? `: ${reason}` : ". Check the model, key and tool-calling support."}`,
         response.status === 429 || response.status >= 500,
+        reason ? {providerMessage: reason} : undefined,
       );
     }
     const raw = await response.text();
@@ -146,7 +161,7 @@ export async function completion(
 // others silently drop it and answer from memory, so probe with one trivial tool.
 const probeTool = {type: "function", function: {name: "confirm_tool_support", description: "Confirms that function calling works.",
   parameters: {type: "object", properties: {ok: {type: "boolean"}}, required: ["ok"], additionalProperties: false}}};
-export const toolCheckSignature = (profile: Profile) => `${profile.apiFormat ?? "chat-completions"}|${profile.baseUrl}|${profile.model}`;
+export const toolCheckSignature = (profile: Profile) => `${profile.apiFormat ?? "chat-completions"}|${profile.baseUrl}|${profile.model}|${JSON.stringify(profile.requestParams ?? null)}`;
 export async function checkToolCalling(profile: Profile, options: {fetch?: typeof fetch; signal?: AbortSignal} = {}) {
   const usage = {inputTokens: 0, outputTokens: 0, calls: 0, unknownCalls: 0};
   const messages = [{role: "user", content: "Call the confirm_tool_support tool with ok set to true. Do not answer with text."}];
@@ -158,7 +173,8 @@ export async function checkToolCalling(profile: Profile, options: {fetch?: typeo
     if (!(error instanceof AppError) || error.code !== "AI_PROVIDER_ERROR" || error.retryable) throw error;
     // Same request without tools: success means the provider rejected only the tools parameter.
     await completion(profile, messages, {...options, usage});
-    return {supported: false, message: "The provider rejected the tools parameter."};
+    const reason = (error.details as {providerMessage?: string} | undefined)?.providerMessage;
+    return {supported: false, message: `The provider rejected the tools parameter${reason ? `: ${reason}` : "."}`};
   }
 }
 

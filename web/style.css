@@ -207,7 +207,8 @@ tbody tr:hover { background: var(--surface); }
 .settings-form section { border-top: 1px solid var(--line); padding: 20px 0; }
 .settings-form .section-title { margin-bottom: 10px; }
 .settings-form section > p { margin-bottom: 12px; }
-.settings-form section > input, .settings-form section > select { margin: 6px 0 14px; }
+.settings-form section > input, .settings-form section > select, .settings-form section > textarea { margin: 6px 0 14px; }
+.settings-form section > .form-grid { margin-bottom: 14px; }
 .storage-info { padding: 14px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; margin-bottom: 16px; }
 .storage-info strong { display: block; }
 .storage-info code { display: block; margin: 7px 0; color: var(--accent); overflow-wrap: anywhere; }

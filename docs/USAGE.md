@@ -67,6 +67,14 @@ birdeye-cli config ai show --short
 
 Supply a provider base URL, model and key through the prompts. Use `--api-format chat-completions` if that is the provider's supported format. The base URL must not already end in `/responses` or `/chat/completions`. The provider must support tool/function calling for research tools. Saving the provider in the UI, or opening **Ask AI**, sends one small test request; Settings and Ask AI warn when the model does not call the test tool or the provider rejects tools.
 
+Providers differ in which request fields they accept. Use **Extra request parameters** in Settings, or `--request-params` with `config ai init`, to add provider-specific fields as a JSON object. A `null` value removes an app default. Chat Completions requests have no token-limit default, because providers disagree on `max_tokens` and `max_completion_tokens`; the provider's own output limit applies unless you set one. Responses requests default to `store: false`, `include: ["reasoning.encrypted_content"]` and `max_output_tokens: 1800`. The app always controls `model`, `messages`/`input`, `tools` and `stream`. Do not put secrets in these parameters. They are shown in Settings and saved with the profile. For example, to cap output on newer OpenAI models:
+
+```bash
+birdeye-cli config ai init --api-format chat-completions --request-params '{"max_completion_tokens":1800}'
+```
+
+When a provider rejects a request, Settings and chat show its error message, with your key removed.
+
 `birdeye-cli doctor --ai --short` sends a provider request and may incur AI charges. Restart an already running UI after changing config through the CLI. When using saved-only chat, Birdeye calls are blocked but AI usage can still be billed. The provider receives the question and selected research/documentation context.
 
 ## Common errors

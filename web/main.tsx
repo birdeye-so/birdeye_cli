@@ -338,6 +338,7 @@ function App() {
       apiFormat: "responses",
       model: "",
       apiKey: "",
+      requestParams: "",
       persist: true,
     }),
     [saved, setSaved] = useState("");
@@ -448,6 +449,7 @@ function App() {
       baseUrl: p?.baseUrl || "",
       apiFormat: p ? (p.apiFormat || "chat-completions") : "responses",
       model: p?.model || "",
+      requestParams: p?.requestParams ? JSON.stringify(p.requestParams, null, 2) : "",
     }));
   }, [savedProfile]);
   async function connect(e: React.FormEvent) {
@@ -507,6 +509,12 @@ function App() {
       };
       if (settings.birdeyeApiKey)
         payload.birdeyeApiKey = settings.birdeyeApiKey;
+      let requestParams: unknown;
+      if (settings.requestParams.trim()) {
+        try { requestParams = JSON.parse(settings.requestParams); } catch { requestParams = undefined; }
+        if (!requestParams || typeof requestParams !== "object" || Array.isArray(requestParams))
+          throw new Error('Extra request parameters must be a JSON object, for example {"max_completion_tokens": 1800}.');
+      }
       if (settings.baseUrl || settings.model)
         payload.profile = {
           provider: "openai-compatible",
@@ -515,6 +523,7 @@ function App() {
           model: settings.model,
           apiKeyEnv: existing?.apiKeyEnv || "BIRDEYE_AI_API_KEY",
           ...(settings.apiKey ? { apiKey: settings.apiKey } : {}),
+          ...(requestParams ? { requestParams } : {}),
         };
       await api("/settings", payload);
       setSettings(old=>({...old,birdeyeApiKey:"",apiKey:""}));
@@ -712,6 +721,23 @@ function App() {
                       />
                     </div>
                   </div>
+                  <label htmlFor="request-params">Extra request parameters (JSON, optional)</label>
+                  <textarea
+                    id="request-params"
+                    rows={3}
+                    spellCheck={false}
+                    value={settings.requestParams}
+                    onChange={(e) => setSettings({ ...settings, requestParams: e.target.value })}
+                    placeholder={settings.apiFormat === "chat-completions" ? '{"max_completion_tokens": 1800}' : '{"reasoning": {"effort": "low"}}'}
+                  />
+                  <p className="muted">
+                    Provider-specific fields added to every AI request, such as a token limit; use <code>null</code> to remove a default.{" "}
+                    {settings.apiFormat === "chat-completions" ? "Chat Completions has no defaults, so the provider's own output limit applies." : <>Defaults: <code>{'{"store": false, "include": ["reasoning.encrypted_content"], "max_output_tokens": 1800}'}</code>.</>}
+                    The app sets model, messages/input, tools and stream. Do not put secrets here.
+                  </p>
+                  {status.aiRelayHost && (
+                    <p className="muted">{status.aiRelayHost} blocks direct browser requests (CORS), so this site relays them. Your AI key passes through the site server in memory only and is never stored.</p>
+                  )}
                   {aiConfigured && (
                     <p className={toolCheck?.supported === false ? "setup-note" : "muted"} aria-live="polite">
                       <span>{checkingTools ? "Checking function calling…" : toolCheck?.supported ? "Function calling: supported." : toolCheck ? `Function calling: not supported. ${toolCheck.message} ${toolWarning}` : "Function calling: not checked yet."}</span>{" "}
