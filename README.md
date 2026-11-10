@@ -1,0 +1,192 @@
+# Birdeye CLI
+
+Query Solana token, market and wallet data from your terminal, or use a local web interface to use research skills and explore saved results with optional AI chat.
+
+[Installation](docs/INSTALLATION.md) · [中文安装指南](docs/INSTALLATION.md#中文安装指南) · [Usage](docs/USAGE.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
+
+Standalone website: [Next.js landing, embeddable docs and live catalog](apps/landing/README.md). Run `npm run landing:install` then `npm run landing:dev` to open it at `http://localhost:3001`.
+
+## Project status
+
+**Pre-1.0, under active development.** The current development version is `0.4.0`. No tagged release baseline is recorded in this checkout. The documented install paths are a source build or a maintainer-provided `.tgz`; installation from the npm registry is not a supported distribution path yet.
+
+Most CLI research supports **Solana**. The Price Surge screen also supports BSC, Base, Ethereum and Robinhood through its documented source endpoints. It reads data and does not execute trades or require a wallet private key.
+
+See [chain support and limitations for all skills](docs/workflows/skill-support.md): 20 current skills plus four compatibility packages. Each skill's installed instructions carry its own chain scope and evidence limits. The [token data skills guide](docs/workflows/token-data-skills.md) covers launchpad discovery, security, stats, holders, traders, liquidity pools, smart-money holders and KOL activity, with use cases and API choices.
+
+## Requirements
+
+- Node.js **22.16.0 or newer** and npm. Node's built-in SQLite stores configuration and history; no database server is needed.
+- macOS or Linux with Bash/Zsh. On Windows, use WSL; native Windows is not currently validated.
+- A [Birdeye API key](https://data.birdeye.so/) with access to the endpoints you use. Help, cost estimates and saved data do not need a key.
+- An AI provider is optional. Data commands and skills work without AI credentials.
+
+## Install Birdeye skills in your AI agent
+
+Copy this prompt into an agent that can run terminal commands:
+
+```text
+Set up Birdeye skills from https://github.com/birdeye-so/birdeye_cli.
+Read docs/INSTALLATION.md, section "Install agent skills". Install the
+skill-trending-list, skill-contract-dd, skill-wallet-analysis and skill-token-dd-score
+skills for my agent. Install the CLI separately from source or a built
+.tgz if it is missing. If GitHub access fails, use my existing checkout
+or explain which repository access is needed. Each skill includes its referenced documentation. Verify with --estimate-cu only. For live
+queries, guide me to enter my Birdeye API key locally via config init;
+do not ask me to paste the key into chat. Show the plan and CU estimate
+before fetching data.
+```
+
+### 中文：复制给 AI 助手
+
+将以下内容复制给能够运行终端命令的 AI 助手：
+
+```text
+请从 https://github.com/birdeye-so/birdeye_cli 为我配置 Birdeye skills。
+先阅读 docs/INSTALLATION.md 中的“中文安装指南”，为我使用的 AI 助手安装
+skill-trending-list、skill-contract-dd、skill-wallet-analysis 和 skill-token-dd-score。
+如果尚未安装 CLI，请从源码或已构建的 .tgz 包单独安装。
+如果 GitHub 访问失败，请使用我已有的本地仓库，或说明需要什么仓库访问权限。
+每个 skill 已包含引用的文档。先使用 --estimate-cu 验证，
+不要调用实时数据接口。需要实时查询时，引导我在本地通过 birdeye-cli config init
+输入 API key，不要让我把密钥发到聊天中。获取数据前先展示执行计划和 CU 估算。
+```
+
+完整步骤见[中文安装指南](docs/INSTALLATION.md#中文安装指南)，包括单个 skill 安装、CLI 配置及验证。
+
+### Terminal installation
+
+Already have this repository checked out? Run from its root:
+
+```bash
+# Inspect available skills; this does not install them.
+npx skills add ./skills --list
+
+# Install these example skills in your user scope for the agent you select.
+npx skills add ./skills --skill skill-trending-list skill-contract-dd skill-wallet-analysis skill-token-dd-score --global
+```
+
+For direct GitHub installation when your Git credentials can access the repository:
+
+```bash
+npx skills add https://github.com/birdeye-so/birdeye_cli/tree/main/skills --skill skill-trending-list --global
+```
+
+Change `skill-trending-list` to another skill name to install it individually. The third-party `skills` installer registers agent instructions; it does **not** install `birdeye-cli` or configure a Birdeye key. Continue with [CLI installation below](#install-from-source), then follow [skill verification and example prompts](docs/INSTALLATION.md#install-agent-skills). No public demo key is bundled.
+
+## Install from source
+
+```bash
+git clone https://github.com/birdeye-so/birdeye_cli.git
+cd birdeye_cli
+npm ci
+npm run build
+node dist/index.js --version
+node dist/index.js --help
+```
+
+To install the built CLI globally:
+
+```bash
+npm pack
+npm install --global ./birdeye-cli-0.4.0.tgz
+birdeye-cli --version
+```
+
+Use the filename printed by `npm pack` if the version differs. For a source-only installation, replace `birdeye-cli` below with `node dist/index.js` and run from the repository directory. See [installation](docs/INSTALLATION.md) for tarballs, updates, backups, uninstalling and PATH issues.
+
+## First run
+
+Save your Birdeye key through the hidden prompt, then check local configuration:
+
+```bash
+birdeye-cli config init
+birdeye-cli config show --short
+birdeye-cli doctor --short
+```
+
+Explore available commands and estimate a request **without spending CU**:
+
+```bash
+birdeye-cli capabilities --short
+birdeye-cli cases --short
+birdeye-cli token price So11111111111111111111111111111111111111112 --estimate-cu --short
+```
+
+Fetch a live price (**uses Birdeye CU**):
+
+```bash
+birdeye-cli token price So11111111111111111111111111111111111111112 --max-cu 3 --short
+birdeye-cli usage show --short
+```
+
+`--estimate-cu` plans without calling the API. `--max-cu` caps documented cost estimates; actual provider billing can differ. `--short` reduces output size, not API cost. No CU limit is applied unless you set one. MCP tool costs may be unknown; see [usage and billing](docs/USAGE.md#costs-and-output).
+
+## Price Surge Screen
+
+Find surging tokens in a market-cap band, with optional security and holder/trader enrichment:
+
+```bash
+birdeye-cli price-surge --min-market-cap 50000 --max-market-cap 5000000 --estimate-cu
+birdeye-cli price-surge --min-market-cap 50000 --max-market-cap 5000000 --max-cu 50
+npx skills add ./skills --skill skill-price-surge --global
+```
+
+Standard costs 50 CU. Advanced mode bounds enrichment with `--top`; `--with-security` enables security checks. The authenticated `POST /price-surge` endpoint returns collected data, computed rows and every exclusion reason using the same research logic as the CLI. See [Price Surge setup, inputs, API and interpretation](docs/workflows/price-surge.md).
+
+## Standalone research API
+
+Run the API wrapper independently of the CLI web interface:
+
+```bash
+birdeye-api --port 8788 --max-cu 320
+# From a built source checkout: npm run api:start -- --port 8788 --max-cu 320
+```
+
+`POST /price-surge` supports Solana, BSC, Base, Ethereum and Robinhood, with holder health on Solana only. `POST /token-dd` supports Solana, with standard and advanced scoring. Clients send their own Birdeye key in `X-API-KEY` on each live request; the wrapper calls Birdeye with that key and does not load a server key or require a separate internal token. Both return raw evidence, computed results and CU usage. Free estimates need no key. See [installation, requests, limits and migration](docs/workflows/internal-api.md). Terminal skills still run in-process without a background server.
+
+## Local web interface
+
+```bash
+birdeye-cli --format interface --bind 127.0.0.1:8787 --max-cu 250 --session-max-cu 2000
+```
+
+Open `http://127.0.0.1:8787`. Configure connections in **Settings**, choose a workflow, inspect its estimate, then run it. **History** opens saved results without fetching them again. Keep the terminal open; press `Ctrl+C` to stop.
+
+AI chat requires a provider base URL, model and API key in Settings. AI usage is billed separately from Birdeye CU. Disable **Allow new Birdeye requests** when chatting only about saved evidence.
+
+The interface is a shared local workspace. Connected browsers share credentials, history and budgets; there are no per-user accounts. Use an [SSH tunnel](docs/INSTALLATION.md#remote-access) for remote access.
+
+## Documentation
+
+| Task | Guide |
+| --- | --- |
+| Install, update, back up or uninstall | [Installation](docs/INSTALLATION.md) |
+| Commands, AI setup, output and troubleshooting | [Usage](docs/USAGE.md) |
+| Research recipes and imports | [Workflow guides](docs/workflows/README.md) |
+| Track changes and compatibility | [Changelog](CHANGELOG.md) |
+| Contribute or release a version | [Contributing](CONTRIBUTING.md), [Releasing](docs/RELEASING.md) |
+| Report a vulnerability or understand storage | [Security](SECURITY.md) |
+
+## Development
+
+```bash
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm run check:changelog
+npm run test:package
+```
+
+The automated suite uses fixtures and does not need real API keys. The package smoke test builds a tarball, installs it into a temporary prefix, and checks the installed CLI and web interface. See [contributing](CONTRIBUTING.md) for optional browser checks.
+
+## Support and license
+
+Report reproducible bugs through [GitHub Issues](https://github.com/birdeye-so/birdeye_cli/issues), including CLI/Node versions, operating system, a redacted command and expected versus actual results. Do not include API keys or configuration databases.
+
+CLI code is licensed under [MIT](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for bundled documentation and dependencies. Follow the [release checks](docs/RELEASING.md) before distributing a new version.
+
+### Browser-only website demo
+
+Build a static demo with encrypted browser storage: `npm run build:browser`, then host `dist/browser` over HTTPS. For local preview: `node dist/index.js --format interface --storage browser --bind 127.0.0.1:8787`. Users supply their own Birdeye and CORS-enabled AI keys; the demo has no workspace backend. See [browser demo setup and encryption limits](docs/BROWSER_DEMO.md).

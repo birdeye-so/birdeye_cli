@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "site": {
+    "name": "Birdeye CLI",
+    "headline": "On-chain research.\nFrom your terminal.",
+    "description": "Turn Birdeye data into research. Choose a skill, follow its usage guide, and explore tokens, wallets and market activity."
+  },
+  "skills": {
+    "overrides": {
+      "skill-trending-list": {
+        "featured": true
+      },
+      "skill-wallet-analysis": {
+        "featured": true
+      },
+      "skill-token-dd-score": {
+        "featured": true
+      }
+    }
+  }
+}

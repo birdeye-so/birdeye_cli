@@ -1,0 +1,13 @@
+# Exclude private working documents from source archives as defense in depth.
+internaldocs/** export-ignore
+docs/plans/** export-ignore
+docs/research/** export-ignore
+docs/ui/** export-ignore
+docs/PUBLIC_READINESS.md export-ignore
+PRODUCT.md export-ignore
+DESIGN.md export-ignore
+.impeccable/** export-ignore
+knowledge/birdeye/cli/docs/research/** export-ignore
+.DS_Store export-ignore
+*.swp export-ignore
+*.swo export-ignore

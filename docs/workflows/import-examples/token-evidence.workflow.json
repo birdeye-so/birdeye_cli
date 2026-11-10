@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "title": "Token evidence",
+  "purpose": "Inspect token identity, liquidity and security observations before deeper research.",
+  "chain": "solana",
+  "steps": [
+    {"id":"overview","operation":"token.overview","purpose":"Read price, liquidity and activity for the exact contract.","params":{"address":"{{address}}"}},
+    {"id":"security","operation":"token.security","purpose":"Read security observations; missing fields remain unknown.","params":{"address":"{{address}}"}}
+  ]
+}

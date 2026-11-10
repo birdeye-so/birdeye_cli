@@ -1,0 +1,101 @@
+{
+  "name": "birdeye-cli",
+  "version": "0.4.0",
+  "description": "Birdeye data CLI with CU accounting and a local AI research interface",
+  "type": "module",
+  "bin": {
+    "birdeye-cli": "dist/index.js",
+    "birdeye-api": "dist/internal-api/index.js",
+    "token-dd-score": "bin/token-dd-score.mjs"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "docs/workflows",
+    "README.md",
+    "knowledge/birdeye",
+    "CHANGELOG.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "docs/INSTALLATION.md",
+    "docs/USAGE.md",
+    "docs/RELEASING.md",
+    "bin",
+    "docs/BROWSER_DEMO.md"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "build": "npm run skills:sync && tsc -p tsconfig.json && node scripts/build-web.mjs && node scripts/build-browser.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.web.json",
+    "dev": "npm run build && node dist/index.js",
+    "api:start": "node dist/internal-api/index.js",
+    "api:dev": "npm run build && npm run api:start --",
+    "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js tests/*.test.mjs",
+    "test:browser": "npm run build && node tests/browser-smoke.mjs",
+    "prepack": "npm run build",
+    "knowledge:sync": "node scripts/sync-knowledge.mjs",
+    "test:demos:browser": "node tests/demo-ui-browser.mjs",
+    "test:token-data:browser": "node tests/token-data-ui-browser.mjs",
+    "check:changelog": "node scripts/check-changelog.mjs",
+    "test:package": "npm run build && node scripts/package-smoke.mjs",
+    "landing:install": "npm --prefix apps/landing ci",
+    "landing:sync": "node scripts/sync-landing-catalog.mjs",
+    "landing:watch": "node scripts/sync-landing-catalog.mjs --watch",
+    "landing:dev": "node scripts/landing-dev.mjs",
+    "landing:build": "npm run landing:demo && npm --prefix apps/landing run build",
+    "landing:start": "npm --prefix apps/landing run start",
+    "landing:typecheck": "npm --prefix apps/landing run typecheck",
+    "test:landing": "node --test tests/landing-catalog.test.mjs",
+    "test:landing:browser": "node tests/landing-browser.mjs",
+    "pretest": "npm run build",
+    "check:public": "node scripts/check-public-files.mjs",
+    "knowledge:sync:cli": "node scripts/sync-cli-knowledge.mjs",
+    "landing:demo": "npm run landing:sync && node scripts/build-landing-demo.mjs",
+    "skills-api:sync": "node scripts/sync-skills-api-catalog.mjs",
+    "skills-api:build": "npm run skills-api:sync && npm --prefix apps/skills-api run build && node scripts/build-browser.mjs apps/skills-api/public",
+    "skills-api:start": "npm --prefix apps/skills-api start --",
+    "test:skills-api": "node --test tests/skills-api.test.mjs",
+    "skills:sync": "node scripts/sync-skill-packages.mjs",
+    "skills:check": "node scripts/sync-skill-packages.mjs --check",
+    "catalog:sync": "npm run skills:sync && npm run landing:sync && npm run skills-api:sync && npm run skills:review",
+    "skills:review": "node scripts/build-skill-review.mjs",
+    "build:browser": "node scripts/build-browser.mjs",
+    "test:browser-storage": "node tests/browser-storage-browser.mjs",
+    "test:settings-sync": "node tests/settings-sync-browser.mjs",
+    "test:ai-tool-check": "node tests/ai-tool-check-browser.mjs",
+    "test:price-surge:browser": "node tests/price-surge-ui-browser.mjs",
+    "test:chat-shortcut": "node tests/chat-shortcut-browser.mjs",
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
+  },
+  "dependencies": {
+    "bignumber.js": "9.3.1",
+    "commander": "14.0.3",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.3.0",
+    "entities": "6.0.1",
+    "esbuild": "0.28.2",
+    "marked": "18.0.11",
+    "playwright-core": "1.63.0",
+    "prettier": "3.9.10",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/birdeye-so/birdeye_cli.git"
+  },
+  "homepage": "https://github.com/birdeye-so/birdeye_cli#readme",
+  "bugs": {
+    "url": "https://github.com/birdeye-so/birdeye_cli/issues"
+  }
+}

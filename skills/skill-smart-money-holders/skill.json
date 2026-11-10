@@ -1,0 +1,7 @@
+{
+  "category": "wallet",
+  "generated": true,
+  "resources": {
+    "references/details.md": "docs/workflows/token-data-skills.md"
+  }
+}

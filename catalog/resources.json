@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "discover",
+      "title": "Market Discovery",
+      "description": "Find tokens and activity worth a closer look."
+    },
+    {
+      "id": "token",
+      "title": "Token Due Diligence",
+      "description": "Understand security, ownership and liquidity."
+    },
+    {
+      "id": "wallet",
+      "title": "Wallet & Smart Money",
+      "description": "Explore holdings, performance and trading behavior."
+    },
+    {
+      "id": "guides",
+      "title": "Agent skills",
+      "description": "Give your agent the context to use Birdeye CLI."
+    }
+  ],
+  "documents": [
+    "docs/INSTALLATION.md",
+    "docs/USAGE.md",
+    "docs/workflows/price-surge.md",
+    "docs/workflows/internal-api.md",
+    "docs/workflows/skill-support.md"
+  ]
+}

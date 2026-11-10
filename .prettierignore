@@ -1,0 +1,15 @@
+# Paths in .gitignore are skipped too.
+# Generated or hashed content: regenerate with the sync scripts instead of formatting.
+knowledge/
+skills/
+catalog/
+apps/landing/public/
+apps/skills-api/catalog.json
+tests/fixtures/
+docs/
+package-lock.json
+apps/*/package-lock.json
+apps/landing/.next/
+apps/landing/next-env.d.ts
+# Prose: tables and wording are reviewed by hand.
+*.md

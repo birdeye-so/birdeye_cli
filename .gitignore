@@ -1,0 +1,36 @@
+node_modules/
+dist/
+.birdeye/
+.env
+config.json
+config.sqlite*
+usage.sqlite*
+*.tgz
+test-results/
+.test-dist/
+.impeccable/review/
+
+# Local editor and credential artifacts
+.DS_Store
+*.swp
+*.swo
+.env.*
+!.env.example
+
+# Private working documents: keep local, never distribute
+/internaldocs/
+/docs/plans/
+/docs/research/
+/docs/ui/
+/docs/PUBLIC_READINESS.md
+/docs/SKILL_REVIEW.md
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
+/knowledge/birdeye/cli/docs/research/
+/in.md
+/archive/
+/.github/workflows/
+
+# Generated browser assets served by Skills API
+/apps/skills-api/public/

@@ -1,0 +1,12 @@
+html {
+  scroll-behavior: smooth;
+  background: #0a0a0a;
+}
+body {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
