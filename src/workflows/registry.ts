@@ -34,7 +34,14 @@ import kol from "./skill-kol-signal/definition.js";
 
 export const workflowDefinitions = [
   priceSurge,
-  launchpad, security, stats, holders, traders, liquidity, smartHolders, kol,
+  launchpad,
+  security,
+  stats,
+  holders,
+  traders,
+  liquidity,
+  smartHolders,
+  kol,
   workflow0,
   workflow1,
   workflow2,
@@ -60,10 +67,14 @@ export const workflowDefinitions = [
   workflow22,
 ] as const;
 export type WorkflowId = (typeof workflowDefinitions)[number]["id"];
-export const caseKinds = workflowDefinitions.map(item => item.id) as [WorkflowId, ...WorkflowId[]];
+export const caseKinds = workflowDefinitions.map((item) => item.id) as [
+  WorkflowId,
+  ...WorkflowId[],
+];
 const registry = new Map<string, WorkflowDefinition>();
 for (const definition of workflowDefinitions) {
-  if (registry.has(definition.id)) throw new Error(`Duplicate workflow ID: ${definition.id}`);
+  if (registry.has(definition.id))
+    throw new Error(`Duplicate workflow ID: ${definition.id}`);
   registry.set(definition.id, definition);
 }
 export const findWorkflow = (id: string) => registry.get(id);
@@ -72,7 +83,39 @@ export function getWorkflow(id: string): WorkflowDefinition {
   if (!definition) throw new Error(`Unknown workflow: ${id}`);
   return definition;
 }
-export const legacyCaseKinds = workflowDefinitions.filter(item => item.family === "legacy").map(item => item.id);
-export const workflowCatalog = () => workflowDefinitions.map(({id: kind, title, category, family, subject, description, purpose, produces, source, guide, fixedSources, supportedChains, limitations}) => ({
-  kind, title, category, group: family === "legacy" ? "legacy" : category, family, subject, description: description ?? purpose, purpose, produces, source, guide, fixedSources, supportedChains, limitations,
-}));
+export const legacyCaseKinds = workflowDefinitions
+  .filter((item) => item.family === "legacy")
+  .map((item) => item.id);
+export const workflowCatalog = () =>
+  workflowDefinitions.map(
+    ({
+      id: kind,
+      title,
+      category,
+      family,
+      subject,
+      description,
+      purpose,
+      produces,
+      source,
+      guide,
+      fixedSources,
+      supportedChains,
+      limitations,
+    }) => ({
+      kind,
+      title,
+      category,
+      group: family === "legacy" ? "legacy" : category,
+      family,
+      subject,
+      description: description ?? purpose,
+      purpose,
+      produces,
+      source,
+      guide,
+      fixedSources,
+      supportedChains,
+      limitations,
+    }),
+  );

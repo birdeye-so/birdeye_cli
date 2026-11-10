@@ -35,7 +35,7 @@ To run the independent research API, run `birdeye-api --port 8788 --max-cu 320`.
 
 ## Supported setup
 
-Use Node.js >=22.16.0 and npm on macOS or Linux. WSL is the documented Windows route; native Windows has not been validated. The CI matrix checks the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS. Check the workflow results for the commit you install.
+Use Node.js >=22.16.0 and npm on macOS or Linux. WSL is the documented Windows route; native Windows has not been validated.
 
 ```bash
 node --version

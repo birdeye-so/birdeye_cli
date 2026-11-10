@@ -6,6 +6,8 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Security
 
+- Interface sign-in no longer trusts browser headers, which any local process can forge. On loopback the terminal prints a link with the connection code in its `#code=` fragment; open it to sign in. After a restart, open the new link or enter the new code.
+- Settings can no longer point an AI provider at loopback or private network addresses, which let connected users send requests to local and internal services. Origins configured before startup, such as a local model server set with `config ai init`, keep working.
 - Reject malformed browser-preview request URLs with HTTP 400 without terminating the server.
 - Bind shared-interface environment credentials to startup profile names, variable names and provider origins; UI-created or redirected profiles require explicit credentials.
 - Deduplicate public skill statistics by keyed client IP, skill and action for 24 hours; limit writes to 60 per client per minute and trust forwarded addresses only from configured proxy IPs.
@@ -43,6 +45,7 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Changed
 
+- Source, tests and scripts are formatted with Prettier. Run `npm run format` before committing; `npm run lint` checks formatting.
 - Chat Completions requests no longer send `max_tokens: 1800`. Providers disagree on `max_tokens` and `max_completion_tokens`, and newer OpenAI models reject `max_tokens`. The provider's default output limit applies unless a profile sets one in its extra request parameters.
 
 - Renamed skills in the API, packages and demo: Trending List → Token Trending, Token DD → Token Due-Diligence Score, Contract DD → Contract Due-Diligence Score, LP Analysis → Liquidity Pool Analysis, Kline Pattern → Token Kline Pattern. Skill IDs are unchanged.
@@ -76,6 +79,11 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 - Package metadata now links to the repository, issues and documentation; user guides, license and changelog ship with the tarball.
 - CI now covers the minimum Node version on Linux, Node 24 on Linux and Node 22 on macOS.
+
+### Removed
+
+- The bundled Birdeye documentation snapshot keeps only pages published in the docs site navigation (298 pages, all 113 API contracts). Hidden, draft and copied pages are no longer bundled or searchable, and `knowledge:sync` now applies the same rule.
+- GitHub Actions workflows are no longer part of the repository. Run the checks in [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/RELEASING.md](docs/RELEASING.md) locally.
 
 ### Fixed
 

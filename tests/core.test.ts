@@ -32,16 +32,26 @@ test("unlimited runs and workflows keep accounting, request limits and explicit 
     assert.equal(ledger.summary(run).estimated, 200001);
     assert.equal(ledger.summary(run).budgetUsed, 200001);
     assert.equal(ledger.summary(run).unknownCostAttempts, 1);
-    assert.throws(() => ledger.reserve(run, "fixture", 1, "fixture"), {code:"REQUEST_LIMIT"});
+    assert.throws(() => ledger.reserve(run, "fixture", 1, "fixture"), {
+      code: "REQUEST_LIMIT",
+    });
     const zero = ledger.createRun(0);
-    assert.throws(() => ledger.reserve(zero, "unknown", null, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
+    assert.throws(() => ledger.reserve(zero, "unknown", null, "fixture"), {
+      code: "CU_BUDGET_EXCEEDED",
+    });
     const capped = ledger.createWorkflow("explicit cap", 10);
     const uncappedRun = ledger.createRun(null, capped.id);
-    assert.throws(() => ledger.reserve(uncappedRun, "fixture", 11, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
+    assert.throws(() => ledger.reserve(uncappedRun, "fixture", 11, "fixture"), {
+      code: "CU_BUDGET_EXCEEDED",
+    });
     const large = ledger.createRun(200001);
     ledger.reserve(large, "fixture", 200001, "fixture");
-    assert.throws(() => ledger.reserve(large, "fixture", 1, "fixture"), {code:"CU_BUDGET_EXCEEDED"});
-  } finally { ledger.close(); }
+    assert.throws(() => ledger.reserve(large, "fixture", 1, "fixture"), {
+      code: "CU_BUDGET_EXCEEDED",
+    });
+  } finally {
+    ledger.close();
+  }
 });
 test("validates Solana bytes, unsupported chains, parameters and pagination before billing", () => {
   assert.throws(() => prepare("token.price", { address: "SOL" }));

@@ -1,11 +1,16 @@
-import {delay} from "./delay.js";
+import { delay } from "./delay.js";
 import { prepare, PRICING_VERSION } from "./catalog.js";
 import { credentialId } from "./config.js";
-import type {LedgerPort} from "./ledger-port.js";
+import type { LedgerPort } from "./ledger-port.js";
 import { AppError, parseData, now, object, type Data } from "./shared.js";
 import { BirdeyeMcp, BIRDEYE_MCP_URL } from "./mcp.js";
 
-export type Result = { schemaVersion: number; data: any; meta: Data; rawResponse?: unknown };
+export type Result = {
+  schemaVersion: number;
+  data: any;
+  meta: Data;
+  rawResponse?: unknown;
+};
 export class Runner {
   constructor(
     public ledger: LedgerPort,
@@ -17,11 +22,21 @@ export class Runner {
       timeoutMs?: number;
     } = {},
   ) {}
-  async executeMcp(client: BirdeyeMcp, name: string, args: Data, context: {run: string; signal?: AbortSignal}): Promise<Result> {
+  async executeMcp(
+    client: BirdeyeMcp,
+    name: string,
+    args: Data,
+    context: { run: string; signal?: AbortSignal },
+  ): Promise<Result> {
     await client.validateCall(name, args, context.signal);
     context.signal?.throwIfAborted();
     const operation = `mcp.${name}`;
-    const id = this.ledger.reserve(context.run, operation, null, credentialId(this.key));
+    const id = this.ledger.reserve(
+      context.run,
+      operation,
+      null,
+      credentialId(this.key),
+    );
     try {
       if (context.signal?.aborted) {
         this.ledger.finish(id, "not-sent");
@@ -30,16 +45,30 @@ export class Runner {
       const data = await client.callTool(name, args, context.signal);
       this.ledger.finish(id, "completed");
       return {
-        schemaVersion: 1, data,
+        schemaVersion: 1,
+        data,
         meta: {
-          operation, params: args, chain: args.chain ?? args.network ?? "unspecified",
-          retrievedAt: now(), runId: context.run, requestId: id,
-          endpoint: BIRDEYE_MCP_URL, method: "tools/call", transport: "mcp",
-          cu: this.ledger.summary(context.run), pricingStatus: "unknown", estimatedCu: null,
-          coverage: data.isError ? "empty" : "unverified", isError: data.isError === true,
+          operation,
+          params: args,
+          chain: args.chain ?? args.network ?? "unspecified",
+          retrievedAt: now(),
+          runId: context.run,
+          requestId: id,
+          endpoint: BIRDEYE_MCP_URL,
+          method: "tools/call",
+          transport: "mcp",
+          cu: this.ledger.summary(context.run),
+          pricingStatus: "unknown",
+          estimatedCu: null,
+          coverage: data.isError ? "empty" : "unverified",
+          isError: data.isError === true,
           warnings: [
             "MCP CU cost is unknown and excluded from estimated/reserved totals. Request limits apply; CU budgets cannot bound MCP charges.",
-            ...(data.isError ? ["Birdeye MCP returned a tool error; this is not successful market evidence."] : []),
+            ...(data.isError
+              ? [
+                  "Birdeye MCP returned a tool error; this is not successful market evidence.",
+                ]
+              : []),
           ],
         },
       };
@@ -58,15 +87,23 @@ export class Runner {
       upperBoundCu: operation === "token.liquidity-ohlc" ? null : p.entry.cost,
       pricingVersion: PRICING_VERSION,
       pricingStatus: p.entry.provisional ? "provisional" : "verified",
-      note: operation === "token.liquidity-ohlc" ? "Provisional 30 CU from DD specification; provider documentation disagrees. Not a verified upper bound or confirmed bill." : p.entry.provisional
-        ? "Conservative documented upper bound; actual billing is not confirmed."
-        : "Documentation estimate, not confirmed billing.",
+      note:
+        operation === "token.liquidity-ohlc"
+          ? "Provisional 30 CU from DD specification; provider documentation disagrees. Not a verified upper bound or confirmed bill."
+          : p.entry.provisional
+            ? "Conservative documented upper bound; actual billing is not confirmed."
+            : "Documentation estimate, not confirmed billing.",
     };
   }
   async execute(
     operation: string,
     params: unknown,
-    context: { run: string; chain?: string; signal?: AbortSignal; captureRawResponse?: boolean },
+    context: {
+      run: string;
+      chain?: string;
+      signal?: AbortSignal;
+      captureRawResponse?: boolean;
+    },
   ): Promise<Result> {
     const p = prepare(operation, params, context.chain);
     if (!this.key)
@@ -82,7 +119,10 @@ export class Runner {
     if (method === "GET")
       for (const [key, value] of Object.entries(p.params))
         if (value !== undefined)
-          url.searchParams.set(key, Array.isArray(value) ? value.join(",") : String(value));
+          url.searchParams.set(
+            key,
+            Array.isArray(value) ? value.join(",") : String(value),
+          );
     if (operation === "market.ohlcv") {
       url.searchParams.set("mode", "range");
       url.searchParams.set("currency", "usd");
@@ -109,12 +149,20 @@ export class Runner {
         ]);
         const response = await (this.options.fetch || fetch)(url, {
           method,
-          ...(method === "POST" ? { body: JSON.stringify(p.entry.requestBody?.(p.params) ?? p.params) } : {}),
+          ...(method === "POST"
+            ? {
+                body: JSON.stringify(
+                  p.entry.requestBody?.(p.params) ?? p.params,
+                ),
+              }
+            : {}),
           headers: {
             "X-API-KEY": this.key,
             "x-chain": p.chain,
             accept: "application/json",
-            ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
+            ...(method === "POST"
+              ? { "Content-Type": "application/json" }
+              : {}),
           },
           signal,
           redirect: "error",
@@ -147,28 +195,61 @@ export class Runner {
             "Birdeye response exceeded 20 MB. Reduce the query.",
           );
         let parsed: unknown;
-        try { parsed = parseData(raw); }
-        catch { throw new AppError("API_RESPONSE_INVALID", "Birdeye returned invalid JSON; billing is uncertain."); }
+        try {
+          parsed = parseData(raw);
+        } catch {
+          throw new AppError(
+            "API_RESPONSE_INVALID",
+            "Birdeye returned invalid JSON; billing is uncertain.",
+          );
+        }
         const body = object(parsed);
         const bare = p.entry.bareArray && Array.isArray(parsed);
         const hasData = Object.hasOwn(body, "data");
         const success = body.success === true || body.success === 1;
-        const compatibleEnvelope = p.entry.dataWithoutSuccess && !Object.hasOwn(body, "success") && hasData;
-        if ((!bare && (!(success || compatibleEnvelope) || !hasData)) || body.error != null)
+        const compatibleEnvelope =
+          p.entry.dataWithoutSuccess &&
+          !Object.hasOwn(body, "success") &&
+          hasData;
+        if (
+          (!bare && (!(success || compatibleEnvelope) || !hasData)) ||
+          body.error != null
+        )
           throw new AppError(
             "API_RESPONSE_INVALID",
             `Birdeye returned an unsupported response envelope for ${operation}; billing is uncertain.`,
             false,
-            {operation, endpoint: p.entry.path, responseType: Array.isArray(parsed) ? "array" : parsed === null ? "null" : typeof parsed, hasData, successType: typeof body.success},
+            {
+              operation,
+              endpoint: p.entry.path,
+              responseType: Array.isArray(parsed)
+                ? "array"
+                : parsed === null
+                  ? "null"
+                  : typeof parsed,
+              hasData,
+              successType: typeof body.success,
+            },
           );
         const data = bare ? parsed : body.data;
-        if (data !== null && p.entry.dataSchema && !p.entry.dataSchema.safeParse(data).success)
-          throw new AppError("API_RESPONSE_INVALID", `Unexpected data shape for ${operation}; no metrics inferred.`);
+        if (
+          data !== null &&
+          p.entry.dataSchema &&
+          !p.entry.dataSchema.safeParse(data).success
+        )
+          throw new AppError(
+            "API_RESPONSE_INVALID",
+            `Unexpected data shape for ${operation}; no metrics inferred.`,
+          );
         this.ledger.finish(id, "completed", p.entry.cost);
         if (operation === "usage.credits")
           this.ledger.snapshot(identity, body.data);
         const d = object(data);
-        const rows = Array.isArray(data) ? data : p.entry.rowsKey ? d[p.entry.rowsKey] : d.items || d.tokens;
+        const rows = Array.isArray(data)
+          ? data
+          : p.entry.rowsKey
+            ? d[p.entry.rowsKey]
+            : d.items || d.tokens;
         const warnings = p.entry.provisional
           ? [
               operation === "token.liquidity-ohlc"
@@ -184,7 +265,7 @@ export class Runner {
         return {
           schemaVersion: 1,
           data,
-          ...(context.captureRawResponse ? {rawResponse: parsed} : {}),
+          ...(context.captureRawResponse ? { rawResponse: parsed } : {}),
           meta: {
             operation,
             params: p.params,
@@ -196,7 +277,9 @@ export class Runner {
             method,
             cu: this.ledger.summary(context.run),
             coverage:
-              data === null || (Array.isArray(rows) && rows.length === 0) || (data && !Array.isArray(data) && Object.keys(d).length === 0)
+              data === null ||
+              (Array.isArray(rows) && rows.length === 0) ||
+              (data && !Array.isArray(data) && Object.keys(d).length === 0)
                 ? "empty"
                 : p.entry.paginated
                   ? "page"

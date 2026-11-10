@@ -145,7 +145,7 @@ npm run test:skills-api
 
 The first command updates the API catalog, landing catalog, installable skills and review materials. Deploy the regenerated API catalog together with the matching API code. `scripts/lib/skill-details.mjs` still generates CLI parameters and the reproducible JSON CU preview from runtime schemas. Icon mappings and color live in [src/icons.ts](src/icons.ts).
 
-Skill definitions own the canonical metadata and execution. Run `npm run catalog:sync` to regenerate instructions, both public snapshots, and [the maintainer review](../../docs/SKILL_REVIEW.md). `npm run skills-api:sync` regenerates this API snapshot only, including the required instruction packages. The root `skills-api:build` command also synchronizes the standalone copy of `src/skill-identity.ts`. Edit identity rules in that source file, then sync; tests reject a stale API copy.
+Skill definitions own the canonical metadata and execution. Run `npm run catalog:sync` to regenerate instructions and both public snapshots. `npm run skills-api:sync` regenerates this API snapshot only, including the required instruction packages. The root `skills-api:build` command also synchronizes the standalone copy of `src/skill-identity.ts`. Edit identity rules in that source file, then sync; tests reject a stale API copy.
 
 The API reads its snapshot per request, so atomic replacement updates a running server. Deploy v4 catalog and matching code together; v3 custom snapshots must be regenerated to include detail content. Custom catalogs must follow the same schema. Skill-list entries omit step graphs; the detail's sample output includes its cost-preview plan. Complex-case questions stay in the maintainer review.
 

@@ -40,7 +40,7 @@ Safety/copyability claims and unsupported endpoints remain deliberately excluded
 
 The UI now follows the reference console: dark navy theme with light toggle, group filters, visible skill rail, central inputs and results, right run history, and UI/Plain/JSON result views. Purpose, editable API steps and CU remain. Detailed API narratives are behind Review API steps; estimates and validation errors remain visible. Both navigation rails use compact disclosures on mobile. Credentials stay in Settings/SQLite rather than browser storage. Unsupported multichain and Telegram execution controls from the reference are not advertised.
 
-Local same-origin browser requests can establish a session on loopback automatically; remote/public-URL access and `--require-code` still require the terminal code. Host, Origin and Fetch Metadata checks prevent cross-origin automatic connection. Keys and local session authentication are separate; restarting does not need the user to re-enter saved keys.
+On loopback, the terminal prints a sign-in link whose `#code=` fragment carries the connection code; remote/public-URL access and `--require-code` require entering the code. Browser headers alone never establish a session, because any local process can forge them. Keys and local session authentication are separate; restarting does not need the user to re-enter saved keys.
 
 The observed global installation was 0.2.0 and still used config.json. This workspace and its new tarball are 0.3.1; start with `node dist/index.js` or install the new tarball to avoid the stale binary. Settings and terminal now show the SQLite path.
 

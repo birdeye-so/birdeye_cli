@@ -1,5 +1,5 @@
-import {skillCategories,skillsInCategory} from "./skill-categories";
-import {skillForPath} from "../src/skill-routes";
+import { skillCategories, skillsInCategory } from "./skill-categories";
+import { skillForPath } from "../src/skill-routes";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BigNumber } from "bignumber.js";
@@ -8,15 +8,19 @@ import { SkillSettings, SkillFindings } from "./skill-settings";
 import { SkillList, RunHistory, plainResult } from "./skill-console";
 import { SkillIcon } from "./skill-icon";
 import { Brand } from "./brand";
-import {AddressText, AddressCopyProvider, AddressCopyNotice} from "./address-text";
-import {ChatPanel} from "./chat-panel";
-import {MarkdownText} from "./markdown-text";
-import {StorageGate,browserStorage} from "./storage-gate";
-import {createApiClient,createRunEvents} from "./api";
-import {CustomerDemos} from "./customer-demos";
+import {
+  AddressText,
+  AddressCopyProvider,
+  AddressCopyNotice,
+} from "./address-text";
+import { ChatPanel } from "./chat-panel";
+import { MarkdownText } from "./markdown-text";
+import { StorageGate, browserStorage } from "./storage-gate";
+import { createApiClient, createRunEvents } from "./api";
+import { CustomerDemos } from "./customer-demos";
 import "./style.css";
 
-import {metricAddressKind, operationSubject} from "./birdeye-address";
+import { metricAddressKind, operationSubject } from "./birdeye-address";
 
 type Data = Record<string, any>;
 type View = "research" | "usage" | "settings" | "demos";
@@ -78,9 +82,17 @@ function Icon({ name, size = 19 }: { name: string; size?: number }) {
   );
 }
 const titleFor: Record<string, string> = {
-  "skill-trending-list": "Token Trending", "skill-smart-wallets": "Smart Wallets",
-  "skill-token-dd": "Token DD", "skill-contract-dd": "Contract Due-Diligence Score", "skill-rugcheck-audit": "RugCheck Audit", "skill-kline-pattern": "Token Kline Pattern",
-  "skill-wallet-score": "Wallet Score", "skill-wallet-style": "Wallet Style", "skill-wallet-analysis": "Wallet Analysis", "skill-smart-money-profile": "Smart Money Profile", "skill-smart-money-leaderboard": "Smart Money Leaderboard",
+  "skill-trending-list": "Token Trending",
+  "skill-smart-wallets": "Smart Wallets",
+  "skill-token-dd": "Token DD",
+  "skill-contract-dd": "Contract Due-Diligence Score",
+  "skill-rugcheck-audit": "RugCheck Audit",
+  "skill-kline-pattern": "Token Kline Pattern",
+  "skill-wallet-score": "Wallet Score",
+  "skill-wallet-style": "Wallet Style",
+  "skill-wallet-analysis": "Wallet Analysis",
+  "skill-smart-money-profile": "Smart Money Profile",
+  "skill-smart-money-leaderboard": "Smart Money Leaderboard",
   "token-research": "Token research",
   "market-shortlist": "Market shortlist",
   "wallet-exposure": "Wallet exposure",
@@ -157,12 +169,25 @@ function exportFile(value: unknown, name: string, type = "application/json") {
 function Metrics({ rows, sources }: { rows: Data[]; sources: Data[] }) {
   const [sort, setSort] = useState<string>("");
   const grouped: Record<string, Data[]> = {};
-  for (const row of rows) (grouped[row.operation || "token observations"] ??= []).push(row);
-  if (Object.keys(grouped).length > 1) return <div className="metric-groups">{Object.entries(grouped).map(([operation, data]) => <section key={operation}><h3>{operation}</h3><Metrics rows={data!} sources={sources} /></section>)}</div>;
+  for (const row of rows)
+    (grouped[row.operation || "token observations"] ??= []).push(row);
+  if (Object.keys(grouped).length > 1)
+    return (
+      <div className="metric-groups">
+        {Object.entries(grouped).map(([operation, data]) => (
+          <section key={operation}>
+            <h3>{operation}</h3>
+            <Metrics rows={data!} sources={sources} />
+          </section>
+        ))}
+      </div>
+    );
   const all = [...new Set(rows.flatMap((r) => Object.keys(r)))].filter(
     (k) => k in labels,
   );
-  const keys = all.includes("symbol") ? ["symbol", ...all.filter((k) => k !== "symbol")] : all;
+  const keys = all.includes("symbol")
+    ? ["symbol", ...all.filter((k) => k !== "symbol")]
+    : all;
   const sorted = [...rows].sort((a, b) => {
     if (!sort) return 0;
     if (a[sort] === null || a[sort] === undefined)
@@ -225,7 +250,21 @@ function Metrics({ rows, sources }: { rows: Data[]; sources: Data[] }) {
                     className={k === "address" ? "address" : ""}
                     title={display(row[k])}
                   >
-                    <AddressText text={display(row[k])} compact chain={row.chain ?? sources.find(s => s.meta.requestId === row.sourceId)?.meta.chain} kind={metricAddressKind(k, row.operation ?? sources.find(s => s.meta.requestId === row.sourceId)?.meta.operation)} />
+                    <AddressText
+                      text={display(row[k])}
+                      compact
+                      chain={
+                        row.chain ??
+                        sources.find((s) => s.meta.requestId === row.sourceId)
+                          ?.meta.chain
+                      }
+                      kind={metricAddressKind(
+                        k,
+                        row.operation ??
+                          sources.find((s) => s.meta.requestId === row.sourceId)
+                            ?.meta.operation,
+                      )}
+                    />
                   </td>
                 ))}
               </tr>
@@ -269,30 +308,79 @@ function App() {
     [maxTop10Pct, setMaxTop10Pct] = useState(""),
     [excludeFreezeable, setExcludeFreezeable] = useState(false),
     [preparedCase, setPreparedCase] = useState<PreparedCase | null>(null);
-  const [skillGroup, setSkillGroup] = useState("all"), [skillOptions, setSkillOptions] = useState<Data>({}), [walletsText, setWalletsText] = useState("");
+  const [skillGroup, setSkillGroup] = useState("all"),
+    [skillOptions, setSkillOptions] = useState<Data>({}),
+    [walletsText, setWalletsText] = useState("");
   const [resultFormat, setResultFormat] = useState("ui");
-  const [demoViewVersion,setDemoViewVersion]=useState(0);
+  const [demoViewVersion, setDemoViewVersion] = useState(0);
   const [theme, setTheme] = useState("dark");
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [chatMessages,setChatMessages] = useState<Data[]>([]), [liveData,setLiveData] = useState(true), [knowledgeInfo,setKnowledgeInfo] = useState<Data|null>(null);
-  const viewedRun=useRef<string|null>(null);
-  useEffect(()=>{if(mode!=="chat"||knowledgeInfo)return;let cancelled=false;void api("/knowledge").then(value=>{if(!cancelled)setKnowledgeInfo(value);}).catch(e=>{if(!cancelled)setError(e.message);});return()=>{cancelled=true;};},[mode,knowledgeInfo]);
-  async function loadThread(id:string) {const thread=await api(`/runs/${id}/thread`);if(viewedRun.current===id)setChatMessages(thread.messages);}
+  const [chatMessages, setChatMessages] = useState<Data[]>([]),
+    [liveData, setLiveData] = useState(true),
+    [knowledgeInfo, setKnowledgeInfo] = useState<Data | null>(null);
+  const viewedRun = useRef<string | null>(null);
+  useEffect(() => {
+    if (mode !== "chat" || knowledgeInfo) return;
+    let cancelled = false;
+    void api("/knowledge")
+      .then((value) => {
+        if (!cancelled) setKnowledgeInfo(value);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [mode, knowledgeInfo]);
+  async function loadThread(id: string) {
+    const thread = await api(`/runs/${id}/thread`);
+    if (viewedRun.current === id) setChatMessages(thread.messages);
+  }
 
   async function loadHistory() {
     if (!status?.historyNextCursor || historyLoading) return;
     setHistoryLoading(true);
     try {
       const page = await api(`/history?before=${status.historyNextCursor}`);
-      setStatus(previous => previous ? {...previous, runs:[...previous.runs, ...page.items.filter((r:Data)=>!previous.runs.some((p:Data)=>p.id===r.id))], historyNextCursor:page.nextCursor} : previous);
-    } catch(e:any) {setError(e.message);} finally {setHistoryLoading(false);}
+      setStatus((previous) =>
+        previous
+          ? {
+              ...previous,
+              runs: [
+                ...previous.runs,
+                ...page.items.filter(
+                  (r: Data) => !previous.runs.some((p: Data) => p.id === r.id),
+                ),
+              ],
+              historyNextCursor: page.nextCursor,
+            }
+          : previous,
+      );
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setHistoryLoading(false);
+    }
   }
-  async function removeHistory(id?:string) {
-    await api("/history/delete",id ? {id} : {all:true});
-    setStatus(previous=>previous ? {...previous,runs:id ? previous.runs.filter((r:Data)=>r.id!==id) : [],historyNextCursor:null} : previous);
-    if(!id || viewedRun.current===id) {
-      viewedRun.current=null;setRun(null);setChatMessages([]);setQuestion("");setLiveData(true);
-    } else if(run?.input?.mode==="chat") {
+  async function removeHistory(id?: string) {
+    await api("/history/delete", id ? { id } : { all: true });
+    setStatus((previous) =>
+      previous
+        ? {
+            ...previous,
+            runs: id ? previous.runs.filter((r: Data) => r.id !== id) : [],
+            historyNextCursor: null,
+          }
+        : previous,
+    );
+    if (!id || viewedRun.current === id) {
+      viewedRun.current = null;
+      setRun(null);
+      setChatMessages([]);
+      setQuestion("");
+      setLiveData(true);
+    } else if (run?.input?.mode === "chat") {
       await loadThread(run.id);
     }
     await refresh();
@@ -305,33 +393,97 @@ function App() {
         window.history.pushState(null, "", url);
       }
     }
-    setKind(next); setSkillOptions({}); setDuration("30d"); setScanLimit(next.startsWith("skill-") ? 20 : 50); setRun(null); viewedRun.current=null; setChatMessages([]); setLiveData(true); setResultFormat("ui"); setView("research"); setMode("case");
+    setKind(next);
+    setSkillOptions({});
+    setDuration("30d");
+    setScanLimit(next.startsWith("skill-") ? 20 : 50);
+    setRun(null);
+    viewedRun.current = null;
+    setChatMessages([]);
+    setLiveData(true);
+    setResultFormat("ui");
+    setView("research");
+    setMode("case");
   }
-  const selectedCase = status?.cases?.find((c:Data) => c.kind === kind);
+  const selectedCase = status?.cases?.find((c: Data) => c.kind === kind);
   const referenceSkill = kind.startsWith("skill-");
-  const walletCase = selectedCase?.subject === "wallet" || ["wallet-exposure", "wallet-analysis", "smart-money-profile", "daily-brief"].includes(kind);
+  const walletCase =
+    selectedCase?.subject === "wallet" ||
+    [
+      "wallet-exposure",
+      "wallet-analysis",
+      "smart-money-profile",
+      "daily-brief",
+    ].includes(kind);
   const optionalAddress = ["smart-money-profile", "daily-brief"].includes(kind);
-  const noAddress = ["none", "wallets"].includes(selectedCase?.subject) || ["market-shortlist", "market-opportunities", "early-project-screening"].includes(kind);
-  const tokenPolicy = !referenceSkill && !["wallet-exposure", "smart-money-profile"].includes(kind) && (kind !== "wallet-analysis" || depth === "full");
-  const discovery = ["market-opportunities", "early-project-screening", "daily-brief"].includes(kind);
-  const caseInput = () => referenceSkill ? {
-    kind, ...(!noAddress && address.trim() ? {address: address.trim()} : {}),
-    ...(selectedCase?.subject === "wallets" && walletsText.trim() ? {wallets: walletsText.split(/[\s,]+/).filter(Boolean)} : {}),
-    limit: candidateLimit, scanLimit, interval, duration, ...skillOptions,
-  } : ({
-    kind, ...(!noAddress && address.trim() ? {address: address.trim()} : {}),
-    depth, limit: candidateLimit, scanLimit, interval, duration,
-    ...(kind === "early-project-screening" ? {stage: launchStage, source: launchSource, ...(minProgress !== "" ? {minProgress: Number(minProgress)} : {})} : {}),
-    ...(tokenPolicy && minLiquidity !== "" ? {minLiquidity: Number(minLiquidity)} : {}),
-    ...(tokenPolicy && maxTop10Pct !== "" ? {maxTop10Pct: Number(maxTop10Pct)} : {}),
-    excludeFreezeable: tokenPolicy && excludeFreezeable,
-  });
+  const noAddress =
+    ["none", "wallets"].includes(selectedCase?.subject) ||
+    [
+      "market-shortlist",
+      "market-opportunities",
+      "early-project-screening",
+    ].includes(kind);
+  const tokenPolicy =
+    !referenceSkill &&
+    !["wallet-exposure", "smart-money-profile"].includes(kind) &&
+    (kind !== "wallet-analysis" || depth === "full");
+  const discovery = [
+    "market-opportunities",
+    "early-project-screening",
+    "daily-brief",
+  ].includes(kind);
+  const caseInput = () =>
+    referenceSkill
+      ? {
+          kind,
+          ...(!noAddress && address.trim() ? { address: address.trim() } : {}),
+          ...(selectedCase?.subject === "wallets" && walletsText.trim()
+            ? { wallets: walletsText.split(/[\s,]+/).filter(Boolean) }
+            : {}),
+          limit: candidateLimit,
+          scanLimit,
+          interval,
+          duration,
+          ...skillOptions,
+        }
+      : {
+          kind,
+          ...(!noAddress && address.trim() ? { address: address.trim() } : {}),
+          depth,
+          limit: candidateLimit,
+          scanLimit,
+          interval,
+          duration,
+          ...(kind === "early-project-screening"
+            ? {
+                stage: launchStage,
+                source: launchSource,
+                ...(minProgress !== ""
+                  ? { minProgress: Number(minProgress) }
+                  : {}),
+              }
+            : {}),
+          ...(tokenPolicy && minLiquidity !== ""
+            ? { minLiquidity: Number(minLiquidity) }
+            : {}),
+          ...(tokenPolicy && maxTop10Pct !== ""
+            ? { maxTop10Pct: Number(maxTop10Pct) }
+            : {}),
+          excludeFreezeable: tokenPolicy && excludeFreezeable,
+        };
   const workflowInput = caseInput();
   const workflowKey = JSON.stringify(workflowInput);
   const caseReady = preparedCase?.key === workflowKey;
-  const chatWorkflowInput = run ? run.input?.case : caseReady ? preparedCase?.input : undefined;
-  const chatWorkflowKind = chatWorkflowInput?.kind || (run ? run.input?.workflowKind : kind);
-  const chatWorkflow = status?.cases?.find((c: Data) => c.kind === chatWorkflowKind);
+  const chatWorkflowInput = run
+    ? run.input?.case
+    : caseReady
+      ? preparedCase?.input
+      : undefined;
+  const chatWorkflowKind =
+    chatWorkflowInput?.kind || (run ? run.input?.workflowKind : kind);
+  const chatWorkflow = status?.cases?.find(
+    (c: Data) => c.kind === chatWorkflowKind,
+  );
   const [settings, setSettings] = useState({
       birdeyeApiKey: "",
       baseUrl: "",
@@ -359,13 +511,17 @@ function App() {
     }
   }
   async function watch(id: string) {
-    viewedRun.current=id;
+    viewedRun.current = id;
     const r = await api(`/runs/${id}`);
-    if(viewedRun.current!==id)return;
-    if(r.input?.mode === "chat") {setMode("chat");setLiveData(r.input.dataPolicy !== "saved-only");await loadThread(id);} else setChatMessages([]);
-    if(viewedRun.current!==id)return;
+    if (viewedRun.current !== id) return;
+    if (r.input?.mode === "chat") {
+      setMode("chat");
+      setLiveData(r.input.dataPolicy !== "saved-only");
+      await loadThread(id);
+    } else setChatMessages([]);
+    if (viewedRun.current !== id) return;
     setRun(r);
-    if(r.input?.mode === "demo")setDemoViewVersion(v=>v+1);
+    if (r.input?.mode === "demo") setDemoViewVersion((v) => v + 1);
     setView(r.input?.mode === "demo" ? "demos" : "research");
     if (r.status !== "running") return;
     stream.current?.close();
@@ -388,7 +544,8 @@ function App() {
         setActiveId(null);
         events.close();
         void refresh();
-        if(viewedRun.current===id && e.data.input?.mode === "chat") void loadThread(id).catch(e=>setError(e.message));
+        if (viewedRun.current === id && e.data.input?.mode === "chat")
+          void loadThread(id).catch((e) => setError(e.message));
       }
     };
     events.onerror = () => {
@@ -406,7 +563,9 @@ function App() {
           await watch(s.activeRunId);
           return;
         }
-        const linkedSkill = skillForPath<Data & {kind: string; family: string}>(window.location.pathname, s.cases);
+        const linkedSkill = skillForPath<
+          Data & { kind: string; family: string }
+        >(window.location.pathname, s.cases);
         if (linkedSkill) {
           setSkillGroup(linkedSkill.category);
           chooseWorkflow(linkedSkill.kind, false);
@@ -421,7 +580,10 @@ function App() {
   useEffect(() => {
     if (!status?.cases) return;
     const restoreSkill = () => {
-      const linkedSkill = skillForPath<Data & {kind: string; family: string}>(window.location.pathname, status.cases);
+      const linkedSkill = skillForPath<Data & { kind: string; family: string }>(
+        window.location.pathname,
+        status.cases,
+      );
       if (linkedSkill) {
         setSkillGroup(linkedSkill.category);
         chooseWorkflow(linkedSkill.kind, false);
@@ -435,21 +597,30 @@ function App() {
   }, [status?.cases]);
   // Other tabs and browsers share the server workspace; pick up their saved keys when this tab is shown or focused.
   useEffect(() => {
-    const onFocus = () => {if (!document.hidden) void refresh();};
+    const onFocus = () => {
+      if (!document.hidden) void refresh();
+    };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
-    return () => {window.removeEventListener("focus", onFocus);document.removeEventListener("visibilitychange", onFocus);};
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
   }, []);
-  const savedProfile = status ? JSON.stringify(status.config.ai.profiles[status.activeAiProfile] ?? null) : undefined;
+  const savedProfile = status
+    ? JSON.stringify(status.config.ai.profiles[status.activeAiProfile] ?? null)
+    : undefined;
   useEffect(() => {
     if (savedProfile === undefined) return;
     const p = JSON.parse(savedProfile);
     setSettings((old) => ({
       ...old,
       baseUrl: p?.baseUrl || "",
-      apiFormat: p ? (p.apiFormat || "chat-completions") : "responses",
+      apiFormat: p ? p.apiFormat || "chat-completions" : "responses",
       model: p?.model || "",
-      requestParams: p?.requestParams ? JSON.stringify(p.requestParams, null, 2) : "",
+      requestParams: p?.requestParams
+        ? JSON.stringify(p.requestParams, null, 2)
+        : "",
     }));
   }, [savedProfile]);
   async function connect(e: React.FormEvent) {
@@ -488,10 +659,19 @@ function App() {
               maxCu: budget,
               short,
             }
-          : { mode, question, parentId: run?.id, case: chatWorkflowInput, workflowKind: chatWorkflowKind, maxCu: liveData ? budget : 0, short, dataPolicy:liveData ? "live" : "saved-only" };
+          : {
+              mode,
+              question,
+              parentId: run?.id,
+              case: chatWorkflowInput,
+              workflowKind: chatWorkflowKind,
+              maxCu: liveData ? budget : 0,
+              short,
+              dataPolicy: liveData ? "live" : "saved-only",
+            };
       const r = await api("/runs", data);
       await watch(r.id);
-      if(mode==="chat")setQuestion("");
+      if (mode === "chat") setQuestion("");
       await refresh();
     } catch (e: any) {
       setError(e.message);
@@ -511,9 +691,19 @@ function App() {
         payload.birdeyeApiKey = settings.birdeyeApiKey;
       let requestParams: unknown;
       if (settings.requestParams.trim()) {
-        try { requestParams = JSON.parse(settings.requestParams); } catch { requestParams = undefined; }
-        if (!requestParams || typeof requestParams !== "object" || Array.isArray(requestParams))
-          throw new Error('Extra request parameters must be a JSON object, for example {"max_completion_tokens": 1800}.');
+        try {
+          requestParams = JSON.parse(settings.requestParams);
+        } catch {
+          requestParams = undefined;
+        }
+        if (
+          !requestParams ||
+          typeof requestParams !== "object" ||
+          Array.isArray(requestParams)
+        )
+          throw new Error(
+            'Extra request parameters must be a JSON object, for example {"max_completion_tokens": 1800}.',
+          );
       }
       if (settings.baseUrl || settings.model)
         payload.profile = {
@@ -526,34 +716,60 @@ function App() {
           ...(requestParams ? { requestParams } : {}),
         };
       await api("/settings", payload);
-      setSettings(old=>({...old,birdeyeApiKey:"",apiKey:""}));
+      setSettings((old) => ({ ...old, birdeyeApiKey: "", apiKey: "" }));
       setSettings((s) => ({ ...s, birdeyeApiKey: "", apiKey: "" }));
-      setSaved(settings.persist && (!browserStorage || status?.configStorage?.persisted) ? `Connections saved and active now. They remain after ${browserStorage ? "locking" : "restarting"}.` : "Connections active now for this session only.");
+      setSaved(
+        settings.persist &&
+          (!browserStorage || status?.configStorage?.persisted)
+          ? `Connections saved and active now. They remain after ${browserStorage ? "locking" : "restarting"}.`
+          : "Connections active now for this session only.",
+      );
       setError("");
       const s = await refresh();
-      if (payload.profile && s?.config.ai.profiles[s.activeAiProfile]?.configured) await checkTools();
+      if (
+        payload.profile &&
+        s?.config.ai.profiles[s.activeAiProfile]?.configured
+      )
+        await checkTools();
     } catch (e: any) {
       setError(e.message);
     }
   }
-  const toolCheck: {supported: boolean; message?: string} | null = status?.aiToolCheck ?? null;
+  const toolCheck: { supported: boolean; message?: string } | null =
+    status?.aiToolCheck ?? null;
   const [checkingTools, setCheckingTools] = useState(false);
-  const toolProbe = useRef(false), autoChecked = useRef("");
+  const toolProbe = useRef(false),
+    autoChecked = useRef("");
   async function checkTools() {
     if (toolProbe.current) return;
-    toolProbe.current = true;setCheckingTools(true);
-    try {await api("/ai/check", {});await refresh();}
-    catch (e: any) {setError(e.message);}
-    finally {toolProbe.current = false;setCheckingTools(false);}
+    toolProbe.current = true;
+    setCheckingTools(true);
+    try {
+      await api("/ai/check", {});
+      await refresh();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      toolProbe.current = false;
+      setCheckingTools(false);
+    }
   }
   // Probe each saved profile once when chat opens, so an unsupported model is flagged before the first question.
   useEffect(() => {
-    if (mode !== "chat" || !status || status.aiToolCheck || savedProfile === undefined || autoChecked.current === savedProfile) return;
+    if (
+      mode !== "chat" ||
+      !status ||
+      status.aiToolCheck ||
+      savedProfile === undefined ||
+      autoChecked.current === savedProfile
+    )
+      return;
     if (!status.config.ai.profiles[status.activeAiProfile]?.configured) return;
     autoChecked.current = savedProfile;
     void checkTools();
   }, [mode, savedProfile, status?.aiToolCheck]);
-  const toolWarning = "AI chat needs function calling to fetch Birdeye data and run skills; until it works, answers cannot use them.";
+  const toolWarning =
+    "AI chat needs function calling to fetch Birdeye data and run skills; until it works, answers cannot use them.";
   const notice = error ? (
     <div className="notice error" role="alert">
       <span>{error}</span>
@@ -607,7 +823,10 @@ function App() {
       </main>
     );
   const publicSkills = skillsInCategory(status.cases as Data[]);
-  const categoryFilters = [{id:"all",title:"All skills",skill_count:publicSkills.length}, ...skillCategories(publicSkills)];
+  const categoryFilters = [
+    { id: "all", title: "All skills", skill_count: publicSkills.length },
+    ...skillCategories(publicSkills),
+  ];
   const config = status.config,
     aiConfigured = !!config.ai.profiles[status.activeAiProfile]?.configured;
   const result = run?.result,
@@ -617,508 +836,1187 @@ function App() {
     <div className={`app-shell console-app ${theme}`}>
       <header className="console-header">
         <Brand />
-        <nav aria-label="Workspace">{(["research", "demos", "usage", "settings"] as View[]).map(v => <button key={v} aria-current={view === v ? "page" : undefined} className={view === v ? "nav-item selected" : "nav-item"} onClick={() => {setView(v); setError("");}}>{v === "research" ? "Research" : v === "demos" ? "Demos" : v === "usage" ? "Usage & credits" : "Settings"}</button>)}</nav>
-        <button className="quiet" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? "Light theme" : "Dark theme"}</button>
+        <nav aria-label="Workspace">
+          {(["research", "demos", "usage", "settings"] as View[]).map((v) => (
+            <button
+              key={v}
+              aria-current={view === v ? "page" : undefined}
+              className={view === v ? "nav-item selected" : "nav-item"}
+              onClick={() => {
+                setView(v);
+                setError("");
+              }}
+            >
+              {v === "research"
+                ? "Research"
+                : v === "demos"
+                  ? "Demos"
+                  : v === "usage"
+                    ? "Usage & credits"
+                    : "Settings"}
+            </button>
+          ))}
+        </nav>
+        <button
+          className="quiet"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        >
+          {theme === "dark" ? "Light theme" : "Dark theme"}
+        </button>
       </header>
       <div className="connection-bar">
-        <span><span className={`status-dot ${config.birdeyeConfigured ? "" : "off"}`} /> Birdeye: {config.birdeyeConfigured ? "key configured" : "key required"}</span>
-        <span>AI: {aiConfigured ? status.config.ai.profiles[status.activeAiProfile]?.model : "not configured"}</span>
+        <span>
+          <span
+            className={`status-dot ${config.birdeyeConfigured ? "" : "off"}`}
+          />{" "}
+          Birdeye:{" "}
+          {config.birdeyeConfigured ? "key configured" : "key required"}
+        </span>
+        <span>
+          AI:{" "}
+          {aiConfigured
+            ? status.config.ai.profiles[status.activeAiProfile]?.model
+            : "not configured"}
+        </span>
       </div>
-      {view === "research" && <div className="console-groups" role="group" aria-label="Skill group">{categoryFilters.map(category => <button key={category.id} data-category={category.id} aria-pressed={skillGroup === category.id} className={skillGroup === category.id ? "case-choice active" : "case-choice"} onClick={() => {
-        setSkillGroup(category.id);
-        const matching = skillsInCategory(publicSkills, category.id);
-        if (!matching.some(skill => skill.kind === kind) && matching[0]) chooseWorkflow(matching[0].kind);
-      }}>{category.title}<span aria-hidden="true">{category.skill_count}</span></button>)}</div>}
-      <div className={`console-layout ${view === "research" ? "" : "utility-layout"}`}>
-      {view === "research" && <SkillList cases={status.cases} group={skillGroup} selected={kind} choose={chooseWorkflow} />}
-      <div className="main-shell">
-        <main className="content">
-          {notice}
-          {view === "demos" ? <CustomerDemos key={demoViewVersion} api={api} busy={busy} budget={budget} setBudget={setBudget} run={run} progress={progress} start={async(demo)=>{const value=await api("/runs",{mode:"demo",demo,maxCu:budget,short});await watch(value.id);await refresh();}} /> : view === "settings" ? (
-            <>
-              <div className="page-heading">
-                <h1>Connections</h1>
-              </div>
-              <details className="source"><summary>Storage details</summary><code>{status.configStorage?.path}</code><p>{browserStorage ? "Saved keys are encrypted with your workspace password. Blank key fields keep current keys. Your AI endpoint must allow CORS from this website." : "Environment variables override saved credentials. Blank key fields keep saved keys."}</p></details>
-              <form className="settings-form" onSubmit={save}>
-                <section>
-                  <div className="section-title">
-                    <h2>Birdeye Data API</h2>
-                    <span
-                      className={`badge ${config.birdeyeConfigured ? "good" : ""}`}
-                    >
-                      {config.birdeyeConfigured
-                        ? "Configured"
-                        : "Not configured"}
-                    </span>
-                  </div>
-                  <label htmlFor="bkey">API key</label>
-                  <input
-                    id="bkey"
-                    type="password"
-                    value={settings.birdeyeApiKey}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        birdeyeApiKey: e.target.value,
-                      })
-                    }
-                    placeholder={
-                      config.birdeyeConfigured
-                        ? "Leave blank to keep the current key"
-                        : "Enter your Birdeye key"
-                    }
-                    autoComplete="off"
-                  />
-                </section>
-                <section>
-                  <div className="section-title">
-                    <h2>AI provider</h2>
-                    <span className={`badge ${aiConfigured ? "good" : ""}`}>
-                      {aiConfigured ? "Configured" : "Optional"}
-                    </span>
-                  </div>
-                  <label htmlFor="baseurl">Base URL</label>
-                  <input
-                    id="baseurl"
-                    type="url"
-                    value={settings.baseUrl}
-                    onChange={(e) =>
-                      setSettings({ ...settings, baseUrl: e.target.value })
-                    }
-                    placeholder="https://your-provider.example/v1"
-                  />
-                  <label htmlFor="api-format">API format</label>
-                  <select id="api-format" value={settings.apiFormat}
-                    onChange={(e) => setSettings({ ...settings, apiFormat: e.target.value })}>
-                    <option value="responses">OpenAI Responses</option>
-                    <option value="chat-completions">Chat Completions</option>
-                  </select>
-                  <p className="muted">Base URL ends at /v1.</p>
-                  <div className="form-grid">
-                    <div>
-                      <label htmlFor="model">Model ID</label>
-                      <input
-                        id="model"
-                        value={settings.model}
-                        onChange={(e) =>
-                          setSettings({ ...settings, model: e.target.value })
-                        }
-                        placeholder="Your provider’s model ID"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="akey">AI API key</label>
-                      <input
-                        id="akey"
-                        type="password"
-                        value={settings.apiKey}
-                        onChange={(e) =>
-                          setSettings({ ...settings, apiKey: e.target.value })
-                        }
-                        placeholder={browserStorage ? "Enter your AI provider key" : "Or use BIRDEYE_AI_API_KEY"}
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                  <label htmlFor="request-params">Extra request parameters (JSON, optional)</label>
-                  <textarea
-                    id="request-params"
-                    rows={3}
-                    spellCheck={false}
-                    value={settings.requestParams}
-                    onChange={(e) => setSettings({ ...settings, requestParams: e.target.value })}
-                    placeholder={settings.apiFormat === "chat-completions" ? '{"max_completion_tokens": 1800}' : '{"reasoning": {"effort": "low"}}'}
-                  />
-                  <p className="muted">
-                    Provider-specific fields added to every AI request, such as a token limit; use <code>null</code> to remove a default.{" "}
-                    {settings.apiFormat === "chat-completions" ? "Chat Completions has no defaults, so the provider's own output limit applies." : <>Defaults: <code>{'{"store": false, "include": ["reasoning.encrypted_content"], "max_output_tokens": 1800}'}</code>.</>}
-                    The app sets model, messages/input, tools and stream. Do not put secrets here.
+      {view === "research" && (
+        <div className="console-groups" role="group" aria-label="Skill group">
+          {categoryFilters.map((category) => (
+            <button
+              key={category.id}
+              data-category={category.id}
+              aria-pressed={skillGroup === category.id}
+              className={
+                skillGroup === category.id
+                  ? "case-choice active"
+                  : "case-choice"
+              }
+              onClick={() => {
+                setSkillGroup(category.id);
+                const matching = skillsInCategory(publicSkills, category.id);
+                if (
+                  !matching.some((skill) => skill.kind === kind) &&
+                  matching[0]
+                )
+                  chooseWorkflow(matching[0].kind);
+              }}
+            >
+              {category.title}
+              <span aria-hidden="true">{category.skill_count}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <div
+        className={`console-layout ${view === "research" ? "" : "utility-layout"}`}
+      >
+        {view === "research" && (
+          <SkillList
+            cases={status.cases}
+            group={skillGroup}
+            selected={kind}
+            choose={chooseWorkflow}
+          />
+        )}
+        <div className="main-shell">
+          <main className="content">
+            {notice}
+            {view === "demos" ? (
+              <CustomerDemos
+                key={demoViewVersion}
+                api={api}
+                busy={busy}
+                budget={budget}
+                setBudget={setBudget}
+                run={run}
+                progress={progress}
+                start={async (demo) => {
+                  const value = await api("/runs", {
+                    mode: "demo",
+                    demo,
+                    maxCu: budget,
+                    short,
+                  });
+                  await watch(value.id);
+                  await refresh();
+                }}
+              />
+            ) : view === "settings" ? (
+              <>
+                <div className="page-heading">
+                  <h1>Connections</h1>
+                </div>
+                <details className="source">
+                  <summary>Storage details</summary>
+                  <code>{status.configStorage?.path}</code>
+                  <p>
+                    {browserStorage
+                      ? "Saved keys are encrypted with your workspace password. Blank key fields keep current keys. Your AI endpoint must allow CORS from this website."
+                      : "Environment variables override saved credentials. Blank key fields keep saved keys."}
                   </p>
-                  {status.aiRelayHost && (
-                    <p className="muted">{status.aiRelayHost} blocks direct browser requests (CORS), so this site relays them. Your AI key passes through the site server in memory only and is never stored.</p>
-                  )}
-                  {aiConfigured && (
-                    <p className={toolCheck?.supported === false ? "setup-note" : "muted"} aria-live="polite">
-                      <span>{checkingTools ? "Checking function calling…" : toolCheck?.supported ? "Function calling: supported." : toolCheck ? `Function calling: not working with these settings. ${toolCheck.message} ${toolWarning}` : "Function calling: not checked yet."}</span>{" "}
-                      <button type="button" className="text-link" disabled={checkingTools} onClick={() => void checkTools()}>Check function calling</button>
-                    </p>
-                  )}
-                </section>
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    checked={settings.persist}
-                    onChange={(e) =>
-                      setSettings({ ...settings, persist: e.target.checked })
-                    }
-                  />
-                  {browserStorage ? "Save keys in encrypted browser workspace" : "Save on this machine"}
-                </label>
-                <p className="muted">{browserStorage ? "Temporary workspace: keys stay in memory regardless of this option. Unchecked: keep these keys only until you lock or reload; existing saved keys remain." : "Unchecked: session only; existing saved settings remain."}</p>
-                <div className="form-actions">
-                  <button className="primary" disabled={busy}>
-                    Save connections
-                  </button>
-                  {saved && (
-                    <span role="status" className="success-text">
-                      {saved}
-                    </span>
-                  )}
-                </div>
-              </form>
-            </>
-          ) : view === "usage" ? (
-            <>
-              <div className="page-heading">
-                <h1>Usage & credits</h1>
-              </div>
-              <div className="usage-summary">
-                <UsageStat
-                  label="Estimated CU"
-                  value={status.usage.estimated}
-                />
-                <UsageStat
-                  label="Budget reserved / used"
-                  value={status.usage.budgetUsed}
-                />
-                <UsageStat label="API attempts" value={status.usage.attempts} />
-                <UsageStat
-                  label="Uncertain attempts"
-                  value={status.usage.uncertainAttempts}
-                />
-              </div>
-              <section className="usage-detail">
-                <h2>Account credits</h2>
-                <p>
-                  Account-wide, including other apps and keys.
-                </p>
-                <button
-                  className="secondary"
-                  disabled={busy || !config.birdeyeConfigured}
-                  onClick={async () => {
-                    try {
-                      const r = await api("/runs", {
-                        mode: "operation",
-                        query: { operation: "usage.credits", params: {} },
-                        maxCu: budget,
-                      });
-                      await watch(r.id);
-                      await refresh();
-                    } catch (e: any) {
-                      setError(e.message);
-                    }
-                  }}
-                >
-                  Refresh credits{" "}
-                  <span className="cost-chip">1 CU estimate</span>
-                </button>
-              </section>
-              <p className="footnote">
-                Pricing catalog: {status.usage.pricingVersion}. Pending,
-                cancelled or failed requests may have been billed. Their
-                reservations remain in the ledger.
-              </p>
-            </>
-          ) : (
-            <>
-              {!config.birdeyeConfigured && (
-                <div className="setup-note">
-                  <Icon name="key" />
-                  <div>
-                    <strong>Birdeye API key required</strong>
-                  </div>
-                  <button
-                    className="secondary"
-                    onClick={() => setView("settings")}
-                  >
-                    Set up <Icon name="arrow" size={16} />
-                  </button>
-                </div>
-              )}
-              <div className="research-composer">
-                <div className="composer-heading">
-                  <div className="selected-skill-heading"><SkillIcon kind={kind} size={22}/><h1>{selectedCase?.title || titleFor[kind]}</h1></div>
-                <div
-                  className="composer-tabs"
-                  role="group"
-                  aria-label="Research mode"
-                >
-                  <button
-                    aria-pressed={mode === "case"}
-                    className={mode === "case" ? "active" : ""}
-                    onClick={() => setMode("case")}
-                  >
-                    Case studies
-                  </button>
-                  <button
-                    aria-pressed={mode === "chat"}
-                    className={mode === "chat" ? "active" : ""}
-                    onClick={() => setMode("chat")}
-                  >
-                    Ask AI
-                  </button>
-                </div>
-                </div>
-                <form onSubmit={start}>
-                  {kind === "skill-wallet-analysis" && <p className="wallet-accounting-note">Birdeye Terminal data use the Net_cash method and may differ from Demo results calculated with wac method.</p>}
-                  {mode === "case" ? (
-                    <>
-                      {!noAddress && <>
-                        <label htmlFor="address">{walletCase ? "Wallet address" : "Token address"}{optionalAddress ? " (optional)" : ""}</label>
-                        <input id="address" className="address-input" value={address} onChange={e => setAddress(e.target.value)} placeholder={optionalAddress ? "Leave blank to discover candidates" : "Paste a Solana address"} required={!optionalAddress} spellCheck={false} />
-                      </>}
-                      {selectedCase?.subject === "wallets" && <label>Wallet addresses<textarea value={walletsText} onChange={e=>setWalletsText(e.target.value)} placeholder="One Solana wallet per line, or comma-separated" required rows={3} /><small className="field-hint">1–10 unique wallets. Each wallet adds its own API steps and CU.</small></label>}
-                      {referenceSkill ? <SkillSettings kind={kind} value={skillOptions} change={setSkillOptions} limit={candidateLimit} setLimit={setCandidateLimit} scanLimit={scanLimit} setScanLimit={setScanLimit} interval={interval} setInterval={setInterval} duration={duration} setDuration={setDuration} /> : <div className="form-grid workflow-options">
-                        {!["project-deep-report", "early-project-screening", "wallet-exposure", "market-shortlist"].includes(kind) && <label>Depth<select value={depth} onChange={e => setDepth(e.target.value)}><option value="core">Core</option><option value="full">Full evidence</option></select></label>}
-                        {(discovery || kind === "market-shortlist" || kind === "wallet-analysis" && depth === "full" || kind === "smart-money-profile" && !address.trim()) && <label>Maximum candidates<input type="number" min="1" max="5" value={candidateLimit} onChange={e => setCandidateLimit(Number(e.target.value))} /></label>}
-                        {discovery && <label>Discovery page size<input type="number" min="1" max="50" value={scanLimit} onChange={e => setScanLimit(Number(e.target.value))} /></label>}
-                        {["market-opportunities", "market-shortlist"].includes(kind) && <label>Trending window<select value={interval} onChange={e => setInterval(e.target.value)}><option>1h</option><option>4h</option><option>24h</option></select></label>}
-                        {["wallet-analysis", "smart-money-profile"].includes(kind) && <label>Wallet trade window<select value={duration} onChange={e => setDuration(e.target.value)}>{["24h", "7d", "30d", "90d"].map(v => <option key={v}>{v}</option>)}</select></label>}
-                        {kind === "early-project-screening" && <>
-                          <label>Launch stage<select value={launchStage} onChange={e => setLaunchStage(e.target.value)}>{["newly-listed", "newly-created", "near-graduation", "graduated"].map(v => <option key={v}>{v}</option>)}</select></label>
-                          <label>Launch venue<select value={launchSource} onChange={e => setLaunchSource(e.target.value)}>{["all", "pump_dot_fun", "moonshot", "raydium_launchlab", "meteora_dynamic_bonding_curve"].map(v => <option key={v}>{v}</option>)}</select></label>
-                          {launchStage === "near-graduation" && <label>Minimum progress · %<input type="number" min="0.01" max="99.99" step="any" value={minProgress} onChange={e => setMinProgress(e.target.value)} required /></label>}
-                        </>}
-                      </div>}
-                      {tokenPolicy && <details className="source">
-                        <summary>Optional screening criteria</summary>
-                        <div className="form-grid">
-                          <label>Minimum liquidity · USD<input type="number" min="0" step="any" value={minLiquidity} onChange={e => setMinLiquidity(e.target.value)} placeholder="No threshold" /></label>
-                          <label>Maximum top-10 account share · %<input type="number" min="0" max="100" step="any" value={maxTop10Pct} onChange={e => setMaxTop10Pct(e.target.value)} placeholder="No threshold" /></label>
-                        </div>
-                        <label className="check"><input type="checkbox" checked={excludeFreezeable} onChange={e => setExcludeFreezeable(e.target.checked)} />Exclude freezeable tokens; stop when the field is unknown</label>
-                      </details>}
-                      <WorkflowOverview key={workflowKey} input={workflowInput} inputKey={workflowKey} budget={budget} onPrepared={setPreparedCase} />
-
-                    </>
-                  ) : (
-                    <>
-                      <ChatPanel messages={chatMessages} question={question} change={setQuestion} live={liveData} setLive={setLiveData} busy={busy} saved={run} knowledge={knowledgeInfo} workflow={chatWorkflow ? {title: chatWorkflow.title, address: chatWorkflowInput?.address, ready: !!chatWorkflowInput} : undefined} />
-                      {!aiConfigured && (
-                        <p className="composer-hint">
-                          Add your AI provider in{" "}
-                          <button
-                            type="button"
-                            className="text-link"
-                            onClick={() => setView("settings")}
-                          >
-                            Settings
-                          </button>{" "}
-                          to ask questions.
-                        </p>
-                      )}
-                      {aiConfigured && toolCheck?.supported === false && (
-                        <p className="setup-note">
-                          <span><strong>Function calling is not working with the current AI settings.</strong> {toolWarning} See the provider's reason in{" "}
-                          <button type="button" className="text-link" onClick={() => setView("settings")}>Settings</button>; changing the API format, request parameters or model usually fixes it.</span>
-                        </p>
-                      )}
-                    </>
-                  )}
-                  <div className="composer-footer">
-                    <div className="run-options">
-                      <label className="budget-label" htmlFor="budget">
-                        CU limit
-                        <input
-                          id="budget"
-                          type="number"
-                          min="0"
-                          placeholder="Unlimited"
-                          value={mode === "chat" && !liveData ? 0 : budget ?? ""}
-                          disabled={mode === "chat" && !liveData}
-                          onChange={(e) => setBudget(e.target.value === "" ? null : Number(e.target.value))}
-                        />
-                      </label>
-                      <label className="check compact">
-                        <input
-                          type="checkbox"
-                          checked={short}
-                          onChange={(e) => setShort(e.target.checked)}
-                        />
-                        Short output
-                      </label>
+                </details>
+                <form className="settings-form" onSubmit={save}>
+                  <section>
+                    <div className="section-title">
+                      <h2>Birdeye Data API</h2>
+                      <span
+                        className={`badge ${config.birdeyeConfigured ? "good" : ""}`}
+                      >
+                        {config.birdeyeConfigured
+                          ? "Configured"
+                          : "Not configured"}
+                      </span>
                     </div>
-                    {busy ? (
-                      <button
-                        type="button"
-                        className="secondary"
-                        onClick={() =>
-                          activeId &&
-                          void api(`/runs/${activeId}/stop`, {}).catch((e) =>
-                            setError(e.message),
-                          )
+                    <label htmlFor="bkey">API key</label>
+                    <input
+                      id="bkey"
+                      type="password"
+                      value={settings.birdeyeApiKey}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          birdeyeApiKey: e.target.value,
+                        })
+                      }
+                      placeholder={
+                        config.birdeyeConfigured
+                          ? "Leave blank to keep the current key"
+                          : "Enter your Birdeye key"
+                      }
+                      autoComplete="off"
+                    />
+                  </section>
+                  <section>
+                    <div className="section-title">
+                      <h2>AI provider</h2>
+                      <span className={`badge ${aiConfigured ? "good" : ""}`}>
+                        {aiConfigured ? "Configured" : "Optional"}
+                      </span>
+                    </div>
+                    <label htmlFor="baseurl">Base URL</label>
+                    <input
+                      id="baseurl"
+                      type="url"
+                      value={settings.baseUrl}
+                      onChange={(e) =>
+                        setSettings({ ...settings, baseUrl: e.target.value })
+                      }
+                      placeholder="https://your-provider.example/v1"
+                    />
+                    <label htmlFor="api-format">API format</label>
+                    <select
+                      id="api-format"
+                      value={settings.apiFormat}
+                      onChange={(e) =>
+                        setSettings({ ...settings, apiFormat: e.target.value })
+                      }
+                    >
+                      <option value="responses">OpenAI Responses</option>
+                      <option value="chat-completions">Chat Completions</option>
+                    </select>
+                    <p className="muted">Base URL ends at /v1.</p>
+                    <div className="form-grid">
+                      <div>
+                        <label htmlFor="model">Model ID</label>
+                        <input
+                          id="model"
+                          value={settings.model}
+                          onChange={(e) =>
+                            setSettings({ ...settings, model: e.target.value })
+                          }
+                          placeholder="Your provider’s model ID"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="akey">AI API key</label>
+                        <input
+                          id="akey"
+                          type="password"
+                          value={settings.apiKey}
+                          onChange={(e) =>
+                            setSettings({ ...settings, apiKey: e.target.value })
+                          }
+                          placeholder={
+                            browserStorage
+                              ? "Enter your AI provider key"
+                              : "Or use BIRDEYE_AI_API_KEY"
+                          }
+                          autoComplete="off"
+                        />
+                      </div>
+                    </div>
+                    <label htmlFor="request-params">
+                      Extra request parameters (JSON, optional)
+                    </label>
+                    <textarea
+                      id="request-params"
+                      rows={3}
+                      spellCheck={false}
+                      value={settings.requestParams}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          requestParams: e.target.value,
+                        })
+                      }
+                      placeholder={
+                        settings.apiFormat === "chat-completions"
+                          ? '{"max_completion_tokens": 1800}'
+                          : '{"reasoning": {"effort": "low"}}'
+                      }
+                    />
+                    <p className="muted">
+                      Provider-specific fields added to every AI request, such
+                      as a token limit; use <code>null</code> to remove a
+                      default.{" "}
+                      {settings.apiFormat === "chat-completions" ? (
+                        "Chat Completions has no defaults, so the provider's own output limit applies."
+                      ) : (
+                        <>
+                          Defaults:{" "}
+                          <code>
+                            {
+                              '{"store": false, "include": ["reasoning.encrypted_content"], "max_output_tokens": 1800}'
+                            }
+                          </code>
+                          .
+                        </>
+                      )}
+                      The app sets model, messages/input, tools and stream. Do
+                      not put secrets here.
+                    </p>
+                    {status.aiRelayHost && (
+                      <p className="muted">
+                        {status.aiRelayHost} blocks direct browser requests
+                        (CORS), so this site relays them. Your AI key passes
+                        through the site server in memory only and is never
+                        stored.
+                      </p>
+                    )}
+                    {aiConfigured && (
+                      <p
+                        className={
+                          toolCheck?.supported === false
+                            ? "setup-note"
+                            : "muted"
                         }
+                        aria-live="polite"
                       >
-                        <Icon name="stop" size={15} />
-                        Stop run
-                      </button>
-                    ) : (
-                      <button
-                        id="composer-submit"
-                        className="primary"
-                        disabled={
-                          (mode === "case" && !config.birdeyeConfigured) ||
-                          (mode === "case" && !caseReady) ||
-                          (mode === "chat" && !aiConfigured)
-                        }
-                      >
-                        {mode === "chat" ? "Send message" : "Run research"} <Icon name="arrow" size={17} />
-                      </button>
+                        <span>
+                          {checkingTools
+                            ? "Checking function calling…"
+                            : toolCheck?.supported
+                              ? "Function calling: supported."
+                              : toolCheck
+                                ? `Function calling: not working with these settings. ${toolCheck.message} ${toolWarning}`
+                                : "Function calling: not checked yet."}
+                        </span>{" "}
+                        <button
+                          type="button"
+                          className="text-link"
+                          disabled={checkingTools}
+                          onClick={() => void checkTools()}
+                        >
+                          Check function calling
+                        </button>
+                      </p>
+                    )}
+                  </section>
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      checked={settings.persist}
+                      onChange={(e) =>
+                        setSettings({ ...settings, persist: e.target.checked })
+                      }
+                    />
+                    {browserStorage
+                      ? "Save keys in encrypted browser workspace"
+                      : "Save on this machine"}
+                  </label>
+                  <p className="muted">
+                    {browserStorage
+                      ? "Temporary workspace: keys stay in memory regardless of this option. Unchecked: keep these keys only until you lock or reload; existing saved keys remain."
+                      : "Unchecked: session only; existing saved settings remain."}
+                  </p>
+                  <div className="form-actions">
+                    <button className="primary" disabled={busy}>
+                      Save connections
+                    </button>
+                    {saved && (
+                      <span role="status" className="success-text">
+                        {saved}
+                      </span>
                     )}
                   </div>
                 </form>
-              </div>
-              {busy && (
-                <div className="progress-line" role="status">
-                  <span className="pulse-dot" />
-                  {progress || "Working…"}
-                  {activeId && run?.id !== activeId && (
-                    <button
-                      className="text-link"
-                      onClick={() =>
-                        void watch(activeId).catch((e) => setError(e.message))
-                      }
-                    >
-                      View active run
-                    </button>
-                  )}
-                  <span>{activeCu} CU reserved</span>
+              </>
+            ) : view === "usage" ? (
+              <>
+                <div className="page-heading">
+                  <h1>Usage & credits</h1>
                 </div>
-              )}
-              {run && (
-                <section className="results">
-                  <div className="result-heading">
+                <div className="usage-summary">
+                  <UsageStat
+                    label="Estimated CU"
+                    value={status.usage.estimated}
+                  />
+                  <UsageStat
+                    label="Budget reserved / used"
+                    value={status.usage.budgetUsed}
+                  />
+                  <UsageStat
+                    label="API attempts"
+                    value={status.usage.attempts}
+                  />
+                  <UsageStat
+                    label="Uncertain attempts"
+                    value={status.usage.uncertainAttempts}
+                  />
+                </div>
+                <section className="usage-detail">
+                  <h2>Account credits</h2>
+                  <p>Account-wide, including other apps and keys.</p>
+                  <button
+                    className="secondary"
+                    disabled={busy || !config.birdeyeConfigured}
+                    onClick={async () => {
+                      try {
+                        const r = await api("/runs", {
+                          mode: "operation",
+                          query: { operation: "usage.credits", params: {} },
+                          maxCu: budget,
+                        });
+                        await watch(r.id);
+                        await refresh();
+                      } catch (e: any) {
+                        setError(e.message);
+                      }
+                    }}
+                  >
+                    Refresh credits{" "}
+                    <span className="cost-chip">1 CU estimate</span>
+                  </button>
+                </section>
+                <p className="footnote">
+                  Pricing catalog: {status.usage.pricingVersion}. Pending,
+                  cancelled or failed requests may have been billed. Their
+                  reservations remain in the ledger.
+                </p>
+              </>
+            ) : (
+              <>
+                {!config.birdeyeConfigured && (
+                  <div className="setup-note">
+                    <Icon name="key" />
                     <div>
-                      <span
-                        className={`badge ${run.status === "completed" ? "good" : ""}`}
-                      >
-                        {run.status}
-                      </span>
-                      <h2><AddressText text={titleFor[run.title] || run.title} /></h2>
+                      <strong>Birdeye API key required</strong>
                     </div>
                     <button
-                      className="quiet"
-                      disabled={!result}
-                      onClick={() =>
-                        exportFile(result, `birdeye-${run.id}.json`)
-                      }
+                      className="secondary"
+                      onClick={() => setView("settings")}
                     >
-                      <Icon name="download" size={16} />
-                      Export JSON
+                      Set up <Icon name="arrow" size={16} />
                     </button>
                   </div>
-                  <div className="run-usage">
-                    <span>
-                      <strong>{run.cu?.estimated ?? 0}</strong> estimated CU
-                    </span>
-                    <span>{run.cu?.budgetUsed ?? 0} CU reserved</span>
-                    <span>{run.cu?.attempts ?? 0} API attempts</span>
-                    {!!run.cu?.uncertainAttempts && (
-                      <span>{run.cu.uncertainAttempts} uncertain</span>
+                )}
+                <div className="research-composer">
+                  <div className="composer-heading">
+                    <div className="selected-skill-heading">
+                      <SkillIcon kind={kind} size={22} />
+                      <h1>{selectedCase?.title || titleFor[kind]}</h1>
+                    </div>
+                    <div
+                      className="composer-tabs"
+                      role="group"
+                      aria-label="Research mode"
+                    >
+                      <button
+                        aria-pressed={mode === "case"}
+                        className={mode === "case" ? "active" : ""}
+                        onClick={() => setMode("case")}
+                      >
+                        Case studies
+                      </button>
+                      <button
+                        aria-pressed={mode === "chat"}
+                        className={mode === "chat" ? "active" : ""}
+                        onClick={() => setMode("chat")}
+                      >
+                        Ask AI
+                      </button>
+                    </div>
+                  </div>
+                  <form onSubmit={start}>
+                    {kind === "skill-wallet-analysis" && (
+                      <p className="wallet-accounting-note">
+                        Birdeye Terminal data use the Net_cash method and may
+                        differ from Demo results calculated with wac method.
+                      </p>
                     )}
-                    {!!run.ai?.calls && <span>{run.ai.inputTokens} in / {run.ai.outputTokens} out AI tokens{run.ai.unknownCalls ? " · usage incomplete" : ""}</span>}
-                  </div>
-                  {run.saved && <p className="field-hint">{run.fromStorage ? "Saved snapshot" : "Saved"} · {new Date(result?.meta?.retrievedAt || run.createdAt).toLocaleString()}</p>}
-                  {run.status === "incomplete" && <p className="notice">Saved checkpoint only. This run is not active here; some data or analysis may be missing.</p>}
-                  {run.storageError && <p className="notice error" role="alert">{run.storageError}</p>}
-                  {result && mode !== "chat" && <button type="button" className="secondary" onClick={()=>{setMode("chat");setLiveData(true);setQuestion("");setChatMessages([]);}}>Discuss saved data with AI</button>}
-                  {run.input && <details className="source"><summary>Saved run parameters</summary><pre><AddressText text={JSON.stringify(run.input,null,2)} /></pre></details>}
-                  {result && <div className="output-tabs" role="group" aria-label="Result format">{[["ui","UI"],["plain","Plain"],["json","JSON"]].map(([value,label]) => <button key={value} aria-pressed={resultFormat === value} className={resultFormat === value ? "active" : ""} onClick={() => setResultFormat(value)}>{label}</button>)}</div>}
-                  {result && resultFormat !== "ui" && <pre className="formatted-output" aria-label={`${resultFormat} result`}><AddressText text={resultFormat === "json" ? JSON.stringify(result, null, 2) : plainResult(result)} /></pre>}
-                  <div hidden={!!result && resultFormat !== "ui"}>
-                  {run.error && (
-                    <div className="notice error" role="alert">
-                      {run.error.message}
-                    </div>
-                  )}
-                  {result?.data?.answer && mode !== "chat" && (
-                    <div className="answer">
-                      <h3>Findings</h3>
-                      <MarkdownText text={result.data.answer} />
-                    </div>
-                  )}
-                  {result && (
-                    <>
-                      {result.data?.missing?.length > 0 && <details className="source"><summary>Missing checks · {result.data.missing.length}</summary><ul>{result.data.missing.map((m: Data, i: number) => <li key={i}>{m.operation || m.step}: {m.message || m.reason}{m.subject ? <> · <AddressText text={String(m.subject)} kind={operationSubject(m.operation)} chain={result.meta.chain} /></> : ""}</li>)}</ul></details>}
-                      {result.data?.outcomes?.length > 0 && <details className="source"><summary>Screening outcomes · {result.data.outcomes.length}</summary><ul>{result.data.outcomes.map((o: Data, i: number) => <li key={i}><AddressText text={o.address} kind="token" chain={result.meta.chain} /> · {o.status}: {o.reasons.join("; ")}</li>)}</ul></details>}
-                      {result.data?.scopeNotes?.length > 0 && <details className="source"><summary>Scope and calculation notes</summary><p className="footnote"><AddressText text={result.data.scopeNotes.join(" ")} /></p></details>}
-                      {result.data?.selections?.length > 0 && <details className="source"><summary>Candidate selection and coverage</summary><pre><AddressText text={JSON.stringify(result.data.selections, null, 2)} /></pre></details>}
-                      {metrics.length > 0 && (result.data?.skillAnalysis ? <details className="source"><summary>Market metrics & source data</summary><Metrics rows={metrics} sources={sources} /></details> : <Metrics rows={metrics} sources={sources} />)}
-                      {!sources.length && ((run.cu?.attempts ?? 0) > 0
-                        ? <p className="notice error">No dataset was returned. Review the request errors before retrying. Reserved CU may still be billed by Birdeye.</p>
-                        : <p className="notice">No API datasets attached. No Birdeye API request was made in this run.</p>)}
-                      {result.data?.skillAnalysis && <SkillFindings key={run.id} analysis={result.data.skillAnalysis} kind={result.data.kind} sources={sources} onRescore={run.status!=="running"?async changes=>{const next=await api("/rescore",{runId:run.id,...changes});await watch(next.id);await refresh();}:undefined} />}
-                      {metrics.length > 0 && (
-                        <details className="source">
-                          <summary>Calculation basis and source links</summary>
-                          <pre>
-                            <AddressText text={JSON.stringify(
-                              metrics.map((m: Data) => ({
-                                sourceId: m.sourceId,
-                                address: m.address,
-                                asOf: m.asOf,
-                                chain: m.chain,
-                                ratioBasis: m.ratioBasis,
-                                weightBasis: m.weightBasis,
-                                securityCoverage: m.securityCoverage,
-                              })),
-                              null,
-                              2,
-                            )} />
-                          </pre>
-                        </details>
-                      )}
-                      {result.meta.warnings?.length > 0 && (
-                        <details className="source">
-                          <summary>Coverage & limitations · {result.meta.warnings.length}</summary>
-                          <ul>
-                            {result.meta.warnings.map(
-                              (w: string, i: number) => (
-                                <li key={i}><AddressText text={w} /></li>
-                              ),
+                    {mode === "case" ? (
+                      <>
+                        {!noAddress && (
+                          <>
+                            <label htmlFor="address">
+                              {walletCase ? "Wallet address" : "Token address"}
+                              {optionalAddress ? " (optional)" : ""}
+                            </label>
+                            <input
+                              id="address"
+                              className="address-input"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              placeholder={
+                                optionalAddress
+                                  ? "Leave blank to discover candidates"
+                                  : "Paste a Solana address"
+                              }
+                              required={!optionalAddress}
+                              spellCheck={false}
+                            />
+                          </>
+                        )}
+                        {selectedCase?.subject === "wallets" && (
+                          <label>
+                            Wallet addresses
+                            <textarea
+                              value={walletsText}
+                              onChange={(e) => setWalletsText(e.target.value)}
+                              placeholder="One Solana wallet per line, or comma-separated"
+                              required
+                              rows={3}
+                            />
+                            <small className="field-hint">
+                              1–10 unique wallets. Each wallet adds its own API
+                              steps and CU.
+                            </small>
+                          </label>
+                        )}
+                        {referenceSkill ? (
+                          <SkillSettings
+                            kind={kind}
+                            value={skillOptions}
+                            change={setSkillOptions}
+                            limit={candidateLimit}
+                            setLimit={setCandidateLimit}
+                            scanLimit={scanLimit}
+                            setScanLimit={setScanLimit}
+                            interval={interval}
+                            setInterval={setInterval}
+                            duration={duration}
+                            setDuration={setDuration}
+                          />
+                        ) : (
+                          <div className="form-grid workflow-options">
+                            {![
+                              "project-deep-report",
+                              "early-project-screening",
+                              "wallet-exposure",
+                              "market-shortlist",
+                            ].includes(kind) && (
+                              <label>
+                                Depth
+                                <select
+                                  value={depth}
+                                  onChange={(e) => setDepth(e.target.value)}
+                                >
+                                  <option value="core">Core</option>
+                                  <option value="full">Full evidence</option>
+                                </select>
+                              </label>
                             )}
-                          </ul>
-                        </details>
-                      )}
-                      <details className="source"><summary>Source datasets · {sources.length}</summary>
-                      {sources.map((s: Data, i: number) => (
-                        <details className="source" key={i}>
-                          <summary>
-                            <span>{s.meta.operation}</span>
-                            <span className="source-endpoint">
-                              {s.meta.endpoint}
-                            </span>
-                            <span className="badge">{s.meta.coverage}</span>
-                          </summary>
-                          <p className="footnote">
-                            Source ID: {s.meta.requestId} · retrieved{" "}
-                            {s.meta.retrievedAt} (UTC)
+                            {(discovery ||
+                              kind === "market-shortlist" ||
+                              (kind === "wallet-analysis" &&
+                                depth === "full") ||
+                              (kind === "smart-money-profile" &&
+                                !address.trim())) && (
+                              <label>
+                                Maximum candidates
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="5"
+                                  value={candidateLimit}
+                                  onChange={(e) =>
+                                    setCandidateLimit(Number(e.target.value))
+                                  }
+                                />
+                              </label>
+                            )}
+                            {discovery && (
+                              <label>
+                                Discovery page size
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="50"
+                                  value={scanLimit}
+                                  onChange={(e) =>
+                                    setScanLimit(Number(e.target.value))
+                                  }
+                                />
+                              </label>
+                            )}
+                            {[
+                              "market-opportunities",
+                              "market-shortlist",
+                            ].includes(kind) && (
+                              <label>
+                                Trending window
+                                <select
+                                  value={interval}
+                                  onChange={(e) => setInterval(e.target.value)}
+                                >
+                                  <option>1h</option>
+                                  <option>4h</option>
+                                  <option>24h</option>
+                                </select>
+                              </label>
+                            )}
+                            {[
+                              "wallet-analysis",
+                              "smart-money-profile",
+                            ].includes(kind) && (
+                              <label>
+                                Wallet trade window
+                                <select
+                                  value={duration}
+                                  onChange={(e) => setDuration(e.target.value)}
+                                >
+                                  {["24h", "7d", "30d", "90d"].map((v) => (
+                                    <option key={v}>{v}</option>
+                                  ))}
+                                </select>
+                              </label>
+                            )}
+                            {kind === "early-project-screening" && (
+                              <>
+                                <label>
+                                  Launch stage
+                                  <select
+                                    value={launchStage}
+                                    onChange={(e) =>
+                                      setLaunchStage(e.target.value)
+                                    }
+                                  >
+                                    {[
+                                      "newly-listed",
+                                      "newly-created",
+                                      "near-graduation",
+                                      "graduated",
+                                    ].map((v) => (
+                                      <option key={v}>{v}</option>
+                                    ))}
+                                  </select>
+                                </label>
+                                <label>
+                                  Launch venue
+                                  <select
+                                    value={launchSource}
+                                    onChange={(e) =>
+                                      setLaunchSource(e.target.value)
+                                    }
+                                  >
+                                    {[
+                                      "all",
+                                      "pump_dot_fun",
+                                      "moonshot",
+                                      "raydium_launchlab",
+                                      "meteora_dynamic_bonding_curve",
+                                    ].map((v) => (
+                                      <option key={v}>{v}</option>
+                                    ))}
+                                  </select>
+                                </label>
+                                {launchStage === "near-graduation" && (
+                                  <label>
+                                    Minimum progress · %
+                                    <input
+                                      type="number"
+                                      min="0.01"
+                                      max="99.99"
+                                      step="any"
+                                      value={minProgress}
+                                      onChange={(e) =>
+                                        setMinProgress(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </label>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )}
+                        {tokenPolicy && (
+                          <details className="source">
+                            <summary>Optional screening criteria</summary>
+                            <div className="form-grid">
+                              <label>
+                                Minimum liquidity · USD
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  value={minLiquidity}
+                                  onChange={(e) =>
+                                    setMinLiquidity(e.target.value)
+                                  }
+                                  placeholder="No threshold"
+                                />
+                              </label>
+                              <label>
+                                Maximum top-10 account share · %
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="100"
+                                  step="any"
+                                  value={maxTop10Pct}
+                                  onChange={(e) =>
+                                    setMaxTop10Pct(e.target.value)
+                                  }
+                                  placeholder="No threshold"
+                                />
+                              </label>
+                            </div>
+                            <label className="check">
+                              <input
+                                type="checkbox"
+                                checked={excludeFreezeable}
+                                onChange={(e) =>
+                                  setExcludeFreezeable(e.target.checked)
+                                }
+                              />
+                              Exclude freezeable tokens; stop when the field is
+                              unknown
+                            </label>
+                          </details>
+                        )}
+                        <WorkflowOverview
+                          key={workflowKey}
+                          input={workflowInput}
+                          inputKey={workflowKey}
+                          budget={budget}
+                          onPrepared={setPreparedCase}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <ChatPanel
+                          messages={chatMessages}
+                          question={question}
+                          change={setQuestion}
+                          live={liveData}
+                          setLive={setLiveData}
+                          busy={busy}
+                          saved={run}
+                          knowledge={knowledgeInfo}
+                          workflow={
+                            chatWorkflow
+                              ? {
+                                  title: chatWorkflow.title,
+                                  address: chatWorkflowInput?.address,
+                                  ready: !!chatWorkflowInput,
+                                }
+                              : undefined
+                          }
+                        />
+                        {!aiConfigured && (
+                          <p className="composer-hint">
+                            Add your AI provider in{" "}
+                            <button
+                              type="button"
+                              className="text-link"
+                              onClick={() => setView("settings")}
+                            >
+                              Settings
+                            </button>{" "}
+                            to ask questions.
                           </p>
-                          {(s.meta.params?.address || s.meta.params?.wallet || s.meta.params?.token_address) && <p className="source-subject">Subject: <AddressText text={String(s.meta.params.wallet ?? s.meta.params.address ?? s.meta.params.token_address)} kind={operationSubject(s.meta.operation)} chain={s.meta.chain} /></p>}
-                          <pre>
-                            <AddressText text={JSON.stringify(
-                              { data: s.data, meta: s.meta },
-                              null,
-                              2,
-                            )} />
-                          </pre>
-                        </details>
-                      ))}
-                      </details>
-                    </>
-                  )}
+                        )}
+                        {aiConfigured && toolCheck?.supported === false && (
+                          <p className="setup-note">
+                            <span>
+                              <strong>
+                                Function calling is not working with the current
+                                AI settings.
+                              </strong>{" "}
+                              {toolWarning} See the provider's reason in{" "}
+                              <button
+                                type="button"
+                                className="text-link"
+                                onClick={() => setView("settings")}
+                              >
+                                Settings
+                              </button>
+                              ; changing the API format, request parameters or
+                              model usually fixes it.
+                            </span>
+                          </p>
+                        )}
+                      </>
+                    )}
+                    <div className="composer-footer">
+                      <div className="run-options">
+                        <label className="budget-label" htmlFor="budget">
+                          CU limit
+                          <input
+                            id="budget"
+                            type="number"
+                            min="0"
+                            placeholder="Unlimited"
+                            value={
+                              mode === "chat" && !liveData ? 0 : (budget ?? "")
+                            }
+                            disabled={mode === "chat" && !liveData}
+                            onChange={(e) =>
+                              setBudget(
+                                e.target.value === ""
+                                  ? null
+                                  : Number(e.target.value),
+                              )
+                            }
+                          />
+                        </label>
+                        <label className="check compact">
+                          <input
+                            type="checkbox"
+                            checked={short}
+                            onChange={(e) => setShort(e.target.checked)}
+                          />
+                          Short output
+                        </label>
+                      </div>
+                      {busy ? (
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() =>
+                            activeId &&
+                            void api(`/runs/${activeId}/stop`, {}).catch((e) =>
+                              setError(e.message),
+                            )
+                          }
+                        >
+                          <Icon name="stop" size={15} />
+                          Stop run
+                        </button>
+                      ) : (
+                        <button
+                          id="composer-submit"
+                          className="primary"
+                          disabled={
+                            (mode === "case" && !config.birdeyeConfigured) ||
+                            (mode === "case" && !caseReady) ||
+                            (mode === "chat" && !aiConfigured)
+                          }
+                        >
+                          {mode === "chat" ? "Send message" : "Run research"}{" "}
+                          <Icon name="arrow" size={17} />
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+                {busy && (
+                  <div className="progress-line" role="status">
+                    <span className="pulse-dot" />
+                    {progress || "Working…"}
+                    {activeId && run?.id !== activeId && (
+                      <button
+                        className="text-link"
+                        onClick={() =>
+                          void watch(activeId).catch((e) => setError(e.message))
+                        }
+                      >
+                        View active run
+                      </button>
+                    )}
+                    <span>{activeCu} CU reserved</span>
                   </div>
-                </section>
-              )}
-
-            </>
-          )}
-        </main>
-
-      </div>
-      <AddressCopyNotice />
-      <RunHistory remove={removeHistory} busy={busy} more={status.historyNextCursor ? () => {void loadHistory();} : undefined} loading={historyLoading} runs={status.runs} selected={run?.id} choose={id => {void watch(id).catch(e => setError(e.message));}} clear={() => {viewedRun.current=null;setRun(null);setChatMessages([]);setQuestion("");setLiveData(true);setView("research");}} />
+                )}
+                {run && (
+                  <section className="results">
+                    <div className="result-heading">
+                      <div>
+                        <span
+                          className={`badge ${run.status === "completed" ? "good" : ""}`}
+                        >
+                          {run.status}
+                        </span>
+                        <h2>
+                          <AddressText
+                            text={titleFor[run.title] || run.title}
+                          />
+                        </h2>
+                      </div>
+                      <button
+                        className="quiet"
+                        disabled={!result}
+                        onClick={() =>
+                          exportFile(result, `birdeye-${run.id}.json`)
+                        }
+                      >
+                        <Icon name="download" size={16} />
+                        Export JSON
+                      </button>
+                    </div>
+                    <div className="run-usage">
+                      <span>
+                        <strong>{run.cu?.estimated ?? 0}</strong> estimated CU
+                      </span>
+                      <span>{run.cu?.budgetUsed ?? 0} CU reserved</span>
+                      <span>{run.cu?.attempts ?? 0} API attempts</span>
+                      {!!run.cu?.uncertainAttempts && (
+                        <span>{run.cu.uncertainAttempts} uncertain</span>
+                      )}
+                      {!!run.ai?.calls && (
+                        <span>
+                          {run.ai.inputTokens} in / {run.ai.outputTokens} out AI
+                          tokens
+                          {run.ai.unknownCalls ? " · usage incomplete" : ""}
+                        </span>
+                      )}
+                    </div>
+                    {run.saved && (
+                      <p className="field-hint">
+                        {run.fromStorage ? "Saved snapshot" : "Saved"} ·{" "}
+                        {new Date(
+                          result?.meta?.retrievedAt || run.createdAt,
+                        ).toLocaleString()}
+                      </p>
+                    )}
+                    {run.status === "incomplete" && (
+                      <p className="notice">
+                        Saved checkpoint only. This run is not active here; some
+                        data or analysis may be missing.
+                      </p>
+                    )}
+                    {run.storageError && (
+                      <p className="notice error" role="alert">
+                        {run.storageError}
+                      </p>
+                    )}
+                    {result && mode !== "chat" && (
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => {
+                          setMode("chat");
+                          setLiveData(true);
+                          setQuestion("");
+                          setChatMessages([]);
+                        }}
+                      >
+                        Discuss saved data with AI
+                      </button>
+                    )}
+                    {run.input && (
+                      <details className="source">
+                        <summary>Saved run parameters</summary>
+                        <pre>
+                          <AddressText
+                            text={JSON.stringify(run.input, null, 2)}
+                          />
+                        </pre>
+                      </details>
+                    )}
+                    {result && (
+                      <div
+                        className="output-tabs"
+                        role="group"
+                        aria-label="Result format"
+                      >
+                        {[
+                          ["ui", "UI"],
+                          ["plain", "Plain"],
+                          ["json", "JSON"],
+                        ].map(([value, label]) => (
+                          <button
+                            key={value}
+                            aria-pressed={resultFormat === value}
+                            className={resultFormat === value ? "active" : ""}
+                            onClick={() => setResultFormat(value)}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {result && resultFormat !== "ui" && (
+                      <pre
+                        className="formatted-output"
+                        aria-label={`${resultFormat} result`}
+                      >
+                        <AddressText
+                          text={
+                            resultFormat === "json"
+                              ? JSON.stringify(result, null, 2)
+                              : plainResult(result)
+                          }
+                        />
+                      </pre>
+                    )}
+                    <div hidden={!!result && resultFormat !== "ui"}>
+                      {run.error && (
+                        <div className="notice error" role="alert">
+                          {run.error.message}
+                        </div>
+                      )}
+                      {result?.data?.answer && mode !== "chat" && (
+                        <div className="answer">
+                          <h3>Findings</h3>
+                          <MarkdownText text={result.data.answer} />
+                        </div>
+                      )}
+                      {result && (
+                        <>
+                          {result.data?.missing?.length > 0 && (
+                            <details className="source">
+                              <summary>
+                                Missing checks · {result.data.missing.length}
+                              </summary>
+                              <ul>
+                                {result.data.missing.map(
+                                  (m: Data, i: number) => (
+                                    <li key={i}>
+                                      {m.operation || m.step}:{" "}
+                                      {m.message || m.reason}
+                                      {m.subject ? (
+                                        <>
+                                          {" "}
+                                          ·{" "}
+                                          <AddressText
+                                            text={String(m.subject)}
+                                            kind={operationSubject(m.operation)}
+                                            chain={result.meta.chain}
+                                          />
+                                        </>
+                                      ) : (
+                                        ""
+                                      )}
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </details>
+                          )}
+                          {result.data?.outcomes?.length > 0 && (
+                            <details className="source">
+                              <summary>
+                                Screening outcomes ·{" "}
+                                {result.data.outcomes.length}
+                              </summary>
+                              <ul>
+                                {result.data.outcomes.map(
+                                  (o: Data, i: number) => (
+                                    <li key={i}>
+                                      <AddressText
+                                        text={o.address}
+                                        kind="token"
+                                        chain={result.meta.chain}
+                                      />{" "}
+                                      · {o.status}: {o.reasons.join("; ")}
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </details>
+                          )}
+                          {result.data?.scopeNotes?.length > 0 && (
+                            <details className="source">
+                              <summary>Scope and calculation notes</summary>
+                              <p className="footnote">
+                                <AddressText
+                                  text={result.data.scopeNotes.join(" ")}
+                                />
+                              </p>
+                            </details>
+                          )}
+                          {result.data?.selections?.length > 0 && (
+                            <details className="source">
+                              <summary>
+                                Candidate selection and coverage
+                              </summary>
+                              <pre>
+                                <AddressText
+                                  text={JSON.stringify(
+                                    result.data.selections,
+                                    null,
+                                    2,
+                                  )}
+                                />
+                              </pre>
+                            </details>
+                          )}
+                          {metrics.length > 0 &&
+                            (result.data?.skillAnalysis ? (
+                              <details className="source">
+                                <summary>Market metrics & source data</summary>
+                                <Metrics rows={metrics} sources={sources} />
+                              </details>
+                            ) : (
+                              <Metrics rows={metrics} sources={sources} />
+                            ))}
+                          {!sources.length &&
+                            ((run.cu?.attempts ?? 0) > 0 ? (
+                              <p className="notice error">
+                                No dataset was returned. Review the request
+                                errors before retrying. Reserved CU may still be
+                                billed by Birdeye.
+                              </p>
+                            ) : (
+                              <p className="notice">
+                                No API datasets attached. No Birdeye API request
+                                was made in this run.
+                              </p>
+                            ))}
+                          {result.data?.skillAnalysis && (
+                            <SkillFindings
+                              key={run.id}
+                              analysis={result.data.skillAnalysis}
+                              kind={result.data.kind}
+                              sources={sources}
+                              onRescore={
+                                run.status !== "running"
+                                  ? async (changes) => {
+                                      const next = await api("/rescore", {
+                                        runId: run.id,
+                                        ...changes,
+                                      });
+                                      await watch(next.id);
+                                      await refresh();
+                                    }
+                                  : undefined
+                              }
+                            />
+                          )}
+                          {metrics.length > 0 && (
+                            <details className="source">
+                              <summary>
+                                Calculation basis and source links
+                              </summary>
+                              <pre>
+                                <AddressText
+                                  text={JSON.stringify(
+                                    metrics.map((m: Data) => ({
+                                      sourceId: m.sourceId,
+                                      address: m.address,
+                                      asOf: m.asOf,
+                                      chain: m.chain,
+                                      ratioBasis: m.ratioBasis,
+                                      weightBasis: m.weightBasis,
+                                      securityCoverage: m.securityCoverage,
+                                    })),
+                                    null,
+                                    2,
+                                  )}
+                                />
+                              </pre>
+                            </details>
+                          )}
+                          {result.meta.warnings?.length > 0 && (
+                            <details className="source">
+                              <summary>
+                                Coverage & limitations ·{" "}
+                                {result.meta.warnings.length}
+                              </summary>
+                              <ul>
+                                {result.meta.warnings.map(
+                                  (w: string, i: number) => (
+                                    <li key={i}>
+                                      <AddressText text={w} />
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </details>
+                          )}
+                          <details className="source">
+                            <summary>
+                              Source datasets · {sources.length}
+                            </summary>
+                            {sources.map((s: Data, i: number) => (
+                              <details className="source" key={i}>
+                                <summary>
+                                  <span>{s.meta.operation}</span>
+                                  <span className="source-endpoint">
+                                    {s.meta.endpoint}
+                                  </span>
+                                  <span className="badge">
+                                    {s.meta.coverage}
+                                  </span>
+                                </summary>
+                                <p className="footnote">
+                                  Source ID: {s.meta.requestId} · retrieved{" "}
+                                  {s.meta.retrievedAt} (UTC)
+                                </p>
+                                {(s.meta.params?.address ||
+                                  s.meta.params?.wallet ||
+                                  s.meta.params?.token_address) && (
+                                  <p className="source-subject">
+                                    Subject:{" "}
+                                    <AddressText
+                                      text={String(
+                                        s.meta.params.wallet ??
+                                          s.meta.params.address ??
+                                          s.meta.params.token_address,
+                                      )}
+                                      kind={operationSubject(s.meta.operation)}
+                                      chain={s.meta.chain}
+                                    />
+                                  </p>
+                                )}
+                                <pre>
+                                  <AddressText
+                                    text={JSON.stringify(
+                                      { data: s.data, meta: s.meta },
+                                      null,
+                                      2,
+                                    )}
+                                  />
+                                </pre>
+                              </details>
+                            ))}
+                          </details>
+                        </>
+                      )}
+                    </div>
+                  </section>
+                )}
+              </>
+            )}
+          </main>
+        </div>
+        <AddressCopyNotice />
+        <RunHistory
+          remove={removeHistory}
+          busy={busy}
+          more={
+            status.historyNextCursor
+              ? () => {
+                  void loadHistory();
+                }
+              : undefined
+          }
+          loading={historyLoading}
+          runs={status.runs}
+          selected={run?.id}
+          choose={(id) => {
+            void watch(id).catch((e) => setError(e.message));
+          }}
+          clear={() => {
+            viewedRun.current = null;
+            setRun(null);
+            setChatMessages([]);
+            setQuestion("");
+            setLiveData(true);
+            setView("research");
+          }}
+        />
       </div>
     </div>
   );
@@ -1131,4 +2029,10 @@ function UsageStat({ label, value }: { label: string; value: unknown }) {
     </div>
   );
 }
-createRoot(document.getElementById("root")!).render(<StorageGate><AddressCopyProvider><App /></AddressCopyProvider></StorageGate>);
+createRoot(document.getElementById("root")!).render(
+  <StorageGate>
+    <AddressCopyProvider>
+      <App />
+    </AddressCopyProvider>
+  </StorageGate>,
+);

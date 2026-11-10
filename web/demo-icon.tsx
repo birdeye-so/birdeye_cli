@@ -8,9 +8,26 @@ const paths: Record<string, string> = {
   "telegram-brief": "m3 10 18-7-6 18-4-7-8-4Z M11 14l10-11",
 };
 export const demoLabels: Record<string, string> = {
-  terminal: "Market", "dex-inspector": "Token & pools", "wallet-intelligence": "Wallets",
-  "security-signals": "Security", "telegram-brief": "Telegram",
+  terminal: "Market",
+  "dex-inspector": "Token & pools",
+  "wallet-intelligence": "Wallets",
+  "security-signals": "Security",
+  "telegram-brief": "Telegram",
 };
-export function DemoIcon({id, size = 20}: {id: string; size?: number}) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[id] || paths.terminal}/></svg>;
+export function DemoIcon({ id, size = 20 }: { id: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={paths[id] || paths.terminal} />
+    </svg>
+  );
 }

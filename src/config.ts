@@ -13,8 +13,8 @@ import { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import { AppError } from "./shared.js";
 
-import {profileSchema, validateProviderUrl} from "./provider.js";
-export {profileSchema, validateProviderUrl} from "./provider.js";
+import { profileSchema, validateProviderUrl } from "./provider.js";
+export { profileSchema, validateProviderUrl } from "./provider.js";
 const configSchema = z
   .object({
     birdeyeApiKey: z.string().max(4096).optional(),
@@ -35,17 +35,21 @@ export const configPath = (dir = configDir()) => join(dir, "config.sqlite");
 function storedConfig(raw: string): Config {
   try {
     const config = configSchema.parse(JSON.parse(raw));
-    for (const profile of Object.values(config.ai.profiles)) validateProviderUrl(profile.baseUrl);
+    for (const profile of Object.values(config.ai.profiles))
+      validateProviderUrl(profile.baseUrl);
     return config;
   } catch {
-    throw new AppError("CONFIG_INVALID", "Stored configuration is invalid. Check the local configuration store.");
+    throw new AppError(
+      "CONFIG_INVALID",
+      "Stored configuration is invalid. Check the local configuration store.",
+    );
   }
 }
 
 function withConfigDb<T>(dir: string, action: (db: DatabaseSync) => T): T {
   let db: DatabaseSync | undefined;
   try {
-    mkdirSync(dir, {recursive: true, mode: 0o700});
+    mkdirSync(dir, { recursive: true, mode: 0o700 });
     const path = configPath(dir);
     // Create with private permissions before SQLite writes any credentials.
     closeSync(openSync(path, "a", 0o600));
@@ -63,7 +67,10 @@ function withConfigDb<T>(dir: string, action: (db: DatabaseSync) => T): T {
     return action(db);
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new AppError("CONFIG_STORAGE_ERROR", `Cannot access configuration database at ${configPath(dir)}.`);
+    throw new AppError(
+      "CONFIG_STORAGE_ERROR",
+      `Cannot access configuration database at ${configPath(dir)}.`,
+    );
   } finally {
     db?.close();
   }
@@ -71,18 +78,28 @@ function withConfigDb<T>(dir: string, action: (db: DatabaseSync) => T): T {
 
 export function readConfig(dir = configDir()): Config {
   const legacy = join(dir, "config.json");
-  if (!existsSync(configPath(dir)) && !existsSync(legacy)) return configSchema.parse({});
-  return withConfigDb(dir, db => {
-    let row = db.prepare("SELECT version, data FROM configuration WHERE id=1").get();
+  if (!existsSync(configPath(dir)) && !existsSync(legacy))
+    return configSchema.parse({});
+  return withConfigDb(dir, (db) => {
+    let row = db
+      .prepare("SELECT version, data FROM configuration WHERE id=1")
+      .get();
     if (!row && existsSync(legacy)) {
       const config = storedConfig(readFileSync(legacy, "utf8"));
       // Atomic first import: never overwrite an existing SQLite configuration.
-      db.prepare("INSERT OR IGNORE INTO configuration (id, version, data, updated_at) VALUES (1, 1, ?, ?)")
-        .run(JSON.stringify(config), new Date().toISOString());
-      row = db.prepare("SELECT version, data FROM configuration WHERE id=1").get();
+      db.prepare(
+        "INSERT OR IGNORE INTO configuration (id, version, data, updated_at) VALUES (1, 1, ?, ?)",
+      ).run(JSON.stringify(config), new Date().toISOString());
+      row = db
+        .prepare("SELECT version, data FROM configuration WHERE id=1")
+        .get();
     }
     if (!row) return configSchema.parse({});
-    if (row.version !== 1) throw new AppError("CONFIG_VERSION_UNSUPPORTED", "Configuration database version is not supported by this CLI.");
+    if (row.version !== 1)
+      throw new AppError(
+        "CONFIG_VERSION_UNSUPPORTED",
+        "Configuration database version is not supported by this CLI.",
+      );
     return storedConfig(String(row.data));
   });
 }
@@ -91,12 +108,19 @@ export function saveConfig(input: unknown, dir = configDir()) {
   const config = configSchema.parse(input);
   for (const p of Object.values(config.ai.profiles))
     validateProviderUrl(p.baseUrl);
-  withConfigDb(dir, db => {
-    const row = db.prepare("SELECT version FROM configuration WHERE id=1").get();
-    if (row && row.version !== 1) throw new AppError("CONFIG_VERSION_UNSUPPORTED", "Configuration database version is not supported by this CLI.");
-    db.prepare(`INSERT INTO configuration (id, version, data, updated_at) VALUES (1, 1, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at`)
-      .run(JSON.stringify(config), new Date().toISOString());
+  withConfigDb(dir, (db) => {
+    const row = db
+      .prepare("SELECT version FROM configuration WHERE id=1")
+      .get();
+    if (row && row.version !== 1)
+      throw new AppError(
+        "CONFIG_VERSION_UNSUPPORTED",
+        "Configuration database version is not supported by this CLI.",
+      );
+    db.prepare(
+      `INSERT INTO configuration (id, version, data, updated_at) VALUES (1, 1, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at`,
+    ).run(JSON.stringify(config), new Date().toISOString());
   });
   return config;
 }
@@ -113,7 +137,11 @@ export function activeProfile(
   return config.ai.profiles[name || config.ai.defaultProfile];
 }
 export function aiKey(profile: Profile) {
-  return (profile.apiKeyEnv ? process.env[profile.apiKeyEnv] : undefined) || profile.apiKey || "";
+  return (
+    (profile.apiKeyEnv ? process.env[profile.apiKeyEnv] : undefined) ||
+    profile.apiKey ||
+    ""
+  );
 }
 export function safeConfig(config: Config) {
   return {
@@ -124,7 +152,14 @@ export function safeConfig(config: Config) {
       profiles: Object.fromEntries(
         Object.entries(config.ai.profiles).map(([name, profile]) => {
           const { apiKey: _, ...safe } = profile;
-          return [name, { ...safe, apiFormat: profile.apiFormat ?? "chat-completions", configured: !!aiKey(profile) }];
+          return [
+            name,
+            {
+              ...safe,
+              apiFormat: profile.apiFormat ?? "chat-completions",
+              configured: !!aiKey(profile),
+            },
+          ];
         }),
       ),
     },

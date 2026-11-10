@@ -10,7 +10,7 @@ Use [Semantic Versioning](https://semver.org/). Before 1.0, increment the minor 
 
 ## Prepare a release commit
 
-1. Verify redistribution rights for bundled public content, scan the full Git history for private content, and enable required CI checks/private vulnerability reporting.
+1. Verify redistribution rights for bundled public content, scan the full Git history for private content, and enable private vulnerability reporting.
 2. Move relevant Unreleased entries into `## [X.Y.Z] - YYYY-MM-DD` using the actual release date. Leave `## [Unreleased]` for future work. Include upgrade/migration notes, known limitations and breaking changes.
 3. Run `npm version X.Y.Z --no-git-tag-version` to update `package.json` and `package-lock.json`. Update the literal version in `src/index.ts` and installation filenames in the English and Vietnamese guides. `check:changelog` verifies manifest/lock/CLI version agreement.
 4. Run the commands below. The release check requires a dated changelog section matching the package version, an empty Unreleased section and a LICENSE.
@@ -30,14 +30,14 @@ Review the archive's file list and dependency notices. `npm pack` prints its fil
 
 ## Tag and distribute
 
-After the release commit has passed required CI checks:
+After the release commit has passed the checks above:
 
 1. Create an annotated `vX.Y.Z` tag on that exact commit and push it.
 2. Create a GitHub Release for that tag. Copy the matching changelog section into release notes, including install instructions, migration notes and known limitations.
 3. Attach the `.tgz` built from that commit and a SHA-256 checksum. On macOS use `shasum -a 256 birdeye-cli-X.Y.Z.tgz`; on Linux use `sha256sum birdeye-cli-X.Y.Z.tgz`.
 4. Download the attached tarball and repeat the documented install/version/estimate checks from a clean user directory before announcing it. Readers can use GitHub Watch → Custom → Releases to track future versions.
 
-The Check workflow validates version/changelog alignment on `v*` tags. The repository still needs required branch checks and protected release tags configured by its maintainers. Git tags and GitHub Releases are intentional maintainer actions, not performed by the local validation scripts.
+The repository still needs protected release tags configured by its maintainers. Git tags and GitHub Releases are intentional maintainer actions, not performed by the local validation scripts.
 
 npm registry publication needs a separate decision about package ownership/name, publishing authentication and provenance. Do not advertise `npm install -g birdeye-cli` until that exact distribution is verified.
 

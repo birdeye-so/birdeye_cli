@@ -69,7 +69,9 @@
     "test:settings-sync": "node tests/settings-sync-browser.mjs",
     "test:ai-tool-check": "node tests/ai-tool-check-browser.mjs",
     "test:price-surge:browser": "node tests/price-surge-ui-browser.mjs",
-    "test:chat-shortcut": "node tests/chat-shortcut-browser.mjs"
+    "test:chat-shortcut": "node tests/chat-shortcut-browser.mjs",
+    "format": "prettier --write .",
+    "lint": "prettier --check ."
   },
   "dependencies": {
     "bignumber.js": "9.3.1",
@@ -83,6 +85,7 @@
     "esbuild": "0.28.2",
     "marked": "18.0.11",
     "playwright-core": "1.63.0",
+    "prettier": "3.9.10",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "typescript": "5.9.3"

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AppError, type Data } from "./shared.js";
 import { address, evmAddress, tokenAddress } from "./schemas.js";
-import {surgeChains} from "./price-surge/schema.js";
+import { surgeChains } from "./price-surge/schema.js";
 import { extendedCatalog } from "./extended-catalog.js";
 import { skillCatalog } from "./skill-catalog.js";
 
@@ -40,15 +40,25 @@ export const catalog = {
   "token.overview": {
     path: "/defi/token_overview",
     cost: 18,
-    costFor: (p: Data) => p.includes === "money_flow" ? 21 : 18,
-    schema: z.object({address, includes: z.literal("money_flow").optional(), frames: z.array(z.enum(["1m","5m","15m","30m","1h","2h","4h","24h"])).min(1).max(8).optional()}).strict(),
+    costFor: (p: Data) => (p.includes === "money_flow" ? 21 : 18),
+    schema: z
+      .object({
+        address,
+        includes: z.literal("money_flow").optional(),
+        frames: z
+          .array(z.enum(["1m", "5m", "15m", "30m", "1h", "2h", "4h", "24h"]))
+          .min(1)
+          .max(8)
+          .optional(),
+      })
+      .strict(),
     description: "Token price, liquidity and 24h activity",
   },
   "token.security": {
     path: "/defi/token_security",
     cost: 30,
     chains: surgeChains,
-    schema: z.object({address: tokenAddress}).strict(),
+    schema: z.object({ address: tokenAddress }).strict(),
     dataSchema: z.record(z.string(), z.unknown()),
     description: "Upstream security observations",
   },
@@ -160,7 +170,10 @@ export function prepare(
     throw new AppError("UNKNOWN_OPERATION", `Unknown operation: ${operation}`);
   const entry: Entry = catalog[operation as Operation];
   if (!(entry.chains ?? ["solana"]).includes(chain))
-    throw new AppError("UNSUPPORTED_CHAIN", `${operation} supports ${(entry.chains ?? ["solana"]).join(", ")}.${operation === "market.token-list" && chain === "arbitrum" ? " Arbitrum is not documented for Token List V3." : ""}`);
+    throw new AppError(
+      "UNSUPPORTED_CHAIN",
+      `${operation} supports ${(entry.chains ?? ["solana"]).join(", ")}.${operation === "market.token-list" && chain === "arbitrum" ? " Arbitrum is not documented for Token List V3." : ""}`,
+    );
   const result = entry.schema.safeParse(params);
   if (!result.success)
     throw new AppError(
@@ -170,17 +183,32 @@ export function prepare(
         .join("; "),
     );
   const values = result.data as Data;
-  if (entry.chains && values.address && !(chain === "solana" ? address : evmAddress).safeParse(values.address).success)
+  if (
+    entry.chains &&
+    values.address &&
+    !(chain === "solana" ? address : evmAddress).safeParse(values.address)
+      .success
+  )
     throw new AppError("INVALID_INPUT", `Invalid token address for ${chain}.`);
   if (operation === "token.top-traders" && chain !== "solana") {
-    if (values.wallet_tags || values.get_holders_networth || values.sort_by === "hold_volume" || values.time_frame === "all_time")
-      throw new AppError("INVALID_INPUT", "Holder metrics, wallet tags and all_time top traders require Solana.");
+    if (
+      values.wallet_tags ||
+      values.get_holders_networth ||
+      values.sort_by === "hold_volume" ||
+      values.time_frame === "all_time"
+    )
+      throw new AppError(
+        "INVALID_INPUT",
+        "Holder metrics, wallet tags and all_time top traders require Solana.",
+      );
     delete values.ui_amount_mode;
     delete values.get_holders_networth;
   }
   return {
     operation: operation as Operation,
-    entry: entry.costFor ? {...entry, cost: entry.costFor(result.data as Data)} : entry,
+    entry: entry.costFor
+      ? { ...entry, cost: entry.costFor(result.data as Data) }
+      : entry,
     params: result.data as Data,
     chain,
   };

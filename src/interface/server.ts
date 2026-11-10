@@ -1,4 +1,4 @@
-import http,{ type IncomingMessage, type ServerResponse } from "node:http";
+import http, { type IncomingMessage, type ServerResponse } from "node:http";
 import https from "node:https";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -22,16 +22,68 @@ import {
   validateProviderUrl,
   type Config,
 } from "../config.js";
+import { lookup } from "node:dns/promises";
+import { BlockList } from "node:net";
 import { runCase, caseSchema } from "../analysis.js";
-import { caseKinds, planCase, workflowCatalog, type CaseInput } from "../workflows.js";
-import { runChat, checkToolCalling, toolCheckSignature, type AIUsage } from "../ai.js";
+import {
+  caseKinds,
+  planCase,
+  workflowCatalog,
+  type CaseInput,
+} from "../workflows.js";
+import {
+  runChat,
+  checkToolCalling,
+  toolCheckSignature,
+  type AIUsage,
+} from "../ai.js";
 import { AppError, errorData, integer, now, type Data } from "../shared.js";
 import { capabilities, prepare } from "../catalog.js";
 import { previewCase } from "../workflow-preview.js";
-import {WorkflowImports,planImported,runImported,importRuntimeSchema} from "../workflow-import.js";
-import {githubDocuments,sourceDocument} from "../workflow-sources.js";
-import {demoCatalog,demoInputSchema,planDemo,runDemo} from "../demos.js";
-import {skillForPath} from "../skill-routes.js";
+import {
+  WorkflowImports,
+  planImported,
+  runImported,
+  importRuntimeSchema,
+} from "../workflow-import.js";
+import { githubDocuments, sourceDocument } from "../workflow-sources.js";
+import { demoCatalog, demoInputSchema, planDemo, runDemo } from "../demos.js";
+import { skillForPath } from "../skill-routes.js";
+
+const internalAddresses = new BlockList();
+for (const [network, prefix] of [
+  ["0.0.0.0", 8],
+  ["10.0.0.0", 8],
+  ["100.64.0.0", 10],
+  ["127.0.0.0", 8],
+  ["169.254.0.0", 16],
+  ["172.16.0.0", 12],
+  ["192.168.0.0", 16],
+] as const)
+  internalAddresses.addSubnet(network, prefix, "ipv4");
+for (const [network, prefix] of [
+  ["::", 127],
+  ["::ffff:0:0", 96],
+  ["fc00::", 7],
+  ["fe80::", 10],
+] as const)
+  internalAddresses.addSubnet(network, prefix, "ipv6");
+// Settings sessions must not aim server requests at loopback or private networks.
+// Checked at save time; HTTPS certificate checks stop later DNS rebinding to internal hosts.
+async function assertPublicProvider(url: URL) {
+  const addresses = await lookup(url.hostname.replace(/^\[|\]$/g, ""), {
+    all: true,
+  }).catch(() => []);
+  if (
+    addresses.some(({ address, family }) =>
+      internalAddresses.check(address, family === 6 ? "ipv6" : "ipv4"),
+    )
+  )
+    throw new AppError(
+      "INVALID_PROVIDER_URL",
+      "Settings cannot point AI providers at loopback or private network addresses. Configure local providers with `birdeye-cli config ai init`, then restart the interface.",
+    );
+}
 
 const operationSchema = z
   .object({
@@ -50,8 +102,14 @@ const requestSchema = z
     query: operationSchema.optional(),
     question: z.string().min(1).max(10000).optional(),
     parentId: z.string().optional(),
-    dataPolicy: z.enum(["saved-only","live"]).optional(),
-    maxCu: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable().optional(),
+    dataPolicy: z.enum(["saved-only", "live"]).optional(),
+    maxCu: z
+      .number()
+      .int()
+      .min(0)
+      .max(Number.MAX_SAFE_INTEGER)
+      .nullable()
+      .optional(),
     short: z.boolean().optional(),
   })
   .strict();
@@ -114,7 +172,10 @@ async function body(req: IncomingMessage, maxBytes = 65536) {
   for await (const chunk of req) {
     size += chunk.length;
     if (size > maxBytes)
-      throw new AppError("BODY_TOO_LARGE", `Request exceeds ${maxBytes} bytes.`);
+      throw new AppError(
+        "BODY_TOO_LARGE",
+        `Request exceeds ${maxBytes} bytes.`,
+      );
     chunks.push(chunk);
   }
   try {
@@ -158,7 +219,10 @@ export async function startInterface(options: ServerOptions) {
     try {
       publicUrl = new URL(options.publicUrl);
     } catch {
-      throw new AppError("PUBLIC_URL_INVALID", "Provide an absolute HTTP or HTTPS public URL.");
+      throw new AppError(
+        "PUBLIC_URL_INVALID",
+        "Provide an absolute HTTP or HTTPS public URL.",
+      );
     }
   }
   // TLS may terminate at an explicitly configured reverse proxy, provided the
@@ -166,7 +230,8 @@ export async function startInterface(options: ServerOptions) {
   const proxyTls = loopback && !secure && publicUrl?.protocol === "https:";
   if (
     publicUrl &&
-    (publicUrl.protocol !== (secure ? "https:" : "http:") && !proxyTls)
+    publicUrl.protocol !== (secure ? "https:" : "http:") &&
+    !proxyTls
   )
     throw new AppError(
       "PUBLIC_URL_INVALID",
@@ -176,12 +241,30 @@ export async function startInterface(options: ServerOptions) {
   let config = options.config || readConfig(dir);
   // Only the process owner can authorize environment credentials, via startup
   // configuration. A Settings session cannot create or move these bindings.
-  const environmentBindings = new Map(Object.entries(config.ai.profiles).map(([name, profile]) =>
-    [name, {origin: new URL(profile.baseUrl).origin, variable: profile.apiKeyEnv}] as const));
+  const environmentBindings = new Map(
+    Object.entries(config.ai.profiles).map(
+      ([name, profile]) =>
+        [
+          name,
+          {
+            origin: new URL(profile.baseUrl).origin,
+            variable: profile.apiKeyEnv,
+          },
+        ] as const,
+    ),
+  );
   let settingsPersisted = !options.config;
   // Function-calling probe results by profile signature; in memory, shared by every tab.
-  const toolChecks = new Map<string, {supported: boolean; message?: string}>();
-  const toolCheck = () => {const profile = activeProfile(config, options.aiProfile); return profile ? toolChecks.get(toolCheckSignature(profile)) ?? null : null;};
+  const toolChecks = new Map<
+    string,
+    { supported: boolean; message?: string }
+  >();
+  const toolCheck = () => {
+    const profile = activeProfile(config, options.aiProfile);
+    return profile
+      ? (toolChecks.get(toolCheckSignature(profile)) ?? null)
+      : null;
+  };
   const autoConnect = loopback && !options.publicUrl && !options.requireCode;
   const connectCode = randomBytes(24).toString("base64url");
   const session = randomBytes(32).toString("base64url");
@@ -191,7 +274,7 @@ export async function startInterface(options: ServerOptions) {
   const archive = new RunStore(options.ledger);
   const imports = new WorkflowImports(options.ledger);
   let knowledge: KnowledgeBase | undefined;
-  const docs = () => knowledge ||= new KnowledgeBase(options.ledger);
+  const docs = () => (knowledge ||= new KnowledgeBase(options.ledger));
   if (options.initialRunId) archive.get(options.initialRunId);
   let initialId = options.initialRunId;
   let initialRemoved = false;
@@ -225,30 +308,47 @@ export async function startInterface(options: ServerOptions) {
     };
   }
   function save(run: Run) {
-    try { run.savedAt = archive.save(run); run.storageError = undefined; }
-    catch (error) { run.storageError = (error as Error).message; throw error; }
+    try {
+      run.savedAt = archive.save(run);
+      run.storageError = undefined;
+    } catch (error) {
+      run.storageError = (error as Error).message;
+      throw error;
+    }
   }
   function history(before?: number) {
     const page = archive.list(50, before);
-    return {...page, items: page.items.map(item => {
-      const live = runs.get(item.id);
-      return live ? {...item, status:live.status, saved:!live.storageError} : item;
-    })};
+    return {
+      ...page,
+      items: page.items.map((item) => {
+        const live = runs.get(item.id);
+        return live
+          ? { ...item, status: live.status, saved: !live.storageError }
+          : item;
+      }),
+    };
   }
-  function ancestors(id:string|undefined,limit=20) {
-    const entries:(Run | ReturnType<RunStore["get"]>)[]=[];
-    const visited=new Set<string>();
-    while(id && !visited.has(id) && entries.length<limit) {
+  function ancestors(id: string | undefined, limit = 20) {
+    const entries: (Run | ReturnType<RunStore["get"]>)[] = [];
+    const visited = new Set<string>();
+    while (id && !visited.has(id) && entries.length < limit) {
       visited.add(id);
-      let entry:Run | ReturnType<RunStore["get"]>;
-      try {entry = runs.get(id) || archive.get(id);}
-      catch(error) {
-        if(entries.length && error instanceof AppError && error.code === "RUN_NOT_FOUND") break;
+      let entry: Run | ReturnType<RunStore["get"]>;
+      try {
+        entry = runs.get(id) || archive.get(id);
+      } catch (error) {
+        if (
+          entries.length &&
+          error instanceof AppError &&
+          error.code === "RUN_NOT_FOUND"
+        )
+          break;
         throw error;
       }
-      entries.unshift(entry);id=entry.input.parentId;
+      entries.unshift(entry);
+      id = entry.input.parentId;
     }
-    return {entries,truncated:!!id};
+    return { entries, truncated: !!id };
   }
   function emit(run: Run, type: string, payload: unknown) {
     const event = { seq: run.events.length + 1, type, data: payload };
@@ -263,12 +363,16 @@ export async function startInterface(options: ServerOptions) {
         "A run is already active. Stop it or wait for completion.",
       );
     // Bound in-memory reports; older results remain available through SQLite.
-    if (runs.size >= 20) for (const [id, run] of runs) {
-      if (runs.size < 20) break;
-      if (run.status !== "running" && !run.storageError) runs.delete(id);
+    if (runs.size >= 20)
+      for (const [id, run] of runs) {
+        if (runs.size < 20) break;
+        if (run.status !== "running" && !run.storageError) runs.delete(id);
+      }
+    const demoPlan = input.mode === "demo" ? planDemo(input.demo) : undefined;
+    if (demoPlan) {
+      input.demo = demoPlan.demoInput;
+      input.case = demoPlan.input;
     }
-    const demoPlan=input.mode === "demo" ? planDemo(input.demo) : undefined;
-    if(demoPlan) {input.demo=demoPlan.demoInput;input.case=demoPlan.input;}
     if (input.mode === "case") {
       if (!input.case)
         throw new AppError("INVALID_INPUT", "Choose a case study.");
@@ -279,8 +383,11 @@ export async function startInterface(options: ServerOptions) {
         throw new AppError("INVALID_INPUT", "Choose an operation.");
       prepare(input.query.operation, input.query.params);
     }
-    const imported = input.mode === "imported" ? imports.get(input.importId || "") : undefined;
-    const importedPlan = imported ? planImported(imported,input.importParams) : undefined;
+    const imported =
+      input.mode === "imported" ? imports.get(input.importId || "") : undefined;
+    const importedPlan = imported
+      ? planImported(imported, input.importParams)
+      : undefined;
     const profile = activeProfile(config, options.aiProfile);
     if (input.mode === "chat" && (!input.question || !profile))
       throw new AppError(
@@ -288,32 +395,51 @@ export async function startInterface(options: ServerOptions) {
         "Configure an AI profile and enter a question.",
       );
     // Validate reuse and index docs before allocating a paid run.
-    const parent = input.parentId ? (runs.get(input.parentId) || archive.get(input.parentId)) : undefined;
-    if(input.mode === "chat") {
-      input.dataPolicy ??= parent?.input.mode === "chat" ? parent.input.dataPolicy ?? "live" : "live";
+    const parent = input.parentId
+      ? runs.get(input.parentId) || archive.get(input.parentId)
+      : undefined;
+    if (input.mode === "chat") {
+      input.dataPolicy ??=
+        parent?.input.mode === "chat"
+          ? (parent.input.dataPolicy ?? "live")
+          : "live";
       if (input.dataPolicy === "saved-only") input.maxCu = 0;
-      if (!input.case && (!input.workflowKind || input.workflowKind === parent?.input.case?.kind))
+      if (
+        !input.case &&
+        (!input.workflowKind || input.workflowKind === parent?.input.case?.kind)
+      )
         input.case = parent?.input.case;
       input.workflowKind ??= input.case?.kind || parent?.input.workflowKind;
       if (input.case) {
         if (input.workflowKind !== input.case.kind)
-          throw new AppError("INVALID_INPUT", "Selected workflow does not match its input.");
+          throw new AppError(
+            "INVALID_INPUT",
+            "Selected workflow does not match its input.",
+          );
         input.case = planCase(input.case).input;
       }
       docs();
     }
     const id = options.ledger.createRun(
-      input.maxCu === undefined ? options.maxCu ?? null : input.maxCu,
+      input.maxCu === undefined ? (options.maxCu ?? null) : input.maxCu,
       sessionWorkflow,
-      demoPlan ? Math.max(20,demoPlan.maxRequests*2) : importedPlan ? Math.max(20,importedPlan.maxRequests*2) : input.mode === "case" && input.case ? Math.max(20, planCase(input.case).maxRequests * 2) : 20,
+      demoPlan
+        ? Math.max(20, demoPlan.maxRequests * 2)
+        : importedPlan
+          ? Math.max(20, importedPlan.maxRequests * 2)
+          : input.mode === "case" && input.case
+            ? Math.max(20, planCase(input.case).maxRequests * 2)
+            : 20,
     );
     const run: Run = {
       id,
       title:
         demoPlan?.demo.title ||
         input.question ||
-        (input.case && workflowCatalog().find(c => c.kind === input.case?.kind)?.title) ||
-        imported?.title || input.case?.kind ||
+        (input.case &&
+          workflowCatalog().find((c) => c.kind === input.case?.kind)?.title) ||
+        imported?.title ||
+        input.case?.kind ||
         input.query?.operation ||
         "Analysis",
       status: "running",
@@ -335,9 +461,30 @@ export async function startInterface(options: ServerOptions) {
       try {
         progress("planning", "Preparing bounded data requests");
         if (demoPlan)
-          run.result=await runDemo(execute,id,demoPlan.demoInput,run.controller.signal,progress,result=>{run.result=result;save(run);});
+          run.result = await runDemo(
+            execute,
+            id,
+            demoPlan.demoInput,
+            run.controller.signal,
+            progress,
+            (result) => {
+              run.result = result;
+              save(run);
+            },
+          );
         else if (imported)
-          run.result = await runImported(execute,id,imported,input.importParams,run.controller.signal,progress,result=>{run.result=result;save(run);});
+          run.result = await runImported(
+            execute,
+            id,
+            imported,
+            input.importParams,
+            run.controller.signal,
+            progress,
+            (result) => {
+              run.result = result;
+              save(run);
+            },
+          );
         else if (input.mode === "operation")
           run.result = await execute.execute(
             input.query!.operation,
@@ -357,28 +504,39 @@ export async function startInterface(options: ServerOptions) {
             },
           );
         else {
-          const history = ancestors(parent?.id,3).entries.filter(p=>p.result).flatMap(previous=>[
-                  { role: "user", content: previous.input.question || previous.title },
-                  {
-                    role: "assistant",
-                    content: JSON.stringify({
-                      answer: previous.result!.data.answer,
-                      metrics: previous.result!.data.metrics,
-                      asOf: previous.result!.meta.retrievedAt,
-                      note: "Previous run context; not current market data.",
-                    }).slice(0, 18000),
-                  },
-                ]);
+          const history = ancestors(parent?.id, 3)
+            .entries.filter((p) => p.result)
+            .flatMap((previous) => [
+              {
+                role: "user",
+                content: previous.input.question || previous.title,
+              },
+              {
+                role: "assistant",
+                content: JSON.stringify({
+                  answer: previous.result!.data.answer,
+                  metrics: previous.result!.data.metrics,
+                  asOf: previous.result!.meta.retrievedAt,
+                  note: "Previous run context; not current market data.",
+                }).slice(0, 18000),
+              },
+            ]);
           run.result = await runChat(execute, id, profile!, input.question!, {
             signal: run.controller.signal,
             short: input.short ?? options.short,
             history,
             knowledge: docs(),
-            mcp: new BirdeyeMcp(dataKey(config), {fetch: options.mcpFetch}),
+            mcp: new BirdeyeMcp(dataKey(config), { fetch: options.mcpFetch }),
             dataPolicy: input.dataPolicy || "live",
-            workflow: input.workflowKind ? {kind: input.workflowKind, input: input.case} : undefined,
+            workflow: input.workflowKind
+              ? { kind: input.workflowKind, input: input.case }
+              : undefined,
             savedRunId: parent?.id,
-            savedSources: parent?.result ? (parent.result.meta.operation === "analysis" ? parent.result.data.sources || [] : [parent.result]) : [],
+            savedSources: parent?.result
+              ? parent.result.meta.operation === "analysis"
+                ? parent.result.data.sources || []
+                : [parent.result]
+              : [],
             progress,
             fetch: options.aiFetch,
             usage: run.ai,
@@ -406,7 +564,11 @@ export async function startInterface(options: ServerOptions) {
         }
       } finally {
         active = false;
-        try { save(run); } catch { /* Keep unsaved evidence available for export. */ }
+        try {
+          save(run);
+        } catch {
+          /* Keep unsaved evidence available for export. */
+        }
         emit(run, "done", publicRun(run));
         for (const res of run.listeners) res.end();
         run.listeners.clear();
@@ -425,7 +587,9 @@ export async function startInterface(options: ServerOptions) {
       if (
         !allowedHosts.has(req.headers.host || "") ||
         (req.headers.origin !== undefined &&
-          req.headers.origin !== (publicUrl?.origin ?? `${secure ? "https" : "http"}://${req.headers.host}`)) ||
+          req.headers.origin !==
+            (publicUrl?.origin ??
+              `${secure ? "https" : "http"}://${req.headers.host}`)) ||
         req.headers["sec-fetch-site"] === "cross-site"
       ) {
         json(res, 403, {
@@ -449,13 +613,10 @@ export async function startInterface(options: ServerOptions) {
         }
         loginAttempts.push(Date.now());
         const input = await body(req);
-        const localConnect = input.local === true && autoConnect &&
-          req.headers["sec-fetch-site"] === "same-origin" &&
-          req.headers.origin === `${secure ? "https" : "http"}://${req.headers.host}`;
+        // Browser headers can be forged by any local process, so every login needs the code.
         if (
-          !localConnect && (
           typeof input.code !== "string" ||
-          !equals(input.code, connectCode))
+          !equals(input.code, connectCode)
         ) {
           json(res, 401, {
             error: {
@@ -473,7 +634,13 @@ export async function startInterface(options: ServerOptions) {
         return;
       }
       if (path === "/price-surge" || path === "/token-dd") {
-        json(res, 404, {error: {code: "NOT_FOUND", message: "Research endpoints are served by the separate birdeye-api process."}});
+        json(res, 404, {
+          error: {
+            code: "NOT_FOUND",
+            message:
+              "Research endpoints are served by the separate birdeye-api process.",
+          },
+        });
         return;
       }
       if (path.startsWith("/api/")) {
@@ -496,7 +663,10 @@ export async function startInterface(options: ServerOptions) {
           const page = history();
           json(res, 200, {
             config: safeConfig(config),
-            configStorage: {path: configPath(dir), persisted: settingsPersisted},
+            configStorage: {
+              path: configPath(dir),
+              persisted: settingsPersisted,
+            },
             activeAiProfile: options.aiProfile || config.ai.defaultProfile,
             aiToolCheck: toolCheck(),
             capabilities: capabilities(),
@@ -516,19 +686,35 @@ export async function startInterface(options: ServerOptions) {
         }
         if (path === "/api/history" && req.method === "GET") {
           const before = new URL(req.url!, origin).searchParams.get("before");
-          json(res, 200, history(before === null ? undefined : integer(before, "before", 1, Number.MAX_SAFE_INTEGER)));
+          json(
+            res,
+            200,
+            history(
+              before === null
+                ? undefined
+                : integer(before, "before", 1, Number.MAX_SAFE_INTEGER),
+            ),
+          );
           return;
         }
         if (path === "/api/ai/check" && req.method === "POST") {
           await body(req);
           const profile = activeProfile(config, options.aiProfile);
-          if (!profile) throw new AppError("AI_CONFIG_MISSING", "Configure an AI endpoint, model and key first.");
-          const result = await checkToolCalling(profile, {fetch: options.aiFetch});
+          if (!profile)
+            throw new AppError(
+              "AI_CONFIG_MISSING",
+              "Configure an AI endpoint, model and key first.",
+            );
+          const result = await checkToolCalling(profile, {
+            fetch: options.aiFetch,
+          });
           toolChecks.set(toolCheckSignature(profile), result);
-          json(res, 200, result);return;
+          json(res, 200, result);
+          return;
         }
         if (path === "/api/knowledge" && req.method === "GET") {
-          json(res,200,docs().info);return;
+          json(res, 200, docs().info);
+          return;
         }
         if (path === "/api/estimate" && req.method === "POST") {
           json(res, 200, planCase(await body(req)));
@@ -538,29 +724,99 @@ export async function startInterface(options: ServerOptions) {
           json(res, 200, previewCase(await body(req)));
           return;
         }
-        if(path === "/api/demos" && req.method === "GET") {json(res,200,{items:demoCatalog});return;}
-        if(path === "/api/demos/plan" && req.method === "POST") {json(res,200,planDemo(await body(req),true));return;}
-        if(path === "/api/workflow-imports" && req.method === "GET") {json(res,200,{items:imports.list()});return;}
-        if(path === "/api/workflow-imports" && req.method === "POST") {
-          const input=z.union([z.object({url:z.string().url(),ref:z.string().max(200).optional()}).strict(),z.object({name:z.string().min(1).max(200),content:z.string().min(1).max(256000)}).strict()]).parse(await body(req,2_000_000));
-          const sources="url" in input ? await githubDocuments(input.url,options.importFetch,input.ref) : [sourceDocument(input.name,"upload:"+input.name,input.content)];
-          const records=imports.import(sources);json(res,200,{items:records.map(r=>({id:r.id,title:r.title,executable:!!r.definition}))});return;
+        if (path === "/api/demos" && req.method === "GET") {
+          json(res, 200, { items: demoCatalog });
+          return;
         }
-        const importMatch=/^\/api\/workflow-imports\/([a-f0-9-]+)(?:\/(plan|export))?$/.exec(path);
-        if(importMatch) {
-          if(req.method === "POST" && importMatch[2] === "plan") {json(res,200,imports.preview(importMatch[1],await body(req)));return;}
-          if(req.method === "GET") {json(res,200,importMatch[2] === "export" ? imports.get(importMatch[1]) : imports.preview(importMatch[1]));return;}
+        if (path === "/api/demos/plan" && req.method === "POST") {
+          json(res, 200, planDemo(await body(req), true));
+          return;
+        }
+        if (path === "/api/workflow-imports" && req.method === "GET") {
+          json(res, 200, { items: imports.list() });
+          return;
+        }
+        if (path === "/api/workflow-imports" && req.method === "POST") {
+          const input = z
+            .union([
+              z
+                .object({
+                  url: z.string().url(),
+                  ref: z.string().max(200).optional(),
+                })
+                .strict(),
+              z
+                .object({
+                  name: z.string().min(1).max(200),
+                  content: z.string().min(1).max(256000),
+                })
+                .strict(),
+            ])
+            .parse(await body(req, 2_000_000));
+          const sources =
+            "url" in input
+              ? await githubDocuments(input.url, options.importFetch, input.ref)
+              : [
+                  sourceDocument(
+                    input.name,
+                    "upload:" + input.name,
+                    input.content,
+                  ),
+                ];
+          const records = imports.import(sources);
+          json(res, 200, {
+            items: records.map((r) => ({
+              id: r.id,
+              title: r.title,
+              executable: !!r.definition,
+            })),
+          });
+          return;
+        }
+        const importMatch =
+          /^\/api\/workflow-imports\/([a-f0-9-]+)(?:\/(plan|export))?$/.exec(
+            path,
+          );
+        if (importMatch) {
+          if (req.method === "POST" && importMatch[2] === "plan") {
+            json(res, 200, imports.preview(importMatch[1], await body(req)));
+            return;
+          }
+          if (req.method === "GET") {
+            json(
+              res,
+              200,
+              importMatch[2] === "export"
+                ? imports.get(importMatch[1])
+                : imports.preview(importMatch[1]),
+            );
+            return;
+          }
         }
         if (path === "/api/history/delete" && req.method === "POST") {
-          const input = z.union([z.object({id:z.string().uuid()}).strict(), z.object({all:z.literal(true)}).strict()]).parse(await body(req));
-          if(active) {
-            json(res,409,{error:{code:"RUN_BUSY",message:"Wait for the active run to finish before deleting history."}});return;
+          const input = z
+            .union([
+              z.object({ id: z.string().uuid() }).strict(),
+              z.object({ all: z.literal(true) }).strict(),
+            ])
+            .parse(await body(req));
+          if (active) {
+            json(res, 409, {
+              error: {
+                code: "RUN_BUSY",
+                message:
+                  "Wait for the active run to finish before deleting history.",
+              },
+            });
+            return;
           }
           const id = "id" in input ? input.id : undefined;
           const deleted = archive.remove(id);
-          if(id === undefined) runs.clear(); else runs.delete(id);
-          if(id === undefined || id === initialId) initialRemoved = true;
-          json(res,200,{deleted});return;
+          if (id === undefined) runs.clear();
+          else runs.delete(id);
+          if (id === undefined || id === initialId) initialRemoved = true;
+          json(res, 200, { deleted });
+          return;
         }
         if (path === "/api/settings" && req.method === "POST") {
           if (active)
@@ -583,11 +839,22 @@ export async function startInterface(options: ServerOptions) {
           const updated: Config = structuredClone(config);
           if (input.birdeyeApiKey) updated.birdeyeApiKey = input.birdeyeApiKey;
           if (input.profile) {
-            validateProviderUrl(input.profile.baseUrl);
+            const providerUrl = validateProviderUrl(input.profile.baseUrl);
+            // Only origins the owner configured before startup may be local or private.
+            if (
+              ![...environmentBindings.values()].some(
+                (b) => b.origin === providerUrl.origin,
+              )
+            )
+              await assertPublicProvider(providerUrl);
             const prior = updated.ai.profiles[input.profileName];
             const binding = environmentBindings.get(input.profileName);
-            const apiKeyEnv = binding && binding.origin === new URL(input.profile.baseUrl).origin &&
-              binding.variable === input.profile.apiKeyEnv ? binding.variable : "";
+            const apiKeyEnv =
+              binding &&
+              binding.origin === new URL(input.profile.baseUrl).origin &&
+              binding.variable === input.profile.apiKeyEnv
+                ? binding.variable
+                : "";
             // A key belonging to a different origin must never follow a profile URL change.
             const preserve =
               prior &&
@@ -598,7 +865,10 @@ export async function startInterface(options: ServerOptions) {
             updated.ai.profiles[input.profileName] = {
               ...input.profile,
               apiKeyEnv,
-              apiFormat: input.profile.apiFormat ?? prior?.apiFormat ?? "chat-completions",
+              apiFormat:
+                input.profile.apiFormat ??
+                prior?.apiFormat ??
+                "chat-completions",
               apiKey: input.profile.apiKey || preserve,
             };
             updated.ai.defaultProfile = input.profileName;
@@ -610,7 +880,10 @@ export async function startInterface(options: ServerOptions) {
         }
         if (path === "/api/initial" && req.method === "POST") {
           await body(req);
-          if(initialRemoved) {json(res,200,{id:null});return;}
+          if (initialRemoved) {
+            json(res, 200, { id: null });
+            return;
+          }
           if (options.initialCase && !initialId)
             initialId = launch({ mode: "case", case: options.initialCase });
           if (options.initial && !initialId)
@@ -619,26 +892,53 @@ export async function startInterface(options: ServerOptions) {
           return;
         }
         if (path === "/api/rescore" && req.method === "POST") {
-          const input=z.object({runId:z.string().uuid(),ddMode:z.enum(["standard","advanced"]).optional(),topN:z.number().int().min(10).max(50).optional(),liqCandles:z.number().int().min(1).max(100).optional()}).strict().parse(await body(req));
-          const {runId,...overrides}=input;
-          const parent=runs.get(runId)||archive.get(runId);
-          if(parent.status==="running"||!parent.result)throw new AppError("RESCORE_INVALID","Wait until the source run finishes before re-scoring.");
-          const saved=rescoreDd(parent.result,overrides,options.ledger,archive);
-          json(res,200,{id:saved.id});return;
+          const input = z
+            .object({
+              runId: z.string().uuid(),
+              ddMode: z.enum(["standard", "advanced"]).optional(),
+              topN: z.number().int().min(10).max(50).optional(),
+              liqCandles: z.number().int().min(1).max(100).optional(),
+            })
+            .strict()
+            .parse(await body(req));
+          const { runId, ...overrides } = input;
+          const parent = runs.get(runId) || archive.get(runId);
+          if (parent.status === "running" || !parent.result)
+            throw new AppError(
+              "RESCORE_INVALID",
+              "Wait until the source run finishes before re-scoring.",
+            );
+          const saved = rescoreDd(
+            parent.result,
+            overrides,
+            options.ledger,
+            archive,
+          );
+          json(res, 200, { id: saved.id });
+          return;
         }
         if (path === "/api/runs" && req.method === "POST") {
           const input = requestSchema.parse(await body(req));
           json(res, 202, { id: launch(input) });
           return;
         }
-        const match = /^\/api\/runs\/([a-f0-9-]+)(?:\/(events|stop|thread))?$/.exec(
-          path,
-        );
+        const match =
+          /^\/api\/runs\/([a-f0-9-]+)(?:\/(events|stop|thread))?$/.exec(path);
         if (match) {
-          if(match[2] === "thread" && req.method === "GET") {
-            const thread=ancestors(match[1]);
-            const messages=thread.entries.filter(entry=>entry.input.mode==="chat").map(entry=>({id:entry.id,question:entry.input.question,answer:entry.result?.data.answer,status:entry.status,createdAt:entry.createdAt,docSources:entry.result?.data.docSources||[]}));
-            json(res,200,{messages,truncated:thread.truncated});return;
+          if (match[2] === "thread" && req.method === "GET") {
+            const thread = ancestors(match[1]);
+            const messages = thread.entries
+              .filter((entry) => entry.input.mode === "chat")
+              .map((entry) => ({
+                id: entry.id,
+                question: entry.input.question,
+                answer: entry.result?.data.answer,
+                status: entry.status,
+                createdAt: entry.createdAt,
+                docSources: entry.result?.data.docSources || [],
+              }));
+            json(res, 200, { messages, truncated: thread.truncated });
+            return;
           }
           const run = runs.get(match[1]);
           if (!run) {
@@ -646,11 +946,22 @@ export async function startInterface(options: ServerOptions) {
               const saved = archive.get(match[1]);
               if (req.method === "GET" && !match[2]) json(res, 200, saved);
               else if (req.method === "GET" && match[2] === "events") {
-                res.writeHead(200, {"Content-Type":"text/event-stream", "Cache-Control":"no-store"});
-                res.end(`data: ${JSON.stringify({type:"done",data:saved})}\n\n`);
-              } else json(res, 409, {error:{message:"This run is not active in this interface."}});
+                res.writeHead(200, {
+                  "Content-Type": "text/event-stream",
+                  "Cache-Control": "no-store",
+                });
+                res.end(
+                  `data: ${JSON.stringify({ type: "done", data: saved })}\n\n`,
+                );
+              } else
+                json(res, 409, {
+                  error: {
+                    message: "This run is not active in this interface.",
+                  },
+                });
             } catch (error) {
-              if (error instanceof AppError && error.code === "RUN_NOT_FOUND") json(res, 404, {error:errorData(error)});
+              if (error instanceof AppError && error.code === "RUN_NOT_FOUND")
+                json(res, 404, { error: errorData(error) });
               else throw error;
             }
             return;
@@ -707,7 +1018,9 @@ export async function startInterface(options: ServerOptions) {
       };
       const skill = skillForPath(path, workflowCatalog());
       if (skill && path !== `/${skill.kind}`) {
-        res.writeHead(302, {Location: `/${skill.kind}${new URL(req.url || "/", origin).search}`});
+        res.writeHead(302, {
+          Location: `/${skill.kind}${new URL(req.url || "/", origin).search}`,
+        });
         res.end();
         return;
       }
@@ -767,13 +1080,17 @@ export async function startInterface(options: ServerOptions) {
   const actualPort =
     typeof address === "object" && address ? address.port : port;
   const urlHost = host.includes(":") ? `[${host}]` : host;
-  origin = publicUrl?.origin ?? `${secure ? "https" : "http"}://${urlHost}:${actualPort}`;
+  origin =
+    publicUrl?.origin ??
+    `${secure ? "https" : "http"}://${urlHost}:${actualPort}`;
   allowedHosts.add(new URL(origin).host);
   // Local aliases are safe only for a loopback listener without an explicit
   // public URL. Browser Origin must still match the request's own Host above.
   if (loopback && !options.publicUrl) {
     for (const alias of ["localhost", "127.0.0.1", "[::1]"]) {
-      allowedHosts.add(new URL(`${secure ? "https" : "http"}://${alias}:${actualPort}`).host);
+      allowedHosts.add(
+        new URL(`${secure ? "https" : "http"}://${alias}:${actualPort}`).host,
+      );
     }
   }
   async function close() {
@@ -787,5 +1104,7 @@ export async function startInterface(options: ServerOptions) {
         server.closeAllConnections();
       });
   }
-  return { url: origin, connectCode, server, close, handler };
+  // The fragment never reaches the server or its logs; the page reads it to sign in.
+  const loginUrl = autoConnect ? `${origin}/#code=${connectCode}` : origin;
+  return { url: origin, loginUrl, connectCode, server, close, handler };
 }

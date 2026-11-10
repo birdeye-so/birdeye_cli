@@ -1,16 +1,19 @@
-import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync, closeSync, openSync, chmodSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import {createHmac, randomBytes} from 'node:crypto';
+import { DatabaseSync } from "node:sqlite";
+import { mkdirSync, closeSync, openSync, chmodSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { createHmac, randomBytes } from "node:crypto";
 
-export type SkillAction = 'view' | 'download';
-type Counts = {skill_id: string; view_count: number; download_count: number};
+export type SkillAction = "view" | "download";
+type Counts = { skill_id: string; view_count: number; download_count: number };
 
 // Connections share SQLite's write lock, including across Node processes.
-export function openSkillStats(path = process.env.SKILL_STATS_DB_PATH || resolve(process.cwd(), '.birdeye/skill-stats.sqlite')) {
-  if (path !== ':memory:') {
-    mkdirSync(dirname(path), {recursive: true, mode: 0o700});
-    closeSync(openSync(path, 'a', 0o600));
+export function openSkillStats(
+  path = process.env.SKILL_STATS_DB_PATH ||
+    resolve(process.cwd(), ".birdeye/skill-stats.sqlite"),
+) {
+  if (path !== ":memory:") {
+    mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
+    closeSync(openSync(path, "a", 0o600));
     chmodSync(path, 0o600);
   }
   const db = new DatabaseSync(path);
@@ -31,52 +34,119 @@ export function openSkillStats(path = process.env.SKILL_STATS_DB_PATH || resolve
       ) STRICT;
       CREATE INDEX IF NOT EXISTS stats_clients_age ON stats_clients(counted_at);
     `);
-    db.prepare('INSERT OR IGNORE INTO stats_settings VALUES (1, ?)').run(randomBytes(32).toString('hex'));
-    const salt = String(db.prepare('SELECT salt FROM stats_settings WHERE id = 1').get()!.salt);
+    db.prepare("INSERT OR IGNORE INTO stats_settings VALUES (1, ?)").run(
+      randomBytes(32).toString("hex"),
+    );
+    const salt = String(
+      db.prepare("SELECT salt FROM stats_settings WHERE id = 1").get()!.salt,
+    );
     // The deployed v1 table is already keyed by these stable skill IDs.
     // If a local v2 build ran, its typed counters are authoritative after that migration.
-    db.exec("CREATE TABLE IF NOT EXISTS stats_migrations (id TEXT PRIMARY KEY) STRICT; BEGIN IMMEDIATE;");
+    db.exec(
+      "CREATE TABLE IF NOT EXISTS stats_migrations (id TEXT PRIMARY KEY) STRICT; BEGIN IMMEDIATE;",
+    );
     try {
-      if (!db.prepare("SELECT id FROM stats_migrations WHERE id = 'unified-skills-v3'").get()) {
-        if (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'resource_stats'").get()) {
+      if (
+        !db
+          .prepare(
+            "SELECT id FROM stats_migrations WHERE id = 'unified-skills-v3'",
+          )
+          .get()
+      ) {
+        if (
+          db
+            .prepare(
+              "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'resource_stats'",
+            )
+            .get()
+        ) {
           db.exec(`INSERT INTO skill_stats (skill_id, view_count, download_count)
             SELECT resource_id, SUM(view_count), SUM(download_count) FROM resource_stats GROUP BY resource_id
             ON CONFLICT(skill_id) DO UPDATE SET view_count = excluded.view_count, download_count = excluded.download_count;`);
         }
-        db.prepare("INSERT INTO stats_migrations (id) VALUES ('unified-skills-v3')").run();
+        db.prepare(
+          "INSERT INTO stats_migrations (id) VALUES ('unified-skills-v3')",
+        ).run();
       }
-      db.exec('COMMIT');
-    } catch (error) {db.exec('ROLLBACK'); throw error;}
+      db.exec("COMMIT");
+    } catch (error) {
+      db.exec("ROLLBACK");
+      throw error;
+    }
     const increment = (skillId: string, action: SkillAction) => {
-        return db.prepare(`INSERT INTO skill_stats (skill_id, view_count, download_count) VALUES (?, ?, ?)
+      return db
+        .prepare(
+          `INSERT INTO skill_stats (skill_id, view_count, download_count) VALUES (?, ?, ?)
           ON CONFLICT(skill_id) DO UPDATE SET
             view_count = skill_stats.view_count + excluded.view_count,
             download_count = skill_stats.download_count + excluded.download_count
           RETURNING skill_id, view_count, download_count
-        `).get(skillId, action === 'view' ? 1 : 0, action === 'download' ? 1 : 0) as Counts;
+        `,
+        )
+        .get(
+          skillId,
+          action === "view" ? 1 : 0,
+          action === "download" ? 1 : 0,
+        ) as Counts;
     };
     return {
-      list: () => db.prepare('SELECT skill_id, view_count, download_count FROM skill_stats').all() as Counts[],
-      increment(skillId: string, action: SkillAction, client?: string, now = Date.now()) {
+      list: () =>
+        db
+          .prepare(
+            "SELECT skill_id, view_count, download_count FROM skill_stats",
+          )
+          .all() as Counts[],
+      increment(
+        skillId: string,
+        action: SkillAction,
+        client?: string,
+        now = Date.now(),
+      ) {
         // Internal imports can increment directly. HTTP callers always supply
         // their server-resolved identity; no raw client address is persisted.
         if (client === undefined) return increment(skillId, action);
-        const hash = createHmac('sha256', salt).update(client).digest('hex');
-        db.exec('BEGIN IMMEDIATE');
+        const hash = createHmac("sha256", salt).update(client).digest("hex");
+        db.exec("BEGIN IMMEDIATE");
         try {
-          db.prepare('DELETE FROM stats_clients WHERE counted_at <= ?').run(now - 86_400_000);
-          const seen = db.prepare('SELECT 1 FROM stats_clients WHERE skill_id = ? AND action = ? AND client_hash = ?').get(skillId, action, hash);
-          const full = Number(db.prepare('SELECT COUNT(*) AS count FROM stats_clients').get()!.count) >= 100_000;
+          db.prepare("DELETE FROM stats_clients WHERE counted_at <= ?").run(
+            now - 86_400_000,
+          );
+          const seen = db
+            .prepare(
+              "SELECT 1 FROM stats_clients WHERE skill_id = ? AND action = ? AND client_hash = ?",
+            )
+            .get(skillId, action, hash);
+          const full =
+            Number(
+              db.prepare("SELECT COUNT(*) AS count FROM stats_clients").get()!
+                .count,
+            ) >= 100_000;
           let counts: Counts;
           if (seen || full) {
-            counts = db.prepare('SELECT skill_id, view_count, download_count FROM skill_stats WHERE skill_id = ?').get(skillId) as Counts || {skill_id: skillId, view_count: 0, download_count: 0};
+            counts = (db
+              .prepare(
+                "SELECT skill_id, view_count, download_count FROM skill_stats WHERE skill_id = ?",
+              )
+              .get(skillId) as Counts) || {
+              skill_id: skillId,
+              view_count: 0,
+              download_count: 0,
+            };
           } else {
-            db.prepare('INSERT INTO stats_clients VALUES (?, ?, ?, ?)').run(skillId, action, hash, now);
+            db.prepare("INSERT INTO stats_clients VALUES (?, ?, ?, ?)").run(
+              skillId,
+              action,
+              hash,
+              now,
+            );
             counts = increment(skillId, action);
           }
-          db.exec('COMMIT');
+          db.exec("COMMIT");
           return counts;
-        } catch (error) {db.exec('ROLLBACK'); throw error;}
+        } catch (error) {
+          db.exec("ROLLBACK");
+          throw error;
+        }
       },
       close: () => db.close(),
     };

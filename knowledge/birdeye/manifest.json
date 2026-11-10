@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "sourceCommit": "b34378ea9a1aad2c22934903ded124cd84729d3f",
   "generatedAt": "2026-10-15T10:23:42.395Z",
-  "documentationPages": 426,
+  "documentationPages": 298,
   "operationPages": 113,
   "specs": [
     {
@@ -19,13 +19,6 @@
     }
   ],
   "entries": [
-    {
-      "id": "docs/README.md",
-      "title": "bds-docs-mintlify",
-      "source": "https://docs.birdeye.so/README",
-      "sha256": "41b0ba0e60f1ea883e802280acdfd11e87998b53a545cd2f8c465735becba9b9",
-      "sourceSha256": "41b0ba0e60f1ea883e802280acdfd11e87998b53a545cd2f8c465735becba9b9"
-    },
     {
       "id": "docs/agents/birdeye-mcp.md",
       "title": "Birdeye MCP",
@@ -664,13 +657,6 @@
       "sourceSha256": "2abc598c81598284c48b089be8d64c2658446d84be327272a59edb85d378f3dc"
     },
     {
-      "id": "docs/changelog/20280812-wallet-net-worth-apis-release.md",
-      "title": "2025.08.12 -  Wallet Net Worth APIs Release",
-      "source": "https://docs.birdeye.so/changelog/20280812-wallet-net-worth-apis-release",
-      "sha256": "fc48abca4895142a57954f601ef8444f6f23039266b59c1bab391b3f4f0ab2d5",
-      "sourceSha256": "fc48abca4895142a57954f601ef8444f6f23039266b59c1bab391b3f4f0ab2d5"
-    },
-    {
       "id": "docs/changelog/block-number-trade-filtering.md",
       "title": "Block Number Trade Filtering",
       "source": "https://docs.birdeye.so/changelog/block-number-trade-filtering",
@@ -1096,13 +1082,6 @@
       "source": "https://docs.birdeye.so/data-api/holder/post-token-v1-holder-batch",
       "sha256": "7d245fcc413ec7d7b47b95f9f67ee3c91316e8753e2821449206d919c8a50e94",
       "sourceSha256": "f5f514fabd6d15a6b9f7d70b8377c30600c1a74659d58fede301f10a3995ce8a"
-    },
-    {
-      "id": "docs/data-api/index.md",
-      "title": "Birdeye Data API",
-      "source": "https://docs.birdeye.so/data-api/index",
-      "sha256": "e33d4911770af49d7d295c6b339ca2c88aca475149fbc1d376f4c2985ced6285",
-      "sourceSha256": "e33d4911770af49d7d295c6b339ca2c88aca475149fbc1d376f4c2985ced6285"
     },
     {
       "id": "docs/data-api/meme/get-defi-v3-token-meme-detail-single.md",
@@ -1707,384 +1686,6 @@
       "sourceSha256": "da9a920d6592b948b72c9587db0f155500ca7c3834123504234f113688d415d9"
     },
     {
-      "id": "docs/guides/birdeye-data-services-bds/authentication-api-keys.md",
-      "title": "Authentication & API Keys",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/authentication-api-keys",
-      "sha256": "2895ebbcd4927d17369a26b76dfe221144a057f04420cd554c506b89fd4942cb",
-      "sourceSha256": "2895ebbcd4927d17369a26b76dfe221144a057f04420cd554c506b89fd4942cb"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-audit-log.md",
-      "title": "Dashboard - Audit Log",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-audit-log",
-      "sha256": "c9b4fae6d6aae402ccc25bf5795359fc696dc9434320e947baf4d9f28e67f6c0",
-      "sourceSha256": "c9b4fae6d6aae402ccc25bf5795359fc696dc9434320e947baf4d9f28e67f6c0"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-billing-history.md",
-      "title": "Dashboard - Billing History",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-billing-history",
-      "sha256": "f5a594f17042de71f2d6d1b9365a047cd48bc32afa5f137dab74114a264c9504",
-      "sourceSha256": "f5a594f17042de71f2d6d1b9365a047cd48bc32afa5f137dab74114a264c9504"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-metrics.md",
-      "title": "Dashboard - Metrics",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-metrics",
-      "sha256": "2acafcd970ffff19a537a205c9f3cde838e15a5ca8bb10f38dc14c18e5b91135",
-      "sourceSha256": "2acafcd970ffff19a537a205c9f3cde838e15a5ca8bb10f38dc14c18e5b91135"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-packages.md",
-      "title": "Dashboard - Packages",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-packages",
-      "sha256": "1a63a527a149e5e94d6341a8f721f97fd8b43f511b013262d6abc56c980f8f9b",
-      "sourceSha256": "1a63a527a149e5e94d6341a8f721f97fd8b43f511b013262d6abc56c980f8f9b"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-payment-methods.md",
-      "title": "Dashboard - Payment Methods",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-payment-methods",
-      "sha256": "26a55132366b95c906fc6d5e3a0303d3fe2c69067da02caf82ae4ed4ba94f5be",
-      "sourceSha256": "26a55132366b95c906fc6d5e3a0303d3fe2c69067da02caf82ae4ed4ba94f5be"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-security.md",
-      "title": "Dashboard - Security",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/dashboard-security",
-      "sha256": "1017d46e85e9f108fa6805b4d407b9ed8f2c7273a1f47b95a7fb4ab8dc207c0e",
-      "sourceSha256": "1017d46e85e9f108fa6805b4d407b9ed8f2c7273a1f47b95a7fb4ab8dc207c0e"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/index.md",
-      "title": "BDS — Getting Started",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/index",
-      "sha256": "9a20f27715797c78205023c8f513f6723049ae2a9b7142de6f66c0f29c7b928d",
-      "sourceSha256": "9a20f27715797c78205023c8f513f6723049ae2a9b7142de6f66c0f29c7b928d"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/manage-your-dashboard.md",
-      "title": "Manage your Dashboard",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/manage-your-dashboard",
-      "sha256": "51a8f2cf6543883233b9341b96a797503d89bfa74b48c4f619b68f2fa130fad2",
-      "sourceSha256": "51a8f2cf6543883233b9341b96a797503d89bfa74b48c4f619b68f2fa130fad2"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/overview-1.md",
-      "title": "Dashboard - Overview",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/bds-getting-started/overview-1",
-      "sha256": "c16a6050c2baf7417bf97260d011081903f59f6c6f1d473e24d8b7b63335fbd5",
-      "sourceSha256": "c16a6050c2baf7417bf97260d011081903f59f6c6f1d473e24d8b7b63335fbd5"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/birdeye-data-services-bds/index.md",
-      "title": "Welcome to Birdeye Data Services",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/birdeye-data-services-bds/index",
-      "sha256": "54be8695af425d585839b48de48ab0e2695f29ecf92921108588b479c1596af4",
-      "sourceSha256": "54be8695af425d585839b48de48ab0e2695f29ecf92921108588b479c1596af4"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/compute-unit-cost-copy.md",
-      "title": "Compute Unit Cost (included Data Download)",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/compute-unit-cost-copy",
-      "sha256": "082da9c35c426904f952c03d618f2ce41ee8634866d622babf6fbb8583335ed2",
-      "sourceSha256": "082da9c35c426904f952c03d618f2ce41ee8634866d622babf6fbb8583335ed2"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/csv-download.md",
-      "title": "Data Download (CSV. File)",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/csv-download",
-      "sha256": "6315dc660c4ca4fea3f461c6e00c2b3406882795b0ff44a2686e09a7eb961e64",
-      "sourceSha256": "6315dc660c4ca4fea3f461c6e00c2b3406882795b0ff44a2686e09a7eb961e64"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/data-accessibility-by-packages-copy-1.md",
-      "title": "Data Accessibility by Packages (include CSV Download)",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/data-accessibility-by-packages-copy-1",
-      "sha256": "abec0158a2be17174d42923855959233d3f6dbdc4d6ad01a58ca4749a608f508",
-      "sourceSha256": "abec0158a2be17174d42923855959233d3f6dbdc4d6ad01a58ca4749a608f508"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/enterprise-contact.md",
-      "title": "Contact",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/enterprise-contact",
-      "sha256": "242004e780ab0c5587a9a87ad42e712b7f22a24b5cbd645e9a4efe1fcbfd325b",
-      "sourceSha256": "242004e780ab0c5587a9a87ad42e712b7f22a24b5cbd645e9a4efe1fcbfd325b"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/glossary/index.md",
-      "title": "Glossary",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/glossary/index",
-      "sha256": "abf50863ad4bd93f7fe631c9df932eafaad3dd402f013e29e3813aa961a4d1eb",
-      "sourceSha256": "abf50863ad4bd93f7fe631c9df932eafaad3dd402f013e29e3813aa961a4d1eb"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/glossary/market-data-1.md",
-      "title": "Market Data",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/glossary/market-data-1",
-      "sha256": "d3fdbd82f08999bfa4451a309655be4a71af25cad800e182787a3fc46b2d4cf2",
-      "sourceSha256": "d3fdbd82f08999bfa4451a309655be4a71af25cad800e182787a3fc46b2d4cf2"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/glossary/security-data.md",
-      "title": "🔒 Security Data Glossary",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/glossary/security-data",
-      "sha256": "99d10c30955adedb9e2ae852fee338ba47d48bca74d480055b9669896d716ab9",
-      "sourceSha256": "99d10c30955adedb9e2ae852fee338ba47d48bca74d480055b9669896d716ab9"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/iframe-old.md",
-      "title": "Iframe (OLD)",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/iframe-old",
-      "sha256": "f0a314b4205bd209c10ff03bd2d39cd433d0dccbd7841b45fcc78478c3f67803",
-      "sourceSha256": "f0a314b4205bd209c10ff03bd2d39cd433d0dccbd7841b45fcc78478c3f67803"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/monitoring.md",
-      "title": "Monitoring",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/monitoring",
-      "sha256": "b3a51f0d3eb4031022c0a2e2f37babf7e3b0697e2ce9c70c86c02b4a5094bd4c",
-      "sourceSha256": "b3a51f0d3eb4031022c0a2e2f37babf7e3b0697e2ce9c70c86c02b4a5094bd4c"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/pricing-copy.md",
-      "title": "Pricing (included Data Download)",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/pricing-copy",
-      "sha256": "b99cfa4bf998e18b1153bb666520523935e05bc4ec18c00a7c7a862d4c6a98bb",
-      "sourceSha256": "b99cfa4bf998e18b1153bb666520523935e05bc4ec18c00a7c7a862d4c6a98bb"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/amm-supported.md",
-      "title": "amm supported",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/amm-supported",
-      "sha256": "8c732849c4b6114c1fc96db0191e5df4edea41f41cf72b814a2e39c7995a7d43",
-      "sourceSha256": "8c732849c4b6114c1fc96db0191e5df4edea41f41cf72b814a2e39c7995a7d43"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/history-price.md",
-      "title": "history_price",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/history-price",
-      "sha256": "f7965b0501dc9fb2158844f7e4a6f255558d77520bdba4ef5fb4d0ed3b1dbd90",
-      "sourceSha256": "f7965b0501dc9fb2158844f7e4a6f255558d77520bdba4ef5fb4d0ed3b1dbd90"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/index.md",
-      "title": "Public APIs - Deprecate soon",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/index",
-      "sha256": "a08f2165e454981406a1ddfe9e5c1af74ff8f7f52c9ef7f50bde44bbdf59a226",
-      "sourceSha256": "a08f2165e454981406a1ddfe9e5c1af74ff8f7f52c9ef7f50bde44bbdf59a226"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/multi-price.md",
-      "title": "multi_price",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/multi-price",
-      "sha256": "3deecc862352cdd4ca98d3072c5822e7e3f91941a4e7441e589092d763c001ec",
-      "sourceSha256": "3deecc862352cdd4ca98d3072c5822e7e3f91941a4e7441e589092d763c001ec"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/price.md",
-      "title": "price",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/price",
-      "sha256": "0a115b3ed9de9d36638c6bb81076054a66a8a64d5feb1178d48033d4f6b5cd30",
-      "sourceSha256": "0a115b3ed9de9d36638c6bb81076054a66a8a64d5feb1178d48033d4f6b5cd30"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/token-existed.md",
-      "title": "token existed",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/token-existed",
-      "sha256": "5a294c3e80bf3043fcae89e029948cfe5d115c6834d756adb062a2560876f7f9",
-      "sourceSha256": "5a294c3e80bf3043fcae89e029948cfe5d115c6834d756adb062a2560876f7f9"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/public-apis-overview/tokenlist.md",
-      "title": "token list",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/public-apis-overview/tokenlist",
-      "sha256": "f7e8593ae47f8bbb581ab29ca9de0a377a6128f7a3de67243dc40176fef1833f",
-      "sourceSha256": "f7e8593ae47f8bbb581ab29ca9de0a377a6128f7a3de67243dc40176fef1833f"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/tutorial/birdeye-ai.md",
-      "title": "Birdeye AI ",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/tutorial/birdeye-ai",
-      "sha256": "1c724e1e5cb495d09a1042f313166260b55e5a8b36c6165717fcac3ffb042a56",
-      "sourceSha256": "1c724e1e5cb495d09a1042f313166260b55e5a8b36c6165717fcac3ffb042a56"
-    },
-    {
-      "id": "docs/guides/birdeye-data-services-bds/tutorial/index.md",
-      "title": "Tutorial",
-      "source": "https://docs.birdeye.so/guides/birdeye-data-services-bds/tutorial/index",
-      "sha256": "df84e652217ca1a558e860e5d00d7fee71399bd27b39a8ef8698e32672cad362",
-      "sourceSha256": "df84e652217ca1a558e860e5d00d7fee71399bd27b39a8ef8698e32672cad362"
-    },
-    {
-      "id": "docs/guides/birdeye-services/advanced-cex-liquidity.md",
-      "title": "Advanced Centralized Exchange Liquidity",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/advanced-cex-liquidity",
-      "sha256": "e9f81e6257aa9395b7f333e93f3921ef0762372faa6a49958be93b5bb0b3ab83",
-      "sourceSha256": "e9f81e6257aa9395b7f333e93f3921ef0762372faa6a49958be93b5bb0b3ab83"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-account.md",
-      "title": "Birdeye Account",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-account",
-      "sha256": "82f05d033ea229878cd5d44061165470aad281309c0548d4b0ae92db2f775607",
-      "sourceSha256": "82f05d033ea229878cd5d44061165470aad281309c0548d4b0ae92db2f775607"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-bots.md",
-      "title": "Birdeye Bots",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-bots",
-      "sha256": "7e77116dcf7a3b5a4f7b4d26ab36dac7f1150a5e724d38d0ff35188c81db7338",
-      "sourceSha256": "7e77116dcf7a3b5a4f7b4d26ab36dac7f1150a5e724d38d0ff35188c81db7338"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-terminal/alert-notification-settings.md",
-      "title": "Alert - Notification Settings",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-terminal/alert-notification-settings",
-      "sha256": "8a6b91c1db2cf240102a3db57f8c4ba5fc410b4acc3c502ac94f05a459afd69c",
-      "sourceSha256": "8a6b91c1db2cf240102a3db57f8c4ba5fc410b4acc3c502ac94f05a459afd69c"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-terminal/alert.md",
-      "title": "Alert",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-terminal/alert",
-      "sha256": "f66ae9d1e48bf5f8be2a749eaa571f867ae989422acb4d313ed6b7c7711131b8",
-      "sourceSha256": "f66ae9d1e48bf5f8be2a749eaa571f867ae989422acb4d313ed6b7c7711131b8"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-terminal/index.md",
-      "title": "Birdeye Terminal",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-terminal/index",
-      "sha256": "98a765bad05fcf219d31f10dd47559718225050344b6b758f28d80744886ca15",
-      "sourceSha256": "98a765bad05fcf219d31f10dd47559718225050344b6b758f28d80744886ca15"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-terminal/labels.md",
-      "title": "Labels",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-terminal/labels",
-      "sha256": "19e393eb1309effc8707c4d39eba8dd51d071a6ba961834400ecc02c141f0214",
-      "sourceSha256": "19e393eb1309effc8707c4d39eba8dd51d071a6ba961834400ecc02c141f0214"
-    },
-    {
-      "id": "docs/guides/birdeye-services/birdeye-terminal/watchlist.md",
-      "title": "Watchlist",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/birdeye-terminal/watchlist",
-      "sha256": "6eceb92d96e970a70eb5da5c66ae73cf7d0d59cbe38b28e5f4bbc136946945f8",
-      "sourceSha256": "6eceb92d96e970a70eb5da5c66ae73cf7d0d59cbe38b28e5f4bbc136946945f8"
-    },
-    {
-      "id": "docs/guides/birdeye-services/brand-assets.md",
-      "title": "Brand Assets",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/brand-assets",
-      "sha256": "4e80ca86403a2ef9ff8c9fc619dff6f245367c23d8ff6bdc137c18c26a7ebd3a",
-      "sourceSha256": "4e80ca86403a2ef9ff8c9fc619dff6f245367c23d8ff6bdc137c18c26a7ebd3a"
-    },
-    {
-      "id": "docs/guides/birdeye-services/iframe-hidden.md",
-      "title": "Iframe",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/iframe-hidden",
-      "sha256": "798fbca2e7829d7c735182de9ffd36d0a09d49cfcd277533f139873845cd339c",
-      "sourceSha256": "798fbca2e7829d7c735182de9ffd36d0a09d49cfcd277533f139873845cd339c"
-    },
-    {
-      "id": "docs/guides/birdeye-services/insights.md",
-      "title": "Insights",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/insights",
-      "sha256": "973b9e1d2f663f236bce7225f81f75057b6d060dab36683f073b5a4579924110",
-      "sourceSha256": "973b9e1d2f663f236bce7225f81f75057b6d060dab36683f073b5a4579924110"
-    },
-    {
-      "id": "docs/guides/birdeye-services/key-data-types/index.md",
-      "title": "Key Data Types",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/key-data-types/index",
-      "sha256": "2bac98c64326862e2687b25eb98e656550de758b1d3e5438b05843dbddfd70df",
-      "sourceSha256": "2bac98c64326862e2687b25eb98e656550de758b1d3e5438b05843dbddfd70df"
-    },
-    {
-      "id": "docs/guides/birdeye-services/key-data-types/multichain-data.md",
-      "title": "Multichain Data",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/key-data-types/multichain-data",
-      "sha256": "41c72a288afcefa81526f9fe792dc05ff47572596cc4e4b04c560d4be558f86a",
-      "sourceSha256": "41c72a288afcefa81526f9fe792dc05ff47572596cc4e4b04c560d4be558f86a"
-    },
-    {
-      "id": "docs/guides/birdeye-services/key-data-types/real-time-candle-chart.md",
-      "title": "Real Time Candle Chart",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/key-data-types/real-time-candle-chart",
-      "sha256": "6c48d3a76e5184f6f85509cb81df3242e01b09aae4ddaba29dd732e99719f94d",
-      "sourceSha256": "6c48d3a76e5184f6f85509cb81df3242e01b09aae4ddaba29dd732e99719f94d"
-    },
-    {
-      "id": "docs/guides/birdeye-services/key-data-types/smart-portfolio.md",
-      "title": "Smart Portfolio",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/key-data-types/smart-portfolio",
-      "sha256": "64063f6a5518bf6c40918fb43c36099e3f5a58ff13261097ca273d8debca354c",
-      "sourceSha256": "64063f6a5518bf6c40918fb43c36099e3f5a58ff13261097ca273d8debca354c"
-    },
-    {
-      "id": "docs/guides/birdeye-services/key-data-types/transaction-simulation.md",
-      "title": "Transaction Simulation",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/key-data-types/transaction-simulation",
-      "sha256": "d3691b72f9132bc33137d0da987df6c6398540ff455d8e6986a878934466a640",
-      "sourceSha256": "d3691b72f9132bc33137d0da987df6c6398540ff455d8e6986a878934466a640"
-    },
-    {
-      "id": "docs/guides/birdeye-services/market-data.md",
-      "title": "Market Data",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/market-data",
-      "sha256": "892d84dd7d5a1d4e6d427e984044e84b41f87d09c5baf857a89b335092a8fc72",
-      "sourceSha256": "892d84dd7d5a1d4e6d427e984044e84b41f87d09c5baf857a89b335092a8fc72"
-    },
-    {
-      "id": "docs/guides/birdeye-services/pro-subscription/index.md",
-      "title": "PRO SUBSCRIPTION",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/pro-subscription/index",
-      "sha256": "f28930507f4b802a1335ced980f9e1e1cda83baafce35777098a36dcafc054bd",
-      "sourceSha256": "f28930507f4b802a1335ced980f9e1e1cda83baafce35777098a36dcafc054bd"
-    },
-    {
-      "id": "docs/guides/birdeye-services/pro-subscription/pricing-2.md",
-      "title": "Pricing",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/pro-subscription/pricing-2",
-      "sha256": "cd59d0c6f8aa1a35a2390991af11af6cd490e09865c305162acdb3bebdc0d064",
-      "sourceSha256": "cd59d0c6f8aa1a35a2390991af11af6cd490e09865c305162acdb3bebdc0d064"
-    },
-    {
-      "id": "docs/guides/birdeye-services/scaled-ui-amount-extension.md",
-      "title": "Scaled UI Amount Extension",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/scaled-ui-amount-extension",
-      "sha256": "19c6edaf515a0377ba7f199845990678d93dce92c7c23bbae601e5f674168d3c",
-      "sourceSha256": "19c6edaf515a0377ba7f199845990678d93dce92c7c23bbae601e5f674168d3c"
-    },
-    {
-      "id": "docs/guides/birdeye-services/security.md",
-      "title": "Security Check",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/security",
-      "sha256": "02bbd27bdd0c41f7805367019617d9b726dcae8bfc8885d91caa3a59bde47acd",
-      "sourceSha256": "02bbd27bdd0c41f7805367019617d9b726dcae8bfc8885d91caa3a59bde47acd"
-    },
-    {
-      "id": "docs/guides/birdeye-services/token-info-update-service.md",
-      "title": "Token Info Update Service",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/token-info-update-service",
-      "sha256": "7b3d687d1b5c930b959e5e5a27c7296c62db2d9329bb8052ddc88f327a6329fe",
-      "sourceSha256": "7b3d687d1b5c930b959e5e5a27c7296c62db2d9329bb8052ddc88f327a6329fe"
-    },
-    {
-      "id": "docs/guides/birdeye-services/wallet-integration.md",
-      "title": "Wallet Integration",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/wallet-integration",
-      "sha256": "6eb5bf11dc792da7829d8cdb86504116b17e5d9b359f25b693298997604709ee",
-      "sourceSha256": "6eb5bf11dc792da7829d8cdb86504116b17e5d9b359f25b693298997604709ee"
-    },
-    {
-      "id": "docs/guides/birdeye-services/web3-wallet-log-in.md",
-      "title": "Web3 Wallet Log-in",
-      "source": "https://docs.birdeye.so/guides/birdeye-services/web3-wallet-log-in",
-      "sha256": "3e01cb36f2435620d4dd052db8330c302848b769c1a9f377efc7855f19e6eb2a",
-      "sourceSha256": "3e01cb36f2435620d4dd052db8330c302848b769c1a9f377efc7855f19e6eb2a"
-    },
-    {
       "id": "docs/guides/compute-unit-cost/batch-token-cu-cost.md",
       "title": "Batch Token Compute Unit Cost",
       "source": "https://docs.birdeye.so/guides/compute-unit-cost/batch-token-cu-cost",
@@ -2106,445 +1707,11 @@
       "sourceSha256": "74d60b7cb9e72baa4fd29fa4708c55ac8801b9a30ccdba9982ae1067d9eaa8ad"
     },
     {
-      "id": "docs/guides/compute-unit-cost/multi-factor-cu-cost.md",
-      "title": "Multi Factor Compute Unit Cost",
-      "source": "https://docs.birdeye.so/guides/compute-unit-cost/multi-factor-cu-cost",
-      "sha256": "74d60b7cb9e72baa4fd29fa4708c55ac8801b9a30ccdba9982ae1067d9eaa8ad",
-      "sourceSha256": "74d60b7cb9e72baa4fd29fa4708c55ac8801b9a30ccdba9982ae1067d9eaa8ad"
-    },
-    {
       "id": "docs/guides/data-accessibility-by-packages.md",
       "title": "Data Accessibility by Packages",
       "source": "https://docs.birdeye.so/guides/data-accessibility-by-packages",
       "sha256": "68d9740d10125c5e1a59e19985539d4210830c0f42511af58fa08298a5768db3",
       "sourceSha256": "68d9740d10125c5e1a59e19985539d4210830c0f42511af58fa08298a5768db3"
-    },
-    {
-      "id": "docs/guides/documentation/birdeye-account-copy.md",
-      "title": "Birdeye Account (COPY)",
-      "source": "https://docs.birdeye.so/guides/documentation/birdeye-account-copy",
-      "sha256": "12396a2177a282b0cc792e89a88ec4253ff5508d45b57f1df0e21a46ddd4286f",
-      "sourceSha256": "12396a2177a282b0cc792e89a88ec4253ff5508d45b57f1df0e21a46ddd4286f"
-    },
-    {
-      "id": "docs/guides/documentation/faq.md",
-      "title": "FAQ — Birdeye Data API",
-      "source": "https://docs.birdeye.so/guides/documentation/faq",
-      "sha256": "d65fb05b7e909507d70a57db53929d56969b8894f96f27d6da369567db252521",
-      "sourceSha256": "d65fb05b7e909507d70a57db53929d56969b8894f96f27d6da369567db252521"
-    },
-    {
-      "id": "docs/guides/documentation/overview.md",
-      "title": "Overview",
-      "source": "https://docs.birdeye.so/guides/documentation/overview",
-      "sha256": "957e0039b2b2d0d9fff225e7cb8a187b4845731e22687f9d11605a9edfe32baa",
-      "sourceSha256": "957e0039b2b2d0d9fff225e7cb8a187b4845731e22687f9d11605a9edfe32baa"
-    },
-    {
-      "id": "docs/guides/documentation/token-info-update-service-copy.md",
-      "title": "Token Info Update Service (COPY)",
-      "source": "https://docs.birdeye.so/guides/documentation/token-info-update-service-copy",
-      "sha256": "273d436681f2ef802d7854f05769f8f2e0cbc69bc47f5e6d39ac04a9d9ff4795",
-      "sourceSha256": "273d436681f2ef802d7854f05769f8f2e0cbc69bc47f5e6d39ac04a9d9ff4795"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/api-access/index.md",
-      "title": "API Access",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/api-access/index",
-      "sha256": "78dcdc04ea59ce7684c08ac0b998da361433b84cb395bfa57382a85190cc5b30",
-      "sourceSha256": "78dcdc04ea59ce7684c08ac0b998da361433b84cb395bfa57382a85190cc5b30"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/api-access/rate-limiting/per-api-rate-limit.md",
-      "title": "Per API rate limit",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/api-access/rate-limiting/per-api-rate-limit",
-      "sha256": "57d63c404e81d5b9d49cde32740da18f6243a0cfa54dff9eea4882cc421d3aee",
-      "sourceSha256": "57d63c404e81d5b9d49cde32740da18f6243a0cfa54dff9eea4882cc421d3aee"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/api-access/supported-networks.md",
-      "title": "Supported networks",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/api-access/supported-networks",
-      "sha256": "1a53903be163b45bce311e0d07a20b9bae335047407b14711653c5c078c058f3",
-      "sourceSha256": "1a53903be163b45bce311e0d07a20b9bae335047407b14711653c5c078c058f3"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/compute-unit-cost/batch-token-cu-cost.md",
-      "title": "Batch Token CU Cost",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/compute-unit-cost/batch-token-cu-cost",
-      "sha256": "7e69f2fb7bae02ab4c2585faebc665354fcfaf3651f2699698abde2139bf79d2",
-      "sourceSha256": "7e69f2fb7bae02ab4c2585faebc665354fcfaf3651f2699698abde2139bf79d2"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/compute-unit-cost/candlestick-pricing.md",
-      "title": "Candlestick Pricing",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/compute-unit-cost/candlestick-pricing",
-      "sha256": "cd8a6a58201817f677f923c691454a95a40e4105e21fb3cba428ba8a32d612d3",
-      "sourceSha256": "cd8a6a58201817f677f923c691454a95a40e4105e21fb3cba428ba8a32d612d3"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/compute-unit-cost/dynamic-cu-cost.md",
-      "title": "🧮 Dynamic Compute Unit Cost",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/compute-unit-cost/dynamic-cu-cost",
-      "sha256": "6e9f6b6d7a5372655243f9e40a2f9177a5a903fdeacacf94dd3be922ef1c78e4",
-      "sourceSha256": "6e9f6b6d7a5372655243f9e40a2f9177a5a903fdeacacf94dd3be922ef1c78e4"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/compute-unit-cost/index.md",
-      "title": "Compute Unit Cost",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/compute-unit-cost/index",
-      "sha256": "02e475648478fdeeb3a567b7a5a391772b1b07f08bd034d76d454f11d749cc13",
-      "sourceSha256": "02e475648478fdeeb3a567b7a5a391772b1b07f08bd034d76d454f11d749cc13"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/compute-unit-cost/multi-factor-cu-cost.md",
-      "title": "Multi Factor CU Cost",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/compute-unit-cost/multi-factor-cu-cost",
-      "sha256": "77a234a7c7f7f11204118ce2dc3bfecad1de91931f0092b46d45c3ee1784d5e9",
-      "sourceSha256": "77a234a7c7f7f11204118ce2dc3bfecad1de91931f0092b46d45c3ee1784d5e9"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/data-coverage-1/amm-coverage.md",
-      "title": "AMM Coverage",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/data-coverage-1/amm-coverage",
-      "sha256": "32429757b30cf047853d1f81cb13ea9b3cb62d8a4788aba8931b2f64f59918c0",
-      "sourceSha256": "32429757b30cf047853d1f81cb13ea9b3cb62d8a4788aba8931b2f64f59918c0"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/data-coverage-1/index.md",
-      "title": "Data Coverage",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/data-coverage-1/index",
-      "sha256": "82acffece1b821e9faf4b55a161fcac5c0b0eb3c9e24e279e0264977039a066c",
-      "sourceSha256": "82acffece1b821e9faf4b55a161fcac5c0b0eb3c9e24e279e0264977039a066c"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/historical-price-unix.md",
-      "title": "Historical Price Unix",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/historical-price-unix",
-      "sha256": "9bd9f758f28c9bf69dc85d5dcc9723740e9977b84da15540a1a4235665a4070c",
-      "sourceSha256": "9bd9f758f28c9bf69dc85d5dcc9723740e9977b84da15540a1a4235665a4070c"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/index.md",
-      "title": "Defi endpoints",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/index",
-      "sha256": "30a27915aa068e8ab2ba0db253fece4e11d2fed652a66f7ba27ee065fa685112",
-      "sourceSha256": "30a27915aa068e8ab2ba0db253fece4e11d2fed652a66f7ba27ee065fa685112"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/multi-price-1.md",
-      "title": "multi price",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/multi-price-1",
-      "sha256": "d9a7be0a7c23b6ceee1f070677dce1b9b04b37bf36891e519d700d336f30a684",
-      "sourceSha256": "d9a7be0a7c23b6ceee1f070677dce1b9b04b37bf36891e519d700d336f30a684"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-base-quote.md",
-      "title": "ohlcv base/quote",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-base-quote",
-      "sha256": "04a72f8bd2950fbf8f8025e8abed76cf2d7875b6ca0cf4ad284fb631cbbbb0ab",
-      "sourceSha256": "04a72f8bd2950fbf8f8025e8abed76cf2d7875b6ca0cf4ad284fb631cbbbb0ab"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-pair.md",
-      "title": "ohlcv pair",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-pair",
-      "sha256": "35891e5f542fc67d18dfb406e0ce6e07c9e21810f24d08f6e32c35e4700122d7",
-      "sourceSha256": "35891e5f542fc67d18dfb406e0ce6e07c9e21810f24d08f6e32c35e4700122d7"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-token.md",
-      "title": "ohlcv token",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/ohlcv-token",
-      "sha256": "777681f2020102013ce916e9540d102261da4a1127b3216cf100586967f8e53c",
-      "sourceSha256": "cc7e15583e0bd30bdcfe61f14ffb1b63690ed65b6f810bc8509d7c110332607f"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/pair.md",
-      "title": "Trades - Pair",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/pair",
-      "sha256": "bf2e92c2f378933e25ecfbdc705284779592c00c2a92ce2ec0dba553b38e2aa1",
-      "sourceSha256": "f80e68912031e25092cd94656815af704ae436b83d1c0a9824e0ce35dea0ee72"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-1.md",
-      "title": "price",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-1",
-      "sha256": "ba0262a0ba1c85b75a97467b079c49e4a1a38a63f6b4e6821a7960d5558c5d1d",
-      "sourceSha256": "7bbc9e81fcd388ab99fd0ddd54895e4352def1eabfec31e0dc9e585a75dea0cf"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-history.md",
-      "title": "price history",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-history",
-      "sha256": "fe1820f847045c24c5f7e55652a4effaef00ea46de2c303ab495e99e3f05c2db",
-      "sourceSha256": "fe1820f847045c24c5f7e55652a4effaef00ea46de2c303ab495e99e3f05c2db"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-volume-multi-tokens.md",
-      "title": "Price Volume - Multi tokens",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-volume-multi-tokens",
-      "sha256": "725216f1b716aac6cbf91c373c66c12b90f4af7337074bf6ed9b739cc8fc8aac",
-      "sourceSha256": "725216f1b716aac6cbf91c373c66c12b90f4af7337074bf6ed9b739cc8fc8aac"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-volume-single-token.md",
-      "title": "Price Volume - Single token",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/price-volume-single-token",
-      "sha256": "bdce67f3cb8eff53f01ed9d00da0a6f342756dcbd6f0d130cd66d9c121459812",
-      "sourceSha256": "bdce67f3cb8eff53f01ed9d00da0a6f342756dcbd6f0d130cd66d9c121459812"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/token.md",
-      "title": "Trades - Token",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/token",
-      "sha256": "2f0fc46ef9b1f4d91e69842bd8dba063fd2acef3c00b855afa495ee3b2d71676",
-      "sourceSha256": "2f0fc46ef9b1f4d91e69842bd8dba063fd2acef3c00b855afa495ee3b2d71676"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/trade-token-seek-by-time.md",
-      "title": "Trade - Token - Seek by time",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/trade-token-seek-by-time",
-      "sha256": "f64bc4f77f6c849776c6f2e99f4cc3e515565c036f29e9cc8a087a024f853f59",
-      "sourceSha256": "f64bc4f77f6c849776c6f2e99f4cc3e515565c036f29e9cc8a087a024f853f59"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/trades-token-seek-by-time.md",
-      "title": "Trades - Pair Seek By Time",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/trades-token-seek-by-time",
-      "sha256": "6da8e2d47c13f9b85d282ec04d9e52cccfd9b6e5e501c8d2607278a63859e001",
-      "sourceSha256": "6da8e2d47c13f9b85d282ec04d9e52cccfd9b6e5e501c8d2607278a63859e001"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/defi-endpoints/trending-tokens.md",
-      "title": "Trending tokens",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/defi-endpoints/trending-tokens",
-      "sha256": "a94c04f5210da3cc4a0b479eda147e928d48795409ec43dec77213582753f75e",
-      "sourceSha256": "a94c04f5210da3cc4a0b479eda147e928d48795409ec43dec77213582753f75e"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/history.md",
-      "title": "history (decommissioned on June 10th, 2024)",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/history",
-      "sha256": "aa545d8663f1728d064dde9f714d48ab615763dcc140801d57bf8cd78b4f6a66",
-      "sourceSha256": "aa545d8663f1728d064dde9f714d48ab615763dcc140801d57bf8cd78b4f6a66"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/index.md",
-      "title": "API Sample Request/Response",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/index",
-      "sha256": "90f6da92abbcbc0fcdb26c9d7385f6d84ed9795977b0682b45692dfd196fa750",
-      "sourceSha256": "90f6da92abbcbc0fcdb26c9d7385f6d84ed9795977b0682b45692dfd196fa750"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/index.md",
-      "title": "Token endpoints",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/index",
-      "sha256": "d6d1f0e60986c3ca7d8d0cefee6b11c41284fbc4370a3083c13f287b79991188",
-      "sourceSha256": "d6d1f0e60986c3ca7d8d0cefee6b11c41284fbc4370a3083c13f287b79991188"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-creation-time.md",
-      "title": "token creation info",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-creation-time",
-      "sha256": "e07aeba35a21f7a32bc37dd78a399f458372cd772ec1637bdfaf0495302db364",
-      "sourceSha256": "e07aeba35a21f7a32bc37dd78a399f458372cd772ec1637bdfaf0495302db364"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-list-v2.md",
-      "title": "token list (v2)",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-list-v2",
-      "sha256": "21bdfd5d3f3352adfb715e6a744bd99d2cff6f284111ebc608209cbf2705bcaf",
-      "sourceSha256": "21bdfd5d3f3352adfb715e6a744bd99d2cff6f284111ebc608209cbf2705bcaf"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-list.md",
-      "title": "token list",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-list",
-      "sha256": "2dac34d2afc6246cfd6f8c6fd15d933b06af84a697f2f28ed36b87bec5e7cc3b",
-      "sourceSha256": "2dac34d2afc6246cfd6f8c6fd15d933b06af84a697f2f28ed36b87bec5e7cc3b"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-market-list.md",
-      "title": "Token - Market List",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-market-list",
-      "sha256": "e47014b5eccc36a52d2fa394e3dfd8643fd0686f8f0f4b012f4b70787db9cb75",
-      "sourceSha256": "e47014b5eccc36a52d2fa394e3dfd8643fd0686f8f0f4b012f4b70787db9cb75"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-new-listing.md",
-      "title": "Token - New Listing",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-new-listing",
-      "sha256": "2bba902398ad9eaf5f900e9b1d04e88e0cca84066a832d88090026b1ff2eace8",
-      "sourceSha256": "2bba902398ad9eaf5f900e9b1d04e88e0cca84066a832d88090026b1ff2eace8"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-overview.md",
-      "title": "token overview",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-overview",
-      "sha256": "20dd4c3ef2dd058750525472b0cff87570cb4558c3290108eb281767df087aee",
-      "sourceSha256": "20dd4c3ef2dd058750525472b0cff87570cb4558c3290108eb281767df087aee"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-security.md",
-      "title": "token security",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-security",
-      "sha256": "d41556884137c4223f2a9916e9b9fb34b70374257f19593f24e984e86de17e66",
-      "sourceSha256": "d41556884137c4223f2a9916e9b9fb34b70374257f19593f24e984e86de17e66"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/token-endpoints/token-top-traders.md",
-      "title": "Token - Top Traders",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/token-endpoints/token-top-traders",
-      "sha256": "c898d3d12a6bf9580e93b3b4bb03c5dc9588089e49d0b50e010adc813587ec8d",
-      "sourceSha256": "c898d3d12a6bf9580e93b3b4bb03c5dc9588089e49d0b50e010adc813587ec8d"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/index.md",
-      "title": "Wallet endpoints",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/index",
-      "sha256": "48a46f0b494e07231d14ec875f94fee9a67982b99ae54c9c66f5b20f8a39485a",
-      "sourceSha256": "48a46f0b494e07231d14ec875f94fee9a67982b99ae54c9c66f5b20f8a39485a"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/list-supported-chains.md",
-      "title": "list supported chains",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/list-supported-chains",
-      "sha256": "402342e97d539a63b534397e79ee0af0c50082bc4859c90f83c17a8db0b85c3b",
-      "sourceSha256": "402342e97d539a63b534397e79ee0af0c50082bc4859c90f83c17a8db0b85c3b"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/transaction-simulation-1.md",
-      "title": "transaction simulation",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/transaction-simulation-1",
-      "sha256": "ba0a66ca3893af87938ee3d968a60779ba097f63448e3e811d99196712312d0e",
-      "sourceSha256": "ba0a66ca3893af87938ee3d968a60779ba097f63448e3e811d99196712312d0e"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-balance.md",
-      "title": "wallet - token balance",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-balance",
-      "sha256": "b03ce90baa90c8f42835028b56257592450d781fff49476448fc55cd7df667cc",
-      "sourceSha256": "b03ce90baa90c8f42835028b56257592450d781fff49476448fc55cd7df667cc"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-portfolio-multichain.md",
-      "title": "wallet portfolio - multichain",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-portfolio-multichain",
-      "sha256": "b167c87eb4009830a08c53e0a8b614ce9a8375e9cbf67821ad2c761cfc4e0e85",
-      "sourceSha256": "b167c87eb4009830a08c53e0a8b614ce9a8375e9cbf67821ad2c761cfc4e0e85"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-portfolio.md",
-      "title": "Wallet - Portfolio (Beta)",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-portfolio",
-      "sha256": "6040ed6488acbf4230449dc97952a6898595011aa45457bfe0249d65e7b2374a",
-      "sourceSha256": "6040ed6488acbf4230449dc97952a6898595011aa45457bfe0249d65e7b2374a"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-transaction-history-multichain.md",
-      "title": "wallet transaction history - multichain",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-transaction-history-multichain",
-      "sha256": "6515e2ae400c5aa0ab64a7d6ffb999bbc9f2d644c71a306084db572534e64fcb",
-      "sourceSha256": "6515e2ae400c5aa0ab64a7d6ffb999bbc9f2d644c71a306084db572534e64fcb"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-transaction-history.md",
-      "title": "wallet transaction history (Beta)",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/premium-apis-1/wallet-endpoints/wallet-transaction-history",
-      "sha256": "35e50ff0b07d68b6a0d6a6c91c6b24649815cccb7f5743f105631e8301d5067a",
-      "sourceSha256": "35e50ff0b07d68b6a0d6a6c91c6b24649815cccb7f5743f105631e8301d5067a"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/index.md",
-      "title": "WebSocket",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/index",
-      "sha256": "b498b88f1f84b5e8f4fe8c0991c1c31facb2d598b86ecde71757cd9af04d1c3e",
-      "sourceSha256": "b498b88f1f84b5e8f4fe8c0991c1c31facb2d598b86ecde71757cd9af04d1c3e"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-base-quote-price.md",
-      "title": "SUBSCRIBE_BASE_QUOTE_PRICE",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-base-quote-price",
-      "sha256": "c6a20cc1842818fa71e1a846d5edaf07bfe7c104b04b1db4bd4d1bbc47ffb1ff",
-      "sourceSha256": "c6a20cc1842818fa71e1a846d5edaf07bfe7c104b04b1db4bd4d1bbc47ffb1ff"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-large-trade-txs.md",
-      "title": "SUBSCRIBE_LARGE_TRADE_TXS",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-large-trade-txs",
-      "sha256": "ef43c286e816af0c74d9769e9001eafcb8094462cb2fd76b49fc45c747d3eab4",
-      "sourceSha256": "ef43c286e816af0c74d9769e9001eafcb8094462cb2fd76b49fc45c747d3eab4"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-meme.md",
-      "title": "SUBSCRIBE_MEME",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-meme",
-      "sha256": "9c1e59e3dca2143d494d881e08346b46aa63e265255166526671afaf34a2639e",
-      "sourceSha256": "9c1e59e3dca2143d494d881e08346b46aa63e265255166526671afaf34a2639e"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-new-pair.md",
-      "title": "SUBSCRIBE_NEW_PAIR",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-new-pair",
-      "sha256": "70e9816c2aeae6afd57917343eb5630da4343b475d1f35f7d92ab7d1fd2a03d2",
-      "sourceSha256": "70e9816c2aeae6afd57917343eb5630da4343b475d1f35f7d92ab7d1fd2a03d2"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-price.md",
-      "title": "SUBSCRIBE_PRICE (OHLCV)",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-price",
-      "sha256": "af96a2c880fa35335a261a7deaf159ae7ea1c4306830e91deb238455c583879e",
-      "sourceSha256": "af96a2c880fa35335a261a7deaf159ae7ea1c4306830e91deb238455c583879e"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-token-new-listing.md",
-      "title": "SUBSCRIBE_TOKEN_NEW_LISTING",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-token-new-listing",
-      "sha256": "595bc8996d3cb081e52957e180b4705eccb57994241a2e10e16d53044d6fd311",
-      "sourceSha256": "595bc8996d3cb081e52957e180b4705eccb57994241a2e10e16d53044d6fd311"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-token-stats.md",
-      "title": "SUBSCRIBE_TOKEN_STATS",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-token-stats",
-      "sha256": "c1ebe8f250eccba7ab30e88755db3bf42226cc7edc691d079f625cee2491e3a4",
-      "sourceSha256": "c1ebe8f250eccba7ab30e88755db3bf42226cc7edc691d079f625cee2491e3a4"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-transfer.md",
-      "title": "SUBSCRIBE_TRANSFER",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-transfer",
-      "sha256": "a54c1e16be5bf61b33f180c8dbceb1341ef7f226a2a0d89c9d1bfadcf83107e9",
-      "sourceSha256": "a54c1e16be5bf61b33f180c8dbceb1341ef7f226a2a0d89c9d1bfadcf83107e9"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-txs.md",
-      "title": "SUBSCRIBE_TXS",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-txs",
-      "sha256": "9ee1e0de22a2b7135987db83105924c7d7b62d77e7e7e33a8281ddee6620fe43",
-      "sourceSha256": "9ee1e0de22a2b7135987db83105924c7d7b62d77e7e7e33a8281ddee6620fe43"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/subscribe-wallet-txs.md",
-      "title": "SUBSCRIBE_WALLET_TXS",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/subscribe-wallet-txs",
-      "sha256": "289c8f5ea449ff61b859c1d5df9a4d65ea9ce84d283308175528c5a2592ff29d",
-      "sourceSha256": "289c8f5ea449ff61b859c1d5df9a4d65ea9ce84d283308175528c5a2592ff29d"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/websocket-metrics.md",
-      "title": "WebSocket Metrics",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/websocket-metrics",
-      "sha256": "b493c8f5124efb03e664272541366ad43261401aaeae3e61b2846767f271ab59",
-      "sourceSha256": "b493c8f5124efb03e664272541366ad43261401aaeae3e61b2846767f271ab59"
-    },
-    {
-      "id": "docs/guides/enterprise-solution/websocket/websocket-types.md",
-      "title": "Websocket Subscriptions",
-      "source": "https://docs.birdeye.so/guides/enterprise-solution/websocket/websocket-types",
-      "sha256": "83ec4c3d9f07dcb4653fa63bc7d73f66e1183338783b1a58f004c45fe59259b8",
-      "sourceSha256": "83ec4c3d9f07dcb4653fa63bc7d73f66e1183338783b1a58f004c45fe59259b8"
     },
     {
       "id": "docs/guides/error-handling.md",
@@ -2561,13 +1728,6 @@
       "sourceSha256": "6bdcf4ee2b69ace856af5df374ba1a26d293c4a9c37d69364eec387e1d1a0371"
     },
     {
-      "id": "docs/guides/payment/cu-carry-over-policy.md",
-      "title": "CU carry-over policy",
-      "source": "https://docs.birdeye.so/guides/payment/cu-carry-over-policy",
-      "sha256": "346b21eb433ed1fcfb6e4a0425cd2aa43940e06e3b089327ba05b65b02b775ad",
-      "sourceSha256": "346b21eb433ed1fcfb6e4a0425cd2aa43940e06e3b089327ba05b65b02b775ad"
-    },
-    {
       "id": "docs/guides/payment/index.md",
       "title": "Payment",
       "source": "https://docs.birdeye.so/guides/payment/index",
@@ -2580,20 +1740,6 @@
       "source": "https://docs.birdeye.so/guides/payment/overage-charge-rule",
       "sha256": "f92cb26143f02d55abc21ad9a793f491813ac573a7d4cd0e72f8835d93f08292",
       "sourceSha256": "f92cb26143f02d55abc21ad9a793f491813ac573a7d4cd0e72f8835d93f08292"
-    },
-    {
-      "id": "docs/guides/payment/pricing-model-2.md",
-      "title": "Pricing",
-      "source": "https://docs.birdeye.so/guides/payment/pricing-model-2",
-      "sha256": "97d903a22a707f099d450e0e8ab82af61f211bfc06cc664c38943e70bfa1bccd",
-      "sourceSha256": "97d903a22a707f099d450e0e8ab82af61f211bfc06cc664c38943e70bfa1bccd"
-    },
-    {
-      "id": "docs/guides/payment/pricing-model.md",
-      "title": "Pricing Model",
-      "source": "https://docs.birdeye.so/guides/payment/pricing-model",
-      "sha256": "47c02add6366d29ae0c8d3262f24d494bf798eaaa20ca8dfeaf0000d3ef26bd2",
-      "sourceSha256": "47c02add6366d29ae0c8d3262f24d494bf798eaaa20ca8dfeaf0000d3ef26bd2"
     },
     {
       "id": "docs/guides/payment/pricing.md",
@@ -2622,13 +1768,6 @@
       "source": "https://docs.birdeye.so/guides/what-is-compute-unit-cost",
       "sha256": "65196bc8e1a83cad40ed0ab258fd3c485868025b92bf6e43a07d618483ea705a",
       "sourceSha256": "65196bc8e1a83cad40ed0ab258fd3c485868025b92bf6e43a07d618483ea705a"
-    },
-    {
-      "id": "docs/perps-api/compute-unit-cost.md",
-      "title": "Perps Compute Unit Cost",
-      "source": "https://docs.birdeye.so/perps-api/compute-unit-cost",
-      "sha256": "5d3501ca49aaec08074990d0115316894bf9d92a85b46062d1891bfccec23c6f",
-      "sourceSha256": "5d3501ca49aaec08074990d0115316894bf9d92a85b46062d1891bfccec23c6f"
     },
     {
       "id": "docs/perps-api/index.md",
@@ -2729,20 +1868,6 @@
       "sourceSha256": "5b9a7ede3ba19d293e5685a8c9e582dda25232cc719d1fe7c60cdcfb51479eac"
     },
     {
-      "id": "docs/resources/compute-unit-cost.md",
-      "title": "Compute Unit Cost",
-      "source": "https://docs.birdeye.so/resources/compute-unit-cost",
-      "sha256": "b42c0132eec51b8bc7ab8b17aaa4550f9b95b3a0e136201e2864080ba3fc1dd2",
-      "sourceSha256": "b42c0132eec51b8bc7ab8b17aaa4550f9b95b3a0e136201e2864080ba3fc1dd2"
-    },
-    {
-      "id": "docs/resources/data-accessibility-by-packages.md",
-      "title": "Data Accessibility by Packages",
-      "source": "https://docs.birdeye.so/resources/data-accessibility-by-packages",
-      "sha256": "91f723f8a88fbf454c2191e3acfcf78cae253d880728d644dfa326ebd6fe23bb",
-      "sourceSha256": "91f723f8a88fbf454c2191e3acfcf78cae253d880728d644dfa326ebd6fe23bb"
-    },
-    {
       "id": "docs/resources/data-coverage/dex-coverage.md",
       "title": "DEX & AMM Coverage",
       "source": "https://docs.birdeye.so/resources/data-coverage/dex-coverage",
@@ -2762,13 +1887,6 @@
       "source": "https://docs.birdeye.so/resources/data-coverage/supported-networks",
       "sha256": "3faef47982e1d2d8591911e680ea841243c8376d432e2bcb248c1d2b9b7fab53",
       "sourceSha256": "3faef47982e1d2d8591911e680ea841243c8376d432e2bcb248c1d2b9b7fab53"
-    },
-    {
-      "id": "docs/resources/data-coverage1.md",
-      "title": "Data & AMM Coverage",
-      "source": "https://docs.birdeye.so/resources/data-coverage1",
-      "sha256": "abbc73dc5a93a49eae43b68ec992f76b0b4641a70b2993a32619fcd96427a1aa",
-      "sourceSha256": "abbc73dc5a93a49eae43b68ec992f76b0b4641a70b2993a32619fcd96427a1aa"
     },
     {
       "id": "docs/resources/faqs.md",
@@ -2811,20 +1929,6 @@
       "source": "https://docs.birdeye.so/resources/terms",
       "sha256": "a1dbf347902ffa8cc959d1c9ddce66683a880df066f927c5047c27891af6b608",
       "sourceSha256": "a1dbf347902ffa8cc959d1c9ddce66683a880df066f927c5047c27891af6b608"
-    },
-    {
-      "id": "docs/resources/x402.md",
-      "title": "x402.md",
-      "source": "https://docs.birdeye.so/resources/x402",
-      "sha256": "e37203ef410a94e28f14066c8220a3feffc88db6063f849522566a242d30edfd",
-      "sourceSha256": "e37203ef410a94e28f14066c8220a3feffc88db6063f849522566a242d30edfd"
-    },
-    {
-      "id": "docs/resourcesbug-bounty-program.md",
-      "title": "Bug Bounty Program",
-      "source": "https://docs.birdeye.so/resourcesbug-bounty-program",
-      "sha256": "cc5377e00255c2df84d76411df6d38e594445f33d5f14c33e934f066db2bf685",
-      "sourceSha256": "cc5377e00255c2df84d76411df6d38e594445f33d5f14c33e934f066db2bf685"
     },
     {
       "id": "docs/use-cases/complete-build/solana-trading-bot-api.md",
@@ -3012,15 +2116,15 @@
       "id": "cli/README.vi.md",
       "title": "Birdeye CLI",
       "source": "cli:README.vi.md",
-      "sha256": "e3bf135f32c0c71728ab8cd49eb7b47bb72c73f249fa594dfac4c430f5a5cc56",
-      "sourceSha256": "e3bf135f32c0c71728ab8cd49eb7b47bb72c73f249fa594dfac4c430f5a5cc56"
+      "sha256": "a265118fbe03d8d5bb19eaefcec7715e32d6702d959eee86ec0e2d829961cbe6",
+      "sourceSha256": "a265118fbe03d8d5bb19eaefcec7715e32d6702d959eee86ec0e2d829961cbe6"
     },
     {
       "id": "cli/docs/INSTALLATION.md",
       "title": "Install Birdeye CLI and agent skills",
       "source": "cli:docs/INSTALLATION.md",
-      "sha256": "49c7108257006e9af8d9b1837eb98764714181fef6abfb2475bd614169ed412b",
-      "sourceSha256": "49c7108257006e9af8d9b1837eb98764714181fef6abfb2475bd614169ed412b"
+      "sha256": "05cac9a038c53bb40f501b9432f481813869429c7a37b88bda025197cbad1767",
+      "sourceSha256": "05cac9a038c53bb40f501b9432f481813869429c7a37b88bda025197cbad1767"
     },
     {
       "id": "cli/docs/USAGE.md",
@@ -3054,8 +2158,8 @@
       "id": "cli/docs/workflows/migration-audit.md",
       "title": "Data Skills migration audit — 0.3.1",
       "source": "cli:docs/workflows/migration-audit.md",
-      "sha256": "2cb8c728b083243b2bc977df3ca0f2b3b4315c6053748fb903cb4e417d5e1840",
-      "sourceSha256": "2cb8c728b083243b2bc977df3ca0f2b3b4315c6053748fb903cb4e417d5e1840"
+      "sha256": "612d1235e908445023b054c0d3dd3d79f4e7c1d4c22bc2357c27acc1be2adc3e",
+      "sourceSha256": "612d1235e908445023b054c0d3dd3d79f4e7c1d4c22bc2357c27acc1be2adc3e"
     },
     {
       "id": "cli/docs/workflows/price-surge.md",
@@ -3159,8 +2263,8 @@
       "id": "cli/skills/birdeye-market/references/migration-audit.md",
       "title": "Data Skills migration audit — 0.3.1",
       "source": "cli:skills/birdeye-market/references/migration-audit.md",
-      "sha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf",
-      "sourceSha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf"
+      "sha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93",
+      "sourceSha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93"
     },
     {
       "id": "cli/skills/birdeye-market/SKILL.md",
@@ -3180,8 +2284,8 @@
       "id": "cli/skills/birdeye-portfolio/references/migration-audit.md",
       "title": "Data Skills migration audit — 0.3.1",
       "source": "cli:skills/birdeye-portfolio/references/migration-audit.md",
-      "sha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf",
-      "sourceSha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf"
+      "sha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93",
+      "sourceSha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93"
     },
     {
       "id": "cli/skills/birdeye-portfolio/SKILL.md",
@@ -3201,8 +2305,8 @@
       "id": "cli/skills/birdeye-token/references/migration-audit.md",
       "title": "Data Skills migration audit — 0.3.1",
       "source": "cli:skills/birdeye-token/references/migration-audit.md",
-      "sha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf",
-      "sourceSha256": "c694d422c4b8fe0e2e10a3a2d5c77d66a844a74a872bcccfcae9b6005f7af8bf"
+      "sha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93",
+      "sourceSha256": "cc5c26f35de91b412a4b3b191d283d2897e1cbb838baaa09a334f1d546df4d93"
     },
     {
       "id": "cli/skills/birdeye-token/references/scoring.md",

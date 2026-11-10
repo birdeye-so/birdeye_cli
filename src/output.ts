@@ -48,12 +48,46 @@ export function project(result: Result, short = false): Result {
   if (!short) return result;
   let data = strip(result.data);
   if (result.data?.kind === "price-surge-v1") {
-    const {raw_response, sources, skillAnalysis, ...screen} = data;
-    return {...result, data: screen, meta: {...result.meta, outputTruncation: "Short Price Surge result omits raw_response, sources and duplicate skillAnalysis; full evidence remains in history."}};
+    const { raw_response, sources, skillAnalysis, ...screen } = data;
+    return {
+      ...result,
+      data: screen,
+      meta: {
+        ...result.meta,
+        outputTruncation:
+          "Short Price Surge result omits raw_response, sources and duplicate skillAnalysis; full evidence remains in history.",
+      },
+    };
   }
-  if(result.data?.plan?.kind==="skill-token-dd-score") {
-    data={...data,sources:[],skillAnalysis:{...data.skillAnalysis,findings:data.skillAnalysis.findings.map((f:Data)=>({...f,pillars:Object.fromEntries(Object.entries(f.pillars).map(([k,p])=>[k,{score:(p as Data).score,coverage:(p as Data).coverage}])),holder_cohorts:undefined,top_holders:undefined,flow_evidence:undefined}))}};
-    return {...result,data,meta:{...result.meta,outputTruncation:"Short DD summary; re-score requires SQLite ID or full export."}};
+  if (result.data?.plan?.kind === "skill-token-dd-score") {
+    data = {
+      ...data,
+      sources: [],
+      skillAnalysis: {
+        ...data.skillAnalysis,
+        findings: data.skillAnalysis.findings.map((f: Data) => ({
+          ...f,
+          pillars: Object.fromEntries(
+            Object.entries(f.pillars).map(([k, p]) => [
+              k,
+              { score: (p as Data).score, coverage: (p as Data).coverage },
+            ]),
+          ),
+          holder_cohorts: undefined,
+          top_holders: undefined,
+          flow_evidence: undefined,
+        })),
+      },
+    };
+    return {
+      ...result,
+      data,
+      meta: {
+        ...result.meta,
+        outputTruncation:
+          "Short DD summary; re-score requires SQLite ID or full export.",
+      },
+    };
   }
   if (result.meta.operation === "analysis" && Array.isArray(data?.sources))
     data = {
@@ -66,10 +100,22 @@ export function project(result: Result, short = false): Result {
             if (value.length > 5) truncatedPaths.push(path);
             return value.slice(0, 5).map((v, i) => preview(v, `${path}[${i}]`));
           }
-          if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k,v]) => [k, preview(v, `${path}.${k}`)]));
+          if (value && typeof value === "object")
+            return Object.fromEntries(
+              Object.entries(value).map(([k, v]) => [
+                k,
+                preview(v, `${path}.${k}`),
+              ]),
+            );
           return value;
         };
-        return { meta: compact.meta, data: preview(compact.data), ...(truncatedPaths.length ? {outputTruncation: {rowLimit: 5, truncatedPaths}} : {}) };
+        return {
+          meta: compact.meta,
+          data: preview(compact.data),
+          ...(truncatedPaths.length
+            ? { outputTruncation: { rowLimit: 5, truncatedPaths } }
+            : {}),
+        };
       }),
     };
   if (result.meta.operation === "token.overview" && data)
@@ -98,14 +144,44 @@ export function render(value: unknown, format = "json", short = false) {
     return JSON.stringify(data, null, short ? undefined : 2);
   const d = object(data);
   const body = d.data ?? data;
-  const tokenData = body?.skillAnalysis?.findings?.find((f: Data) => f.kind === "token-data");
+  const tokenData = body?.skillAnalysis?.findings?.find(
+    (f: Data) => f.kind === "token-data",
+  );
   if (tokenData) {
-    const tables = tokenData.tables.map((t: Data) => [t.title, t.columns.map((c: Data) => c.label).join("\t"), ...t.rows.map((r: Data) => t.columns.map((c: Data) => cell(r[c.key])).join("\t"))].join("\n"));
-    return [tokenData.skill, JSON.stringify(tokenData.summary, null, 2), ...tables, `Coverage: ${d.meta?.coverage}`, ...tokenData.missing, `CU: ${JSON.stringify(d.meta?.cu)}`].join("\n\n");
+    const tables = tokenData.tables.map((t: Data) =>
+      [
+        t.title,
+        t.columns.map((c: Data) => c.label).join("\t"),
+        ...t.rows.map((r: Data) =>
+          t.columns.map((c: Data) => cell(r[c.key])).join("\t"),
+        ),
+      ].join("\n"),
+    );
+    return [
+      tokenData.skill,
+      JSON.stringify(tokenData.summary, null, 2),
+      ...tables,
+      `Coverage: ${d.meta?.coverage}`,
+      ...tokenData.missing,
+      `CU: ${JSON.stringify(d.meta?.cu)}`,
+    ].join("\n\n");
   }
   if (body?.kind === "price-surge-v1") {
-    const columns = ["rank", "symbol", "address", "price_change_interval_pct", "market_cap", "liquidity", "hydration_status", "risk_flags"];
-    const table = (rows: Data[], keys: string[]) => [keys.join("\t"), ...rows.map(row => keys.map(key => cell(row[key])).join("\t"))].join("\n");
+    const columns = [
+      "rank",
+      "symbol",
+      "address",
+      "price_change_interval_pct",
+      "market_cap",
+      "liquidity",
+      "hydration_status",
+      "risk_flags",
+    ];
+    const table = (rows: Data[], keys: string[]) =>
+      [
+        keys.join("\t"),
+        ...rows.map((row) => keys.map((key) => cell(row[key])).join("\t")),
+      ].join("\n");
     return `Price Surge · ${body.params.chain} · ${body.params.interval}\n${body.n_rows} kept / ${body.n_scanned} scanned / ${body.n_excluded} excluded / ${body.n_hydrated} hydrated\n\n${table(body.rows, columns)}\n\nAuto-filtered\n${table(body.dropped, ["symbol", "address", "reason", "flags"])}\n\n${body.hydration_note ?? ""}\nCU: ${JSON.stringify(d.meta?.cu)}\n${(d.meta?.warnings ?? []).join("\n")}`;
   }
   const list = Array.isArray(body) ? body : (body?.items ?? body?.tokens);

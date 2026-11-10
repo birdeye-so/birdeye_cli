@@ -141,7 +141,7 @@ birdeye-cli --format interface --bind 127.0.0.1:8787
 
 Mở **http://127.0.0.1:8787** → **Settings** → nhập Birdeye API key → giữ chọn **Save keys and provider settings on this machine** → **Save connections**. Sau khi lưu, ô key có thể trống nhưng trạng thái phải là **Configured**; UI không hiện lại secret. Để trống key khi lưu lại sẽ giữ key đã lưu.
 
-Restart với cùng tài khoản hệ điều hành và cùng config directory sẽ giữ key. Browser tự kết nối khi bind loopback, trừ khi bật `--require-code` hoặc `--public-url`. Nếu cần nhập code, dùng code in ở terminal của server đang chạy, không dùng API key.
+Restart với cùng tài khoản hệ điều hành và cùng config directory sẽ giữ key. Khi bind loopback, terminal in link đăng nhập có code trong phần `#code=`; mở link đó để browser tự kết nối, trừ khi bật `--require-code` hoặc `--public-url`. Giữ link như giữ code. Nếu cần nhập code, dùng code in ở terminal của server đang chạy, không dùng API key.
 
 ### 4. Kiểm tra và chạy lệnh đầu tiên
 
@@ -421,7 +421,7 @@ birdeye-cli capabilities
 | --- | --- | --- |
 | `--bind <host:port>` | `127.0.0.1:3000` | Địa chỉ listen; chỉ dùng cùng `--format interface`. Ví dụ `127.0.0.1:8787`, IPv6 là `[::1]:8787`. |
 | `--session-max-cu <cu>` | Không đặt budget session riêng | Giới hạn CU tích lũy của các lượt chạy trong phiên UI; budget mỗi lượt vẫn áp dụng. Restart tạo phiên mới. |
-| `--require-code` | Tắt trên loopback | Bắt nhập connection code kể cả local. Remote hoặc `--public-url` luôn cần code. |
+| `--require-code` | Tắt trên loopback | Link in ở terminal không kèm code; phải nhập connection code kể cả local. Remote hoặc `--public-url` luôn cần code. |
 | `--tls-cert <path>` | Không có | File chứng chỉ HTTPS; phải đi cùng `--tls-key`. Bắt buộc nếu bind ngoài loopback. |
 | `--tls-key <path>` | Không có | File private key cho chứng chỉ HTTPS. |
 | `--public-url <url>` | URL từ địa chỉ bind | URL browser được phép truy cập, dùng kiểm tra Host/Origin. HTTPS public có thể đi qua reverse proxy đến HTTP loopback. Các trường hợp khác giao thức phải khớp server. Bắt buộc cho wildcard `0.0.0.0`/`[::]`; bind remote vẫn cần TLS trực tiếp. |
@@ -1130,7 +1130,7 @@ birdeye-cli --format interface --bind 127.0.0.1:8787
 ssh -L 8787:127.0.0.1:8787 user@remote-host
 ```
 
-Bind ngoài loopback yêu cầu `--tls-cert` và `--tls-key`; wildcard bind cần thêm `--public-url https://hostname:port` để xác minh Host/Origin. Local browser cùng origin tự nhận session cookie HttpOnly; Host/Origin và Fetch Metadata vẫn được kiểm tra. Dùng `--require-code` để bắt nhập code cả trên loopback. Bind remote hoặc dùng `--public-url` luôn cần code. Không đưa API key vào browser storage. Port bận trả lỗi; Ctrl+C dừng server và giữ lại usage đã phát sinh.
+Bind ngoài loopback yêu cầu `--tls-cert` và `--tls-key`; wildcard bind cần thêm `--public-url https://hostname:port` để xác minh Host/Origin. Trên loopback, link đăng nhập in ở terminal mang code trong phần `#code=` (không gửi lên server) để browser nhận session cookie HttpOnly; header của browser không đủ để kết nối. Settings không cho trỏ AI provider tới loopback hoặc mạng private, trừ origin đã cấu hình trước khi khởi động; cấu hình provider local bằng `config ai init`. Dùng `--require-code` để bắt nhập code cả trên loopback. Bind remote hoặc dùng `--public-url` luôn cần code. Không đưa API key vào browser storage. Port bận trả lỗi; Ctrl+C dừng server và giữ lại usage đã phát sinh.
 
 Cấu hình và ledger mặc định ở `~/.config/birdeye`; thay bằng `BIRDEYE_CONFIG_DIR` hoặc `--config-dir`. Luôn dùng cùng thư mục khi restart để đọc lại cấu hình đã lưu. `doctor --short` hiển thị đường dẫn database, không gọi API.
 
@@ -1370,7 +1370,7 @@ Trong UI: chọn nhóm → skill → nhập subject và options → xem/chỉnh 
 node dist/index.js --format interface --bind 127.0.0.1:8787 --short --max-cu 100 --session-max-cu 300
 ```
 
-Mở `http://127.0.0.1:8787`; browser tự kết nối local. Vào Settings để cấu hình key. Chỉ mở interface chưa gọi API.
+Mở link `http://127.0.0.1:8787/#code=…` in ở terminal; browser tự kết nối local. Vào Settings để cấu hình key. Chỉ mở interface chưa gọi API.
 
 Bind loopback chấp nhận Host `localhost`, `127.0.0.1` và `[::1]` trên cùng port; kết nối vẫn phải đến được địa chỉ đang listen. Nếu cấu hình `--public-url`, chỉ Host của URL đó được chấp nhận và Origin của browser phải khớp origin public, kể cả khi proxy chuyển HTTPS xuống HTTP loopback. Khi không có public URL, Origin phải khớp Host và protocol của listener.
 
@@ -1435,7 +1435,7 @@ npm run build
 node dist/index.js --format interface --bind 127.0.0.1:8787 --config-dir "$HOME/.config/birdeye"
 ```
 
-Trong Settings nhập Birdeye key, AI base URL/model/API format/key, giữ checkbox lưu trên máy và bấm **Save connections**. Dừng server bằng Ctrl+C rồi chạy lại cùng lệnh. Browser tự kết nối lại; Settings phải giữ provider/model/format và trạng thái **Configured**. Ô key vẫn trống để không hiển thị secret; để trống khi Save sẽ giữ key đã lưu nếu provider vẫn cùng origin.
+Trong Settings nhập Birdeye key, AI base URL/model/API format/key, giữ checkbox lưu trên máy và bấm **Save connections**. Dừng server bằng Ctrl+C rồi chạy lại cùng lệnh. Mở link mới in ở terminal (code đổi sau mỗi lần restart); Settings phải giữ provider/model/format và trạng thái **Configured**. Ô key vẫn trống để không hiển thị secret; để trống khi Save sẽ giữ key đã lưu nếu provider vẫn cùng origin.
 
 Cũng có thể lưu từ CLI:
 
@@ -1454,7 +1454,7 @@ node dist/index.js doctor --short
 
 `npm test` có test SQLite qua tiến trình CLI mới, migration JSON một lần, restart HTTP handler, session-only, giữ key khi sửa profile, environment override, permission, dữ liệu lỗi và ghi thất bại. Các test dùng thư mục tạm và key giả.
 
-Nếu giữ tab Settings mở khi restart server local, Save connections tự kết nối lại rồi gửi lại form khi nhận `CONNECT_REQUIRED`; các giá trị đang nhập được giữ nguyên. Chỉ lỗi phiên kết nối này được retry, không tự gửi lại khi lỗi mạng, validation hoặc ghi SQLite. `--require-code` vẫn yêu cầu kết nối bằng code.
+Nếu giữ tab Settings mở khi restart server local, code cũ không còn hiệu lực: Save connections báo `CONNECT_REQUIRED` và không ghi gì. Mở link mới trong terminal hoặc nhập code mới rồi lưu lại. Chỉ lỗi phiên kết nối này được retry, không tự gửi lại khi lỗi mạng, validation hoặc ghi SQLite. `--require-code` vẫn yêu cầu kết nối bằng code.
 
 ```bash
 # Regression: mở Settings → restart server → Save → đọc lại SQLite
@@ -1489,7 +1489,7 @@ npm test
 npm run test:browser
 ```
 
-`test:browser` cần quyền mở cổng và chạy Chrome. Test kiểm tra tự kết nối local, chọn skill theo nhóm/rail, chỉnh từng API step, Smart Wallets với response raw array, kết quả UI/JSON, history và overflow mobile. Trong sandbox hiện tại TCP listen (`EPERM`), Chrome launch và DNS upstream bị chặn; không coi các test fixture là kiểm chứng API live hay hình render thực tế.
+`test:browser` cần quyền mở cổng và chạy Chrome. Test kiểm tra đăng nhập qua link local, chọn skill theo nhóm/rail, chỉnh từng API step, Smart Wallets với response raw array, kết quả UI/JSON, history và overflow mobile. Trong sandbox hiện tại TCP listen (`EPERM`), Chrome launch và DNS upstream bị chặn; không coi các test fixture là kiểm chứng API live hay hình render thực tế.
 
 Kiểm tra live Smart Wallets (cần key Birdeye đã lưu, phát sinh CU):
 
@@ -1601,7 +1601,7 @@ Câu trả lời AI hiển thị Markdown: tiêu đề, đậm/nghiêng, danh s�
 
 Khi chuyển từ workflow sang **Ask AI**, chat mang theo workflow đang chọn, địa chỉ, khoảng thời gian và các chỉnh sửa API-step đã hợp lệ. `read_research_context` cho AI đọc ngữ cảnh/ước tính, `list_workflows` khám phá các flow có sẵn, và `run_selected_workflow` chạy đúng cấu hình đã chọn. `run_workflow` dùng khi cần flow khác hoặc người dùng đổi phạm vi. Workflow còn thiếu địa chỉ chỉ được truyền tên, để AI hỏi bổ sung; không dùng địa chỉ giả. Yêu cầu phân tích/research được hướng dẫn thực hiện tool calls và trả kết luận dựa trên bằng chứng, tái sử dụng dữ liệu đã có trước khi gọi thêm. Kết quả và nguồn được lưu vào History như workflow chạy trực tiếp.
 
-Bộ Markdown trong `knowledge/birdeye` nhập 425 MDX + README từ docs local, bổ sung 113 hợp đồng OpenAPI đã resolve, cùng workflow/skill của CLI và hướng dẫn sử dụng/harness. Manifest ghi source commit, hash từng trang và thời điểm tạo; các file cấu hình bí mật/certificate/database/script không được nhập. Nội dung MDX được giữ trong file `.md` như văn bản tham khảo; không thực thi JSX. SQLite FTS5 tìm các đoạn liên quan, không gửi toàn bộ kho docs cho mỗi câu hỏi; không dùng embedding API.
+Bộ Markdown trong `knowledge/birdeye` chỉ nhập 298 trang đang publish trên docs Birdeye (trang ẩn, bản nháp và bản copy bị loại), bổ sung 113 hợp đồng OpenAPI đã resolve, cùng workflow/skill của CLI và hướng dẫn sử dụng/harness. Manifest ghi source commit, hash từng trang và thời điểm tạo; các file cấu hình bí mật/certificate/database/script không được nhập. Nội dung MDX được giữ trong file `.md` như văn bản tham khảo; không thực thi JSX. SQLite FTS5 tìm các đoạn liên quan, không gửi toàn bộ kho docs cho mỗi câu hỏi; không dùng embedding API.
 
 ```bash
 # Tìm/đọc docs offline: 0 Birdeye CU, 0 AI tokens

@@ -1,144 +1,311 @@
-import assert from 'node:assert/strict';
-import { chromium } from 'playwright-core';
-import { spawn } from 'node:child_process';
-import { mkdtemp, readFile, writeFile, mkdir, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { setTimeout as delay } from 'node:timers/promises';
+import assert from "node:assert/strict";
+import { chromium } from "playwright-core";
+import { spawn } from "node:child_process";
+import { mkdtemp, readFile, writeFile, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { setTimeout as delay } from "node:timers/promises";
 
-const temporary = await mkdtemp(resolve(tmpdir(), 'birdeye-landing-test-'));
-const catalogPath = resolve(temporary, 'catalog.json');
-const original = JSON.parse(await readFile('apps/landing/public/catalog.json', 'utf8'));
+const temporary = await mkdtemp(resolve(tmpdir(), "birdeye-landing-test-"));
+const catalogPath = resolve(temporary, "catalog.json");
+const original = JSON.parse(
+  await readFile("apps/landing/public/catalog.json", "utf8"),
+);
 await writeFile(catalogPath, JSON.stringify(original));
 const port = Number(process.env.LANDING_TEST_PORT || 3107);
 const origin = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], {cwd: resolve('apps/landing'), env: {...process.env, CATALOG_PATH: catalogPath, CATALOG_URL: ''}, stdio: ['ignore', 'pipe', 'pipe']});
-let logs = '';
-server.stdout.on('data', chunk => logs += chunk);
-server.stderr.on('data', chunk => logs += chunk);
+const server = spawn(
+  process.execPath,
+  [
+    "node_modules/next/dist/bin/next",
+    "start",
+    "--hostname",
+    "127.0.0.1",
+    "--port",
+    String(port),
+  ],
+  {
+    cwd: resolve("apps/landing"),
+    env: { ...process.env, CATALOG_PATH: catalogPath, CATALOG_URL: "" },
+    stdio: ["ignore", "pipe", "pipe"],
+  },
+);
+let logs = "";
+server.stdout.on("data", (chunk) => (logs += chunk));
+server.stderr.on("data", (chunk) => (logs += chunk));
 let browser;
 try {
   let ready = false;
   for (let attempt = 0; attempt < 60; attempt++) {
     if (server.exitCode !== null) throw new Error(logs);
-    try {if ((await fetch(`${origin}/api/catalog`)).ok) {ready = true; break;}} catch {}
+    try {
+      if ((await fetch(`${origin}/api/catalog`)).ok) {
+        ready = true;
+        break;
+      }
+    } catch {}
     await delay(500);
   }
   assert.ok(ready, logs);
   const response = await fetch(`${origin}/api/catalog`);
-  const etag = response.headers.get('etag');
-  assert.match(response.headers.get('cache-control'), /no-store/);
-  assert.equal((await fetch(`${origin}/api/catalog`, {headers: {'If-None-Match': etag}})).status, 304);
-  browser = await chromium.launch({executablePath: process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true});
-  const page = await browser.newPage({viewport: {width: 1440, height: 1080}});
+  const etag = response.headers.get("etag");
+  assert.match(response.headers.get("cache-control"), /no-store/);
+  assert.equal(
+    (
+      await fetch(`${origin}/api/catalog`, {
+        headers: { "If-None-Match": etag },
+      })
+    ).status,
+    304,
+  );
+  browser = await chromium.launch({
+    executablePath:
+      process.env.CHROME_PATH ||
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    headless: true,
+  });
+  const page = await browser.newPage({
+    viewport: { width: 1440, height: 1080 },
+  });
   const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.addInitScript(() => Object.defineProperty(navigator, 'clipboard', {value: {writeText: async value => {window.lastCopied = value;}}}));
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: async (value) => {
+          window.lastCopied = value;
+        },
+      },
+    }),
+  );
   await page.goto(origin);
-  await page.getByRole('heading', {name: /On-chain research/}).waitFor();
-  await page.getByRole('button', {name: 'Research', exact: true}).click();
-  await page.getByRole('button', {name: 'Copy command'}).first().click();
-  assert.match(await page.evaluate(() => window.lastCopied), /case token-research/);
-  await page.getByRole('button', {name: 'Discover', exact: true}).click();
-  await mkdir('.impeccable/review', {recursive: true});
-  await page.screenshot({path: '.impeccable/review/landing-desktop.png', fullPage: true});
-  const demo = page.locator('#demo');
+  await page.getByRole("heading", { name: /On-chain research/ }).waitFor();
+  await page.getByRole("button", { name: "Research", exact: true }).click();
+  await page.getByRole("button", { name: "Copy command" }).first().click();
+  assert.match(
+    await page.evaluate(() => window.lastCopied),
+    /case token-research/,
+  );
+  await page.getByRole("button", { name: "Discover", exact: true }).click();
+  await mkdir(".impeccable/review", { recursive: true });
+  await page.screenshot({
+    path: ".impeccable/review/landing-desktop.png",
+    fullPage: true,
+  });
+  const demo = page.locator("#demo");
   await demo.scrollIntoViewIfNeeded();
-  const timeline = demo.getByRole('slider', {name: 'Demo timeline'});
-  assert.equal(await timeline.inputValue(), '0');
-  await demo.getByRole('button', {name: 'Play demo', exact: true}).click();
-  await page.waitForFunction(() => Number(document.querySelector('#demo input[type=range]').value) > 500);
-  await demo.getByRole('button', {name: 'Pause demo', exact: true}).click();
+  const timeline = demo.getByRole("slider", { name: "Demo timeline" });
+  assert.equal(await timeline.inputValue(), "0");
+  await demo.getByRole("button", { name: "Play demo", exact: true }).click();
+  await page.waitForFunction(
+    () => Number(document.querySelector("#demo input[type=range]").value) > 500,
+  );
+  await demo.getByRole("button", { name: "Pause demo", exact: true }).click();
   const paused = await timeline.inputValue();
   await delay(350);
-  assert.equal(await timeline.inputValue(), paused, 'Pause freezes the timeline');
-  await demo.getByRole('button', {name: /Explore the evidence/}).first().click();
-  await demo.getByRole('table').waitFor();
-  await demo.screenshot({path: '.impeccable/review/landing-demo-desktop.png'});
-  await demo.getByRole('button', {name: 'CLI transcript', exact: true}).click();
-  await demo.getByLabel('CLI demo transcript').getByText('Recorded API data. Commands are not executed during playback.').waitFor();
-  await demo.getByRole('button', {name: 'Wallet analysis', exact: true}).click();
-  assert.equal(await timeline.inputValue(), '0', 'Changing scenario resets playback');
-  const downloadPromise = page.waitForEvent('download');
-  await demo.getByRole('button', {name: 'Download full JSON'}).click();
+  assert.equal(
+    await timeline.inputValue(),
+    paused,
+    "Pause freezes the timeline",
+  );
+  await demo
+    .getByRole("button", { name: /Explore the evidence/ })
+    .first()
+    .click();
+  await demo.getByRole("table").waitFor();
+  await demo.screenshot({
+    path: ".impeccable/review/landing-demo-desktop.png",
+  });
+  await demo
+    .getByRole("button", { name: "CLI transcript", exact: true })
+    .click();
+  await demo
+    .getByLabel("CLI demo transcript")
+    .getByText("Recorded API data. Commands are not executed during playback.")
+    .waitFor();
+  await demo
+    .getByRole("button", { name: "Wallet analysis", exact: true })
+    .click();
+  assert.equal(
+    await timeline.inputValue(),
+    "0",
+    "Changing scenario resets playback",
+  );
+  const downloadPromise = page.waitForEvent("download");
+  await demo.getByRole("button", { name: "Download full JSON" }).click();
   const download = await downloadPromise;
-  const scriptPath = resolve(temporary, 'downloaded-script.json');
+  const scriptPath = resolve(temporary, "downloaded-script.json");
   await download.saveAs(scriptPath);
-  const downloadedScript = JSON.parse(await readFile(scriptPath, 'utf8'));
-  assert.equal(downloadedScript.id, 'skill-wallet-analysis');
+  const downloadedScript = JSON.parse(await readFile(scriptPath, "utf8"));
+  assert.equal(downloadedScript.id, "skill-wallet-analysis");
   assert.equal(downloadedScript.illustrative, false);
   assert.equal(downloadedScript.chapters.length, 6);
   assert.equal(downloadedScript.reports.length, 1);
-  await demo.getByRole('button', {name: 'UI preview', exact: true}).click();
-  await demo.getByRole('button', {name: 'Restart demo', exact: true}).click();
+  await demo.getByRole("button", { name: "UI preview", exact: true }).click();
+  await demo.getByRole("button", { name: "Restart demo", exact: true }).click();
   // The exported HTML works directly from disk with networking blocked.
-  const offline = await browser.newPage({viewport: {width: 1280, height: 900}, reducedMotion: 'reduce'});
-  offline.on('pageerror', error => errors.push(error.message));
-  await offline.route(/^https?:/, route => route.abort());
-  await offline.goto(pathToFileURL(resolve('apps/landing/public/demo.html')).href);
-  await offline.getByRole('heading', {name: 'See the research unfold.'}).waitFor();
-  assert.equal(await offline.getByRole('slider').inputValue(), '0', 'No autoplay under reduced motion');
-  await offline.getByRole('button', {name: /Revisit the result/}).click();
-  await offline.getByRole('heading', {name: 'Research you can revisit', exact: true}).waitFor();
+  const offline = await browser.newPage({
+    viewport: { width: 1280, height: 900 },
+    reducedMotion: "reduce",
+  });
+  offline.on("pageerror", (error) => errors.push(error.message));
+  await offline.route(/^https?:/, (route) => route.abort());
+  await offline.goto(
+    pathToFileURL(resolve("apps/landing/public/demo.html")).href,
+  );
+  await offline
+    .getByRole("heading", { name: "See the research unfold." })
+    .waitFor();
+  assert.equal(
+    await offline.getByRole("slider").inputValue(),
+    "0",
+    "No autoplay under reduced motion",
+  );
+  await offline.getByRole("button", { name: /Revisit the result/ }).click();
+  await offline
+    .getByRole("heading", { name: "Research you can revisit", exact: true })
+    .waitFor();
   await offline.close();
-  const input = page.getByRole('textbox', {name: 'Search skills'});
-  await input.fill('nonsense-no-results');
-  await page.getByRole('heading', {name: 'No matching skills'}).waitFor();
-  await page.getByRole('button', {name: 'Clear filters'}).click();
-  assert.equal(await page.getByRole('button', {name: 'Workflows', exact: true}).count(), 0);
-  assert.equal(await page.locator('a[href^="#skill/"]').count(), original.skills.length);
+  const input = page.getByRole("textbox", { name: "Search skills" });
+  await input.fill("nonsense-no-results");
+  await page.getByRole("heading", { name: "No matching skills" }).waitFor();
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  assert.equal(
+    await page.getByRole("button", { name: "Workflows", exact: true }).count(),
+    0,
+  );
+  assert.equal(
+    await page.locator('a[href^="#skill/"]').count(),
+    original.skills.length,
+  );
   assert.equal(await page.locator('a[href^="#workflow/"]').count(), 0);
   await page.locator('a[href="#skill/token-research"]').click();
-  await page.getByRole('heading', {name: 'How to use this skill'}).waitFor();
-  await page.screenshot({path: '.impeccable/review/landing-detail.png', fullPage: false});
+  await page.getByRole("heading", { name: "How to use this skill" }).waitFor();
+  await page.screenshot({
+    path: ".impeccable/review/landing-detail.png",
+    fullPage: false,
+  });
   await page.reload();
-  await page.getByRole('heading', {name: 'How to use this skill'}).waitFor();
+  await page.getByRole("heading", { name: "How to use this skill" }).waitFor();
   const changed = structuredClone(original);
-  changed.skills.find(item => item.id === 'token-research').title = 'Token Research — updated live';
+  changed.skills.find((item) => item.id === "token-research").title =
+    "Token Research — updated live";
   // Deliberately preserve the old revision: the API must hash actual content.
   await writeFile(catalogPath, JSON.stringify(changed));
-  await page.getByRole('heading', {name: 'Token Research — updated live', exact: true}).waitFor({timeout: 15000});
-  assert.notEqual((await fetch(`${origin}/api/catalog`)).headers.get('etag'), etag);
-  await writeFile(catalogPath, '{invalid');
+  await page
+    .getByRole("heading", {
+      name: "Token Research — updated live",
+      exact: true,
+    })
+    .waitFor({ timeout: 15000 });
+  assert.notEqual(
+    (await fetch(`${origin}/api/catalog`)).headers.get("etag"),
+    etag,
+  );
+  await writeFile(catalogPath, "{invalid");
   assert.equal((await fetch(`${origin}/api/catalog`)).status, 503);
-  await page.getByText('Showing saved content · reconnecting', {exact: false}).waitFor({timeout: 15000});
-  assert.equal(await page.getByRole('heading', {name: 'Token Research — updated live', exact: true}).count(), 1);
+  await page
+    .getByText("Showing saved content · reconnecting", { exact: false })
+    .waitFor({ timeout: 15000 });
+  assert.equal(
+    await page
+      .getByRole("heading", {
+        name: "Token Research — updated live",
+        exact: true,
+      })
+      .count(),
+    1,
+  );
   await writeFile(catalogPath, JSON.stringify(original));
-  await page.getByRole('button', {name: 'Retry', exact: true}).click();
-  await page.getByRole('heading', {name: 'Token Research', exact: true}).waitFor();
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await page
+    .getByRole("heading", { name: "Token Research", exact: true })
+    .waitFor();
   await page.goto(`${origin}/#quickstart`);
-  const quickstart = page.locator('#quickstart');
-  await quickstart.getByRole('button', {name: 'Copy command'}).first().click();
-  assert.match(await page.evaluate(() => window.lastCopied), /^npm install --global \.\/birdeye-cli-.*\.tgz\nbirdeye-cli --version\nbirdeye-cli --help$/);
-  await page.getByRole('link', {name: 'Full installation guide'}).click();
-  await page.getByRole('heading', {name: 'Install Birdeye CLI and agent skills', exact: true}).waitFor();
+  const quickstart = page.locator("#quickstart");
+  await quickstart
+    .getByRole("button", { name: "Copy command" })
+    .first()
+    .click();
+  assert.match(
+    await page.evaluate(() => window.lastCopied),
+    /^npm install --global \.\/birdeye-cli-.*\.tgz\nbirdeye-cli --version\nbirdeye-cli --help$/,
+  );
+  await page.getByRole("link", { name: "Full installation guide" }).click();
+  await page
+    .getByRole("heading", {
+      name: "Install Birdeye CLI and agent skills",
+      exact: true,
+    })
+    .waitFor();
   await page.goto(`${origin}/embed`);
-  await page.getByRole('link', {name: 'Install with npm', exact: true}).click();
-  await page.getByRole('heading', {name: 'Install Birdeye CLI and agent skills', exact: true}).waitFor();
+  await page
+    .getByRole("link", { name: "Install with npm", exact: true })
+    .click();
+  await page
+    .getByRole("heading", {
+      name: "Install Birdeye CLI and agent skills",
+      exact: true,
+    })
+    .waitFor();
   await page.goto(`${origin}/embed#workflow/skill-token-dd-score`);
-  await page.getByRole('heading', {name: 'Token Due-Diligence Score', exact: true}).waitFor();
-  assert.equal(await page.getByRole('navigation', {name: 'Main navigation'}).count(), 0);
-  await page.getByText('Use with your AI agent', {exact: true}).click();
-  assert.match(await page.getByRole('article').innerText(), /--skill skill-token-dd-score/);
-  const mobile = await browser.newPage({viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true});
-  mobile.on('pageerror', error => errors.push(error.message));
+  await page
+    .getByRole("heading", { name: "Token Due-Diligence Score", exact: true })
+    .waitFor();
+  assert.equal(
+    await page.getByRole("navigation", { name: "Main navigation" }).count(),
+    0,
+  );
+  await page.getByText("Use with your AI agent", { exact: true }).click();
+  assert.match(
+    await page.getByRole("article").innerText(),
+    /--skill skill-token-dd-score/,
+  );
+  const mobile = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  mobile.on("pageerror", (error) => errors.push(error.message));
   await mobile.goto(origin);
-  await mobile.getByRole('heading', {name: /On-chain research/}).waitFor();
-  assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= 390), 'No horizontal page overflow beyond the device viewport');
-  await mobile.screenshot({path: '.impeccable/review/landing-mobile.png', fullPage: true});
-  const mobileDemo = mobile.locator('#demo');
-  await mobileDemo.getByRole('button', {name: /Explore the evidence/}).first().click();
-  await mobileDemo.screenshot({path: '.impeccable/review/landing-demo-mobile.png'});
-  assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= 390), 'Demo fits mobile viewport');
-  await mobile.getByRole('textbox', {name: 'Search skills'}).fill('token research');
+  await mobile.getByRole("heading", { name: /On-chain research/ }).waitFor();
+  assert.ok(
+    await mobile.evaluate(() => document.documentElement.scrollWidth <= 390),
+    "No horizontal page overflow beyond the device viewport",
+  );
+  await mobile.screenshot({
+    path: ".impeccable/review/landing-mobile.png",
+    fullPage: true,
+  });
+  const mobileDemo = mobile.locator("#demo");
+  await mobileDemo
+    .getByRole("button", { name: /Explore the evidence/ })
+    .first()
+    .click();
+  await mobileDemo.screenshot({
+    path: ".impeccable/review/landing-demo-mobile.png",
+  });
+  assert.ok(
+    await mobile.evaluate(() => document.documentElement.scrollWidth <= 390),
+    "Demo fits mobile viewport",
+  );
+  await mobile
+    .getByRole("textbox", { name: "Search skills" })
+    .fill("token research");
   await mobile.locator('a[href="#skill/token-research"]').click();
-  await mobile.getByRole('heading', {name: 'How to use this skill'}).waitFor();
-  assert.ok(await mobile.evaluate(() => document.documentElement.scrollWidth <= 390));
+  await mobile
+    .getByRole("heading", { name: "How to use this skill" })
+    .waitFor();
+  assert.ok(
+    await mobile.evaluate(() => document.documentElement.scrollWidth <= 390),
+  );
   assert.deepEqual(errors, []);
-  console.log('Landing browser checks passed: desktop/mobile, filters, clipboard, deep links, embed, live JSON updates, stale-content recovery, and no runtime errors.');
+  console.log(
+    "Landing browser checks passed: desktop/mobile, filters, clipboard, deep links, embed, live JSON updates, stale-content recovery, and no runtime errors.",
+  );
 } finally {
   await browser?.close();
-  server.kill('SIGTERM');
-  await rm(temporary, {recursive: true, force: true});
+  server.kill("SIGTERM");
+  await rm(temporary, { recursive: true, force: true });
 }

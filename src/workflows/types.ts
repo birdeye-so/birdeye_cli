@@ -2,10 +2,32 @@ import type { Operation } from "../catalog.js";
 import type { Data } from "../shared.js";
 import type { WorkflowInput } from "./input.js";
 
-export type Selection = { from: string[]; take: number; kind: "token" | "wallet" | "pair"; sort?: boolean };
-export type Step = { id: string; operation: Operation; params: Data; cost: number; subjects?: Selection; subjectKey?: string };
-export type AddStep = (id: string, operation: Operation, params: Data, subjects?: Selection, subjectKey?: string) => void;
-export type PlanContext = {input: WorkflowInput; add: AddStep; notes: string[]};
+export type Selection = {
+  from: string[];
+  take: number;
+  kind: "token" | "wallet" | "pair";
+  sort?: boolean;
+};
+export type Step = {
+  id: string;
+  operation: Operation;
+  params: Data;
+  cost: number;
+  subjects?: Selection;
+  subjectKey?: string;
+};
+export type AddStep = (
+  id: string,
+  operation: Operation,
+  params: Data,
+  subjects?: Selection,
+  subjectKey?: string,
+) => void;
+export type PlanContext = {
+  input: WorkflowInput;
+  add: AddStep;
+  notes: string[];
+};
 export type WorkflowDefinition = {
   id: string;
   title: string;
@@ -16,7 +38,12 @@ export type WorkflowDefinition = {
   purpose: string;
   produces: string;
   source: string;
-  guide?: {input: string; instructions: string; exampleFlags?: string; useCases: readonly string[]};
+  guide?: {
+    input: string;
+    instructions: string;
+    exampleFlags?: string;
+    useCases: readonly string[];
+  };
   fixedSources?: boolean;
   supportedChains?: readonly string[];
   limitations?: readonly string[];
@@ -31,6 +58,13 @@ export type WorkflowDefinition = {
   plan: (context: PlanContext) => void;
   finalize?: (input: WorkflowInput, steps: Step[]) => void;
 };
-export function defineWorkflow<const Id extends string, const Family extends WorkflowDefinition["family"]>(definition: WorkflowDefinition & {id: Id; family: Family}) {
-  return {supportedChains: ["solana"] as readonly string[], limitations: [] as readonly string[], ...definition};
+export function defineWorkflow<
+  const Id extends string,
+  const Family extends WorkflowDefinition["family"],
+>(definition: WorkflowDefinition & { id: Id; family: Family }) {
+  return {
+    supportedChains: ["solana"] as readonly string[],
+    limitations: [] as readonly string[],
+    ...definition,
+  };
 }

@@ -46,13 +46,21 @@ export class Ledger {
       .run(id, workflow || null, maxCu, maxRequests, now());
     return id;
   }
-  reserve(run: string, operation: string, cost: number | null, credential: string) {
+  reserve(
+    run: string,
+    operation: string,
+    cost: number | null,
+    credential: string,
+  ) {
     this.db.exec("BEGIN IMMEDIATE");
     try {
       const r = this.db.prepare("SELECT * FROM runs WHERE id=?").get(run)!;
       if (!r) throw new AppError("RUN_NOT_FOUND", "Run not found.");
       if (cost === null && r.max_cu !== null && Number(r.max_cu) === 0)
-        throw new AppError("CU_BUDGET_EXCEEDED", "A zero CU budget does not permit calls with unknown cost.");
+        throw new AppError(
+          "CU_BUDGET_EXCEEDED",
+          "A zero CU budget does not permit calls with unknown cost.",
+        );
       const own = this.summary(run);
       if (own.attempts >= Number(r.max_requests))
         throw new AppError("REQUEST_LIMIT", "Request-attempt limit reached.");
@@ -66,9 +74,11 @@ export class Ledger {
           .prepare("SELECT * FROM workflows WHERE id=?")
           .get(r.workflow)!;
         if (
-          w.max_cu !== null && ((cost === null && Number(w.max_cu) === 0) ||
-          this.summary(undefined, String(r.workflow)).budgetUsed + (cost ?? 0) >
-          Number(w.max_cu))
+          w.max_cu !== null &&
+          ((cost === null && Number(w.max_cu) === 0) ||
+            this.summary(undefined, String(r.workflow)).budgetUsed +
+              (cost ?? 0) >
+              Number(w.max_cu))
         )
           throw new AppError(
             "CU_BUDGET_EXCEEDED",
@@ -116,7 +126,9 @@ export class Ledger {
     return {
       estimated: rows.reduce((s, r) => s + Number(r.estimated), 0),
       reported: null,
-      unknownCostAttempts: rows.filter(r => r.pricing_version === "mcp-unpriced" && r.status !== "not-sent").length,
+      unknownCostAttempts: rows.filter(
+        (r) => r.pricing_version === "mcp-unpriced" && r.status !== "not-sent",
+      ).length,
       budgetUsed: rows.reduce((s, r) => s + Number(r.reserved), 0),
       uncertainAttempts: rows.filter(
         (r) => r.status === "uncertain" || r.status === "pending",

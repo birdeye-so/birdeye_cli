@@ -17,7 +17,6 @@ The public model has one resource: **skill**. Current skills are registered in t
 | Generated installable instructions | `skills/<id>/SKILL.md` |
 | Public description/usage projection | `scripts/lib/skill-runtime.mjs` |
 | Shared categories and guides | `catalog/resources.json` |
-| Maintainer review of complex execution | `docs/SKILL_REVIEW.md` |
 
 The internal `workflows/` path, `workflowCatalog` export, `case` CLI command and historical `skill-*` IDs remain for compatibility. They do not create a second public resource type. Existing integrations continue using the same CLI commands and inputs.
 

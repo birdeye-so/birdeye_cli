@@ -1,9 +1,15 @@
 import { BigNumber } from "bignumber.js";
-import { caseSchema, planCase, executePlan, type CaseInput, type Execution } from "./workflows.js";
+import {
+  caseSchema,
+  planCase,
+  executePlan,
+  type CaseInput,
+  type Execution,
+} from "./workflows.js";
 import { workflowMetrics } from "./metrics.js";
 import { skillAnalysis } from "./skill-metrics.js";
 import { attachDdCu } from "./token-dd-runtime.js";
-import {runPriceSurge} from "./price-surge/api.js";
+import { runPriceSurge } from "./price-surge/api.js";
 export { caseSchema, type CaseInput };
 import { Runner, type Result } from "./runner.js";
 import { object, decimal, errorData, now, type Data } from "./shared.js";
@@ -113,39 +119,91 @@ export async function runCase(
   evidence: (result: Result) => void = () => {},
 ): Promise<Result> {
   const plan = planCase(input);
-  if (plan.kind === "skill-price-surge") return runPriceSurge(runner, run, plan.input.priceSurge, signal, progress, evidence);
+  if (plan.kind === "skill-price-surge")
+    return runPriceSurge(
+      runner,
+      run,
+      plan.input.priceSurge,
+      signal,
+      progress,
+      evidence,
+    );
   function resultFor(state: Execution) {
-    const result = analysisResult(run, runner, plan.kind, state.sources, state.warnings);
-    result.data.plan = {kind: plan.kind, input: plan.input, steps: plan.steps, estimatedCu: plan.estimatedCu, maxRequests: plan.maxRequests, pricingVersion: plan.pricingVersion};
+    const result = analysisResult(
+      run,
+      runner,
+      plan.kind,
+      state.sources,
+      state.warnings,
+    );
+    result.data.plan = {
+      kind: plan.kind,
+      input: plan.input,
+      steps: plan.steps,
+      estimatedCu: plan.estimatedCu,
+      maxRequests: plan.maxRequests,
+      pricingVersion: plan.pricingVersion,
+    };
     result.data.selections = state.selections;
     result.data.outcomes = state.outcomes;
     result.data.missing = state.missing;
     result.data.scopeNotes = plan.notes;
-    result.data.status = state.missing.length || state.warnings.length || state.sources.some(s => s.meta.coverage === "empty") ? "partial" : "complete-for-requested-scope";
+    result.data.status =
+      state.missing.length ||
+      state.warnings.length ||
+      state.sources.some((s) => s.meta.coverage === "empty")
+        ? "partial"
+        : "complete-for-requested-scope";
     if (plan.kind.startsWith("skill-")) {
       result.data.skillAnalysis = skillAnalysis(plan.input, state.sources);
-      attachDdCu(result,runner.ledger,run);
-      const missing = result.data.skillAnalysis.findings.flatMap((f: Data) => f.missing ?? []);
+      attachDdCu(result, runner.ledger, run);
+      const missing = result.data.skillAnalysis.findings.flatMap(
+        (f: Data) => f.missing ?? [],
+      );
       if (missing.length) {
         result.data.status = "partial";
-        result.data.missing = [...result.data.missing, ...missing.map((reason: string) => ({step: "analysis", reason}))];
+        result.data.missing = [
+          ...result.data.missing,
+          ...missing.map((reason: string) => ({ step: "analysis", reason })),
+        ];
       }
     }
     result.meta.coverage = result.data.status;
     if (plan.kind === "smart-money-profile") result.data.copyTradeRoi = null;
-    if (plan.kind === "risk-warning" && plan.input.baselineLiquidity !== undefined) {
-      const observation = state.sources.find(s => s.meta.operation === "token.overview");
+    if (
+      plan.kind === "risk-warning" &&
+      plan.input.baselineLiquidity !== undefined
+    ) {
+      const observation = state.sources.find(
+        (s) => s.meta.operation === "token.overview",
+      );
       const value = decimal(observation?.data?.liquidity);
       result.data.metrics.push({
-        sourceId: observation?.meta.requestId ?? null, address: plan.input.address,
-        liquidityChangePct: value ? value.div(plan.input.baselineLiquidity).minus(1).times(100).toFixed(6) : null,
-        baselineLiquidity: plan.input.baselineLiquidity, baselineTime: plan.input.baselineTime,
-        basis: "user-supplied token liquidity baseline; USD change does not prove withdrawal",
+        sourceId: observation?.meta.requestId ?? null,
+        address: plan.input.address,
+        liquidityChangePct: value
+          ? value
+              .div(plan.input.baselineLiquidity)
+              .minus(1)
+              .times(100)
+              .toFixed(6)
+          : null,
+        baselineLiquidity: plan.input.baselineLiquidity,
+        baselineTime: plan.input.baselineTime,
+        basis:
+          "user-supplied token liquidity baseline; USD change does not prove withdrawal",
       });
     }
     return result;
   }
-  const state = await executePlan(runner, run, plan, signal, progress, state => evidence(resultFor(state)));
+  const state = await executePlan(
+    runner,
+    run,
+    plan,
+    signal,
+    progress,
+    (state) => evidence(resultFor(state)),
+  );
   progress("calculating", "Calculating metrics from retrieved data");
   return resultFor(state);
 }

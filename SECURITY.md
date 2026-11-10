@@ -10,7 +10,7 @@ Include affected version/commit, reproduction steps, impact and a redacted proof
 
 Configuration keys are stored in `config.sqlite` with private filesystem permissions, not encrypted. Research history, imports and chats are stored in `usage.sqlite`. Protect the whole config directory and its backups. Environment credentials override saved credentials; `.env` is not loaded automatically.
 
-The web interface is one shared workspace. Connected users can access shared data and consume the configured API budget. Connection codes are reusable until restart; this is not per-user authentication or isolation. Prefer loopback with an SSH tunnel for remote use. Review public URL, TLS and proxy settings before any Internet exposure.
+The web interface is one shared workspace. Connected users can access shared data and consume the configured API budget. Connection codes are reusable until restart; this is not per-user authentication or isolation. On loopback the terminal prints a sign-in link with the code in its `#code=` fragment; treat that link like the code. Prefer loopback with an SSH tunnel for remote use. Review public URL, TLS and proxy settings before any Internet exposure.
 
 AI providers receive prompts and selected evidence/context. Birdeye and MCP requests use configured credentials. Review what data you send to each service. The CLI does not need wallet seed phrases or private keys.
 
@@ -20,7 +20,7 @@ Review tracked files and Git history for secrets and confidential content before
 
 ## Provider credentials in the shared interface
 
-Only AI profiles configured by the process owner before startup may use environment credentials. The interface binds each profile name and environment variable to its startup provider origin. Settings-created profiles and changes to another origin disable environment lookup (stored as an empty `apiKeyEnv`); provide an explicit key for that provider. This restriction survives restart. To authorize a new environment-backed provider, configure it from the CLI and restart. The shared SQLite interface still grants connected users access to shared research and settings; use browser storage for public demos.
+Only AI profiles configured by the process owner before startup may use environment credentials. The interface binds each profile name and environment variable to its startup provider origin. Settings cannot point a provider at loopback or private network addresses unless that origin was configured before startup; configure local providers with `birdeye-cli config ai init`. Settings-created profiles and changes to another origin disable environment lookup (stored as an empty `apiKeyEnv`); provide an explicit key for that provider. This restriction survives restart. To authorize a new environment-backed provider, configure it from the CLI and restart. The shared SQLite interface still grants connected users access to shared research and settings; use browser storage for public demos.
 
 ## Release gates
 

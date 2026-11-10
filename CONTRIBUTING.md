@@ -25,24 +25,24 @@ CHROME_PATH=/path/to/chrome npm run test:browser
 CHROME_PATH=/path/to/chrome npm run test:demos:browser
 ```
 
-These browser scripts use fixture providers. They are separate from the default CI matrix; record whether they ran when changing UI behavior.
+These browser scripts use fixture providers. They are not part of `npm test`; record whether they ran when changing UI behavior.
 
 ## Every update needs a changelog entry
 
 Update [CHANGELOG.md](CHANGELOG.md) in the same pull request as code, dependencies, documentation or CI changes. Add a concise entry under **Unreleased**, grouped under Added, Changed, Deprecated, Removed, Fixed or Security. Explain what users/maintainers can observe and any migration action. Do not dump commit messages or create a dated release section before release preparation.
 
-CI compares the PR base or previous pushed commit with the current checkout and fails if repository changes do not include a changelog edit. A maintainer must configure the Check workflow's jobs as required branch checks to prevent bypass. Local validation:
+The changelog check compares a base commit with the current checkout and fails if repository changes do not include a changelog edit. Run it before opening a PR:
 
 ```bash
 npm run check:changelog
 npm run check:changelog -- --base origin/main
 ```
 
-The base comparison uses committed changes, matching CI; run it after making your local commit. The content check reads the working tree.
+The base comparison uses committed changes; run it after making your local commit. The content check reads the working tree.
 
 ## Pull requests
 
-Describe the problem, changed behavior and checks actually run. Update usage docs when commands, defaults, errors, costs or configuration change. Include regression coverage for behavior changes. Preserve JSON output, credential redaction and offline/no-charge planning. Keep unrelated formatting and generated snapshot changes separate from the requested change.
+Describe the problem, changed behavior and checks actually run. Update usage docs when commands, defaults, errors, costs or configuration change. Include regression coverage for behavior changes. Preserve JSON output, credential redaction and offline/no-charge planning. Keep unrelated formatting and generated snapshot changes separate from the requested change. Run `npm run format` before committing; `npm run lint` must pass.
 
 Before sharing logs, redact keys, provider credentials, connection codes, cookies and private research data. Release instructions are in [docs/RELEASING.md](docs/RELEASING.md).
 

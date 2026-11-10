@@ -23,10 +23,14 @@ test-results/
 /docs/research/
 /docs/ui/
 /docs/PUBLIC_READINESS.md
+/docs/SKILL_REVIEW.md
 /PRODUCT.md
 /DESIGN.md
 /.impeccable/
 /knowledge/birdeye/cli/docs/research/
+/in.md
+/archive/
+/.github/workflows/
 
 # Generated browser assets served by Skills API
 /apps/skills-api/public/
