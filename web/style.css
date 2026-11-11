@@ -605,6 +605,8 @@ label > textarea {
 }
 .workflow-overview > :is(.section-title, .notice, .overview-help) {
   flex-basis: 100%;
+  /* These are <p>s; the global 75ch cap would let the CLI summary wrap beside them. */
+  max-width: none;
 }
 .workflow-overview > details {
   min-width: 0;

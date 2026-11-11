@@ -10,6 +10,18 @@ const server = createSkillServer({
   demoDirectory: resolve("apps/skills-api/public"),
 });
 await new Promise((done) => server.listen(0, "127.0.0.1", done));
+// Native validation blocks Run with only a browser tooltip, so every default must be in range.
+const invalidNumbers = (page) =>
+  page
+    .locator('input[type="number"]')
+    .evaluateAll((inputs) =>
+      inputs
+        .filter((input) => !input.validity.valid)
+        .map(
+          (input) =>
+            `${input.labels[0]?.textContent}: ${input.validationMessage}`,
+        ),
+    );
 const preview = await startBrowserInterface("127.0.0.1:0");
 let browser;
 try {
@@ -74,6 +86,7 @@ try {
           "same workspace",
           "Selection must not reload the workspace",
         );
+        assert.deepEqual(await invalidNumbers(page), [], skill.title);
       }
       const last = catalog.skills.at(-1),
         previous = catalog.skills.at(-2);
@@ -135,6 +148,7 @@ try {
           skill.title,
         );
         assert.equal(await page.locator(".history-item").count(), 0);
+        assert.deepEqual(await invalidNumbers(page), [], skill.title);
         await page.reload();
         await page
           .getByRole("button", { name: "Use temporary session", exact: true })
@@ -192,6 +206,57 @@ try {
         await page
           .getByRole("heading", { name: "Price Surge Screen", exact: true })
           .waitFor();
+      }
+      if (width === 1440) {
+        const nav = page.getByRole("navigation", { name: "Workspace" });
+        const showing = (tab) =>
+          page.waitForFunction(
+            (name) =>
+              document.querySelector(
+                'nav[aria-label="Workspace"] [aria-current="page"]',
+              )?.textContent === name,
+            tab,
+            { timeout: 5000 },
+          );
+        await page.goto(`${origin}/skill-top-trader-analysis?from=demo`);
+        await page
+          .getByRole("button", { name: "Use temporary session", exact: true })
+          .click();
+        await page
+          .getByRole("heading", { name: "Top Trader Analysis", exact: true })
+          .waitFor();
+        assert.match(await page.title(), /^Top Trader Analysis · /);
+        await page.getByLabel("Maximum page rows").fill("7");
+        for (const [tab, view] of [
+          ["Demos", "demos"],
+          ["Usage & credits", "usage"],
+          ["Settings", "settings"],
+        ]) {
+          await nav.getByRole("button", { name: tab, exact: true }).click();
+          await showing(tab);
+          const url = new URL(page.url());
+          assert.equal(url.pathname, "/skill-top-trader-analysis");
+          assert.equal(url.searchParams.get("view"), view, tab);
+          assert.equal(url.searchParams.get("from"), "demo");
+          assert.match(await page.title(), new RegExp(`^${tab} · `));
+        }
+        await page.goBack();
+        await showing("Usage & credits");
+        await page.goBack();
+        await page.goBack();
+        await showing("Research");
+        assert.equal(new URL(page.url()).search, "?from=demo");
+        assert.equal(
+          await page.getByLabel("Maximum page rows").inputValue(),
+          "7",
+          "Back to Research must keep the form",
+        );
+        await page.goto(`${origin}/skill-top-trader-analysis?view=usage`);
+        await page
+          .getByRole("button", { name: "Use temporary session", exact: true })
+          .click();
+        await showing("Usage & credits");
+        assert.match(await page.title(), /^Usage & credits · /);
       }
       assert.deepEqual(errors, []);
       assert.deepEqual(

@@ -90,6 +90,14 @@ User-visible changes are recorded here using [Keep a Changelog](https://keepacha
 
 ### Fixed
 
+- Top Trader Analysis runs with its default settings. Choosing it set **Maximum page rows** to 20 while the skill allows at most 10, so Run research was blocked by a browser tooltip with no message in the page. Each skill now starts within its own row cap.
+
+- Research form address handling: in browser storage mode an invalid address now shows the validator's message, such as "Use a Solana address, not a token symbol.", instead of raw issue JSON, and the error no longer pushes **CLI command** beside it. With the address empty, the estimate line asks you to fill in the address field instead of showing a CU estimate and budget warning next to a disabled Run button. Token skills and wallet skills keep separate addresses, so a token address is never sent to a wallet skill, and each address survives skills without an address field and Back/Forward. Going Back or Forward between tabs clears the previous tab's error.
+
+- Header tabs have their own URLs: Demos, Usage & credits and Settings add `?view=demos`, `?view=usage` or `?view=settings` to the current page, so they can be linked, reloaded and left with Back without clearing the research form. The browser tab title names the open skill or tab.
+- Price Surge Screen shows Chain, Surge interval and minimum/maximum market cap in the research form; previously these were only reachable under API steps. USD amount fields in skill settings accept decimals.
+- Number fields in the research form can be cleared with Backspace. Clearing one left a `0`, so typing 20 showed `020`, and fields with a default such as **Top holder wallets** snapped back to it and kept its first digit. A cleared field now stays empty, shows its default as a placeholder and uses that default when the skill runs.
+
 - Price Surge Screen runs in the demo now show their results: ranked surging tokens with price change, liquidity and key metrics, a selectable token detail, and every excluded token with its reasons. Previously the screen produced findings the UI did not render, leaving an empty Research findings section.
 
 - AI provider errors now include the provider's own JSON error message (bounded, with the configured key redacted) instead of only the HTTP status, so unsupported parameters or unknown models can be diagnosed from Settings and chat.

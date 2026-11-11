@@ -4,7 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BigNumber } from "bignumber.js";
 import { WorkflowOverview, type PreparedCase } from "./workflow-overview";
-import { SkillSettings, SkillFindings } from "./skill-settings";
+import {
+  SkillSettings,
+  SkillFindings,
+  NumberInput,
+  defaultScanLimit,
+} from "./skill-settings";
 import { SkillList, RunHistory, plainResult } from "./skill-console";
 import { SkillIcon } from "./skill-icon";
 import { Brand } from "./brand";
@@ -23,7 +28,18 @@ import "./style.css";
 import { metricAddressKind, operationSubject } from "./birdeye-address";
 
 type Data = Record<string, any>;
-type View = "research" | "usage" | "settings" | "demos";
+const viewLabels = {
+  research: "Research",
+  demos: "Demos",
+  usage: "Usage & credits",
+  settings: "Settings",
+} as const;
+type View = keyof typeof viewLabels;
+// ?view= rather than a path: every server already serves the app on skill paths.
+const urlView = (): View => {
+  const view = new URLSearchParams(window.location.search).get("view");
+  return view && Object.hasOwn(viewLabels, view) ? (view as View) : "research";
+};
 const api = createApiClient();
 function Icon({ name, size = 19 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
@@ -283,7 +299,7 @@ function App() {
   const [status, setStatus] = useState<Data | null>(null),
     [locked, setLocked] = useState(false),
     [code, setCode] = useState(""),
-    [view, setView] = useState<View>("research");
+    [view, setView] = useState<View>(urlView);
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [run, setRun] = useState<Data | null>(null),
@@ -292,13 +308,13 @@ function App() {
     [activeCu, setActiveCu] = useState(0);
   const [mode, setMode] = useState<"case" | "chat">("case"),
     [kind, setKind] = useState("skill-trending-list"),
-    [address, setAddress] = useState(""),
+    [addresses, setAddresses] = useState({ token: "", wallet: "" }),
     [question, setQuestion] = useState(""),
     [budget, setBudget] = useState<number | null>(null),
     [short, setShort] = useState(true);
   const [depth, setDepth] = useState("core"),
-    [candidateLimit, setCandidateLimit] = useState(3),
-    [scanLimit, setScanLimit] = useState(20),
+    [candidateLimit, setCandidateLimit] = useState<number | undefined>(3),
+    [scanLimit, setScanLimit] = useState<number | undefined>(20),
     [interval, setInterval] = useState("24h"),
     [duration, setDuration] = useState("30d"),
     [launchStage, setLaunchStage] = useState("newly-created"),
@@ -388,21 +404,21 @@ function App() {
   function chooseWorkflow(next: string, updateUrl = true) {
     if (updateUrl) {
       const url = new URL(window.location.href);
-      if (url.pathname !== `/${next}`) {
-        url.pathname = `/${next}`;
+      url.pathname = `/${next}`;
+      url.searchParams.delete("view");
+      if (url.href !== window.location.href)
         window.history.pushState(null, "", url);
-      }
     }
     setKind(next);
     setSkillOptions({});
     setDuration("30d");
-    setScanLimit(next.startsWith("skill-") ? 20 : 50);
+    setScanLimit(defaultScanLimit(next));
     setRun(null);
     viewedRun.current = null;
     setChatMessages([]);
     setLiveData(true);
     setResultFormat("ui");
-    setView("research");
+    setView(updateUrl ? "research" : urlView());
     setMode("case");
   }
   const selectedCase = status?.cases?.find((c: Data) => c.kind === kind);
@@ -415,6 +431,9 @@ function App() {
       "smart-money-profile",
       "daily-brief",
     ].includes(kind);
+  // Token and wallet skills keep separate addresses, so one is never run as the other.
+  const addressSlot = walletCase ? "wallet" : "token";
+  const address = addresses[addressSlot];
   const optionalAddress = ["smart-money-profile", "daily-brief"].includes(kind);
   const noAddress =
     ["none", "wallets"].includes(selectedCase?.subject) ||
@@ -440,8 +459,8 @@ function App() {
           ...(selectedCase?.subject === "wallets" && walletsText.trim()
             ? { wallets: walletsText.split(/[\s,]+/).filter(Boolean) }
             : {}),
-          limit: candidateLimit,
-          scanLimit,
+          limit: candidateLimit ?? 3,
+          scanLimit: scanLimit ?? defaultScanLimit(kind),
           interval,
           duration,
           ...skillOptions,
@@ -450,8 +469,8 @@ function App() {
           kind,
           ...(!noAddress && address.trim() ? { address: address.trim() } : {}),
           depth,
-          limit: candidateLimit,
-          scanLimit,
+          limit: candidateLimit ?? 3,
+          scanLimit: scanLimit ?? defaultScanLimit(kind),
           interval,
           duration,
           ...(kind === "early-project-screening"
@@ -584,17 +603,36 @@ function App() {
         window.location.pathname,
         status.cases,
       );
-      if (linkedSkill) {
-        setSkillGroup(linkedSkill.category);
-        chooseWorkflow(linkedSkill.kind, false);
-      } else if (["/", "/index.html"].includes(window.location.pathname)) {
-        setSkillGroup("all");
-        chooseWorkflow("skill-trending-list", false);
+      const next =
+        linkedSkill?.kind ??
+        (["/", "/index.html"].includes(window.location.pathname)
+          ? "skill-trending-list"
+          : undefined);
+      // Back between tabs of the same skill must keep its form and run.
+      if (next && next !== kind) {
+        setSkillGroup(linkedSkill?.category ?? "all");
+        chooseWorkflow(next, false);
       }
+      setView(urlView());
+      setError("");
     };
     window.addEventListener("popstate", restoreSkill);
     return () => window.removeEventListener("popstate", restoreSkill);
-  }, [status?.cases]);
+  }, [status?.cases, kind]);
+  useEffect(() => {
+    if (urlView() === view) return;
+    const url = new URL(window.location.href);
+    if (view === "research") url.searchParams.delete("view");
+    else url.searchParams.set("view", view);
+    window.history.pushState(null, "", url);
+  }, [view]);
+  useEffect(() => {
+    const page =
+      view === "research"
+        ? selectedCase?.title || titleFor[kind]
+        : viewLabels[view];
+    document.title = `${page} · Birdeye Research`;
+  }, [view, kind, selectedCase?.title]);
   // Other tabs and browsers share the server workspace; pick up their saved keys when this tab is shown or focused.
   useEffect(() => {
     const onFocus = () => {
@@ -837,7 +875,7 @@ function App() {
       <header className="console-header">
         <Brand />
         <nav aria-label="Workspace">
-          {(["research", "demos", "usage", "settings"] as View[]).map((v) => (
+          {(Object.keys(viewLabels) as View[]).map((v) => (
             <button
               key={v}
               aria-current={view === v ? "page" : undefined}
@@ -847,13 +885,7 @@ function App() {
                 setError("");
               }}
             >
-              {v === "research"
-                ? "Research"
-                : v === "demos"
-                  ? "Demos"
-                  : v === "usage"
-                    ? "Usage & credits"
-                    : "Settings"}
+              {viewLabels[v]}
             </button>
           ))}
         </nav>
@@ -1266,7 +1298,12 @@ function App() {
                               id="address"
                               className="address-input"
                               value={address}
-                              onChange={(e) => setAddress(e.target.value)}
+                              onChange={(e) =>
+                                setAddresses({
+                                  ...addresses,
+                                  [addressSlot]: e.target.value,
+                                })
+                              }
                               placeholder={
                                 optionalAddress
                                   ? "Leave blank to discover candidates"
@@ -1334,28 +1371,24 @@ function App() {
                                 !address.trim())) && (
                               <label>
                                 Maximum candidates
-                                <input
-                                  type="number"
+                                <NumberInput
                                   min="1"
                                   max="5"
+                                  placeholder="3"
                                   value={candidateLimit}
-                                  onChange={(e) =>
-                                    setCandidateLimit(Number(e.target.value))
-                                  }
+                                  onValue={setCandidateLimit}
                                 />
                               </label>
                             )}
                             {discovery && (
                               <label>
                                 Discovery page size
-                                <input
-                                  type="number"
+                                <NumberInput
                                   min="1"
                                   max="50"
+                                  placeholder={String(defaultScanLimit(kind))}
                                   value={scanLimit}
-                                  onChange={(e) =>
-                                    setScanLimit(Number(e.target.value))
-                                  }
+                                  onValue={setScanLimit}
                                 />
                               </label>
                             )}

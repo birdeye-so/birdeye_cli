@@ -222,7 +222,8 @@ export function WorkflowOverview({
       )}
       {error && (
         <p role="alert" className="notice error">
-          {error} Fix the parameter or reset the edited step.
+          {error}
+          {customized && " Fix the parameter or reset the edited step."}
         </p>
       )}
       {!plan && checking && (
@@ -414,14 +415,17 @@ export function WorkflowOverview({
             ? "Checking parameters and CU…"
             : error
               ? "Fix the parameters to estimate and run."
-              : plan
-                ? `${plan.estimatedCu} CU before retries · at most ${plan.maxRequests} requests`
-                : "Estimate is free."}
+              : plan?.needsAddress
+                ? "Fill in the address field above to estimate and run."
+                : plan
+                  ? `${plan.estimatedCu} CU before retries · at most ${plan.maxRequests} requests`
+                  : "Estimate is free."}
         </span>
       </div>
       {plan &&
         !checking &&
         !error &&
+        !plan.needsAddress &&
         budget !== null &&
         plan.estimatedCu > budget && (
           <p className="notice">

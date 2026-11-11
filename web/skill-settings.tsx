@@ -1,6 +1,45 @@
 import React from "react";
+import { surgeChains, surgeIntervals } from "../src/price-surge/schema";
 export { SkillDashboard as SkillFindings } from "./skill-visuals";
 type Data = Record<string, any>;
+// Renders the typed text, so a field can be emptied and "20" never shows as "020".
+export function NumberInput({
+  value,
+  onValue,
+  ...props
+}: Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "type" | "value" | "onChange"
+> & {
+  value: number | undefined;
+  onValue: (value: number | undefined) => void;
+}) {
+  const [draft, setDraft] = React.useState<{ text: string; value?: number }>({
+    text: "",
+  });
+  return (
+    <input
+      type="number"
+      {...props}
+      value={draft.value === value ? draft.text : (value ?? "")}
+      onChange={(e) => {
+        const text = e.target.value,
+          next = text === "" ? undefined : Number(text);
+        setDraft({ text, value: next });
+        onValue(next);
+      }}
+    />
+  );
+}
+// Per-skill page-row caps; the shared scanLimit state must start within them.
+export const scanLimitMax = (kind: string) =>
+  kind === "skill-top-trader-analysis"
+    ? 10
+    : ["skill-lp-analysis", "skill-smart-wallets"].includes(kind)
+      ? 20
+      : 50;
+export const defaultScanLimit = (kind: string) =>
+  Math.min(kind.startsWith("skill-") ? 20 : 50, scanLimitMax(kind));
 export function SkillSettings({
   kind,
   value,
@@ -17,10 +56,10 @@ export function SkillSettings({
   kind: string;
   value: Data;
   change: (value: Data) => void;
-  limit: number;
-  setLimit: (v: number) => void;
-  scanLimit: number;
-  setScanLimit: (v: number) => void;
+  limit: number | undefined;
+  setLimit: (v: number | undefined) => void;
+  scanLimit: number | undefined;
+  setScanLimit: (v: number | undefined) => void;
   interval: string;
   setInterval: (v: string) => void;
   duration: string;
@@ -82,20 +121,25 @@ export function SkillSettings({
     min: number,
     max?: number,
     fallback?: number,
+    step?: "any",
   ) => (
     <label key={key}>
       {label}
-      <input
-        type="number"
+      <NumberInput
         min={min}
         max={max}
-        value={value[key] ?? fallback ?? ""}
-        onChange={(e) =>
-          patch(key, e.target.value === "" ? undefined : Number(e.target.value))
-        }
+        step={step}
+        placeholder={fallback === undefined ? undefined : String(fallback)}
+        // A cleared field keeps its key as undefined and falls back on the server, not on screen.
+        value={Object.hasOwn(value, key) ? value[key] : fallback}
+        onValue={(v) => patch(key, v)}
       />
     </label>
   );
+  // Price Surge reads its filters from input.priceSurge, not top-level options.
+  const surge = value.priceSurge ?? {};
+  const setSurge = (key: string, v: unknown) =>
+    change({ ...value, priceSurge: { ...surge, [key]: v } });
   return (
     <div
       className={`skill-settings${kind === "skill-token-dd-score" ? " token-dd-settings" : ""}`}
@@ -141,7 +185,52 @@ export function SkillSettings({
             {value.stage === "near-graduation" &&
               numericInput("minProgress", "Minimum launch progress · %", 1, 99)}
             {value.stage !== "newly-listed" &&
-              numericInput("minLiquidity", "Minimum liquidity · USD", 0)}
+              numericInput(
+                "minLiquidity",
+                "Minimum liquidity · USD",
+                0,
+                undefined,
+                undefined,
+                "any",
+              )}
+          </>
+        )}
+        {kind === "skill-price-surge" && (
+          <>
+            {(
+              [
+                ["chain", "Chain", surgeChains, "solana"],
+                ["interval", "Surge interval", surgeIntervals, "1h"],
+              ] as const
+            ).map(([key, label, choices, fallback]) => (
+              <label key={key}>
+                {label}
+                <select
+                  value={surge[key] ?? fallback}
+                  onChange={(e) => setSurge(key, e.target.value)}
+                >
+                  {choices.map((v) => (
+                    <option key={v}>{v}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+            {(
+              [
+                ["min_market_cap", "Minimum market cap · USD"],
+                ["max_market_cap", "Maximum market cap · USD"],
+              ] as const
+            ).map(([key, label]) => (
+              <label key={key}>
+                {label}
+                <NumberInput
+                  min="0"
+                  step="any"
+                  value={surge[key]}
+                  onValue={(v) => setSurge(key, v)}
+                />
+              </label>
+            ))}
           </>
         )}
         {kind === "skill-token-stats" && (
@@ -214,18 +303,12 @@ export function SkillSettings({
             {kind === "skill-kol-signal"
               ? "Maximum wallets per detail bucket"
               : "Maximum page rows"}
-            <input
-              type="number"
+            <NumberInput
               min="1"
-              max={
-                kind === "skill-top-trader-analysis"
-                  ? 10
-                  : kind === "skill-lp-analysis"
-                    ? 20
-                    : 50
-              }
+              max={scanLimitMax(kind)}
+              placeholder={String(defaultScanLimit(kind))}
               value={scanLimit}
-              onChange={(e) => setScanLimit(Number(e.target.value))}
+              onValue={setScanLimit}
             />
           </label>
         )}
@@ -233,12 +316,12 @@ export function SkillSettings({
           (kind === "skill-launchpad-trending" && value.depth === "full")) && (
           <label>
             Maximum detail lookups
-            <input
-              type="number"
+            <NumberInput
               min="1"
               max="5"
+              placeholder="3"
               value={limit}
-              onChange={(e) => setLimit(Number(e.target.value))}
+              onValue={setLimit}
             />
           </label>
         )}
@@ -258,6 +341,7 @@ export function SkillSettings({
             0,
             undefined,
             0,
+            "any",
           )}
         {(timeline ||
           kind === "skill-launchpad-trending" ||
@@ -314,34 +398,14 @@ export function SkillSettings({
             </fieldset>
             {(value.ddMode ?? "advanced") === "advanced" && (
               <>
-                <label>
-                  Top holder rows
-                  <input
-                    type="number"
-                    min="10"
-                    max="50"
-                    value={value.topN ?? 50}
-                    onChange={(e) => patch("topN", Number(e.target.value))}
-                  />
-                </label>
+                {numericInput("topN", "Top holder rows", 10, 50, 50)}
                 {select(
                   "liqResolution",
                   "Liquidity candle resolution",
                   ["1m", "5m", "15m", "30m", "1h", "4h", "1D"],
                   "15m",
                 )}
-                <label>
-                  Liquidity candles
-                  <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={value.liqCandles ?? 96}
-                    onChange={(e) =>
-                      patch("liqCandles", Number(e.target.value))
-                    }
-                  />
-                </label>
+                {numericInput("liqCandles", "Liquidity candles", 1, 100, 96)}
               </>
             )}
             <p className="field-hint">
@@ -400,12 +464,12 @@ export function SkillSettings({
         {["skill-trending-list", "skill-smart-wallets"].includes(kind) && (
           <label>
             Discovery rows
-            <input
-              type="number"
+            <NumberInput
               min="1"
-              max={kind === "skill-smart-wallets" ? 20 : 50}
+              max={scanLimitMax(kind)}
+              placeholder={String(defaultScanLimit(kind))}
               value={scanLimit}
-              onChange={(e) => setScanLimit(Number(e.target.value))}
+              onValue={setScanLimit}
             />
             {kind === "skill-smart-wallets" && (
               <small className="field-hint">
@@ -424,12 +488,12 @@ export function SkillSettings({
             )}
             <label>
               Maximum tokens / wallets
-              <input
-                type="number"
+              <NumberInput
                 min="1"
                 max="5"
+                placeholder="3"
                 value={limit}
-                onChange={(e) => setLimit(Number(e.target.value))}
+                onValue={setLimit}
               />
             </label>
           </>
@@ -446,18 +510,8 @@ export function SkillSettings({
           "skill-contract-dd",
           "skill-rugcheck-audit",
           "skill-token-dd",
-        ].includes(kind) && (
-          <label>
-            Observation window · days
-            <input
-              type="number"
-              min="1"
-              max="30"
-              value={value.windowDays ?? 7}
-              onChange={(e) => patch("windowDays", Number(e.target.value))}
-            />
-          </label>
-        )}
+        ].includes(kind) &&
+          numericInput("windowDays", "Observation window · days", 1, 30, 7)}
         {wallet &&
           kind !== "skill-smart-wallets" &&
           select("pnlMethod", "PnL accounting", ["wac", "net_cash"], "wac")}
